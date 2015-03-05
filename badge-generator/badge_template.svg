@@ -63,9 +63,9 @@
        xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAIAAAAHjs1qAAAAA3NCSVQICAjb4U/gAAAEOUlEQVR4 nO3dwY6jOBRAURjl/3+ZWdRuNOpYausVcM9Zlwght7zhyT6v6zqg4XMcx3mev30bv2Dl/3zlyWxZ L8Y+aPGzXum6rn9++x5gjtwJkTshcidE7oTInRC5EyJ3QuROiNwJ+az80ePmaibfk295/3+3J3y3 +/lq8Re3uhMid0LkTojcCZE7IXInRO6EyJ0QuRMid0LkTsjSzMyKyTGVsYmOXZtzbHk4t5pjeejP bXUnRO6EyJ0QuRMid0LkTojcCZE7IXInRO6EyJ2QbTMzr5Q91+WtrO6EyJ0QuRMid0LkTojcCZE7 IXInRO6EyJ0QuRNiZuZPxrZ2MZwzw+pOiNwJkTshcidE7oTInRC5EyJ3QuROiNwJkTsh22ZmbnVy 0OM87uk97oZ/WN0JkTshcidE7oTInRC5EyJ3QuROiNwJkTshS0ME2W0hVr74yuv0r9fZcpHF66x4 6y9udSdE7oTInRC5EyJ3QuROiNwJkTshcidE7oTInZDzoTsozNg1OuIh34TVnRC5EyJ3QuROiNwJ kTshcidE7oTInRC5EyJ3Qj7H4C4oKyY/66tbbdsyeTNbPmtsl55F13VZ3QmROyFyJ0TuhMidELkT IndC5E6I3AmROyFyJ2TpbKYVu4YfbjXRses6Y/vM3G1M5T4f9MPqTojcCZE7IXInRO6EyJ0QuRMi d0LkTojcCZE7IdtmZoaHH/5sch5my3Ued3jTrsGb4QEeqzshcidE7oTInRC5EyJ3QuROiNwJkTsh cifkcyy8yJ3cW2LL5hyPeye/6wk/7ovvsvjFre6EyJ0QuRMid0LkTojcCZE7IXInRO6EyJ0QuRNy Xtc1tmfGrc5sWTE5CPTV5M1sGaNaMfylrO6EyJ0QuRMid0LkTojcCZE7IXInRO6EyJ0QuRNyZncm WXGrE3h22fKLT249tJHVnRC5EyJ3QuROiNwJkTshcidE7oTInRC5EyJ3Qj7HSydDvto10bFynfft M/NQVndC5E6I3AmROyFyJ0TuhMidELkTIndC5E6I3An5rPzR4yYoHjcF9Mp5mMnzm5zNBP8ld0Lk TojcCZE7IXInRO6EyJ0QuRMid0KWhghWTL63H3sNvvH19d/fzK4nPPZL7Xp6G5+w1Z0QuRMid0Lk TojcCZE7IXInRO6EyJ0QuRMid0K2zcy80uM28Fhxq21Uxo76+WF1J0TuhMidELkTIndC5E6I3AmR OyFyJ0TuhMidEDMzf2vL1Met5liOwRsePl3H6k6I3AmROyFyJ0TuhMidELkTIndC5E6I3AmROyHb ZmbuNvWxxdjZTJMb2tzqhodnb6zuhMidELkTIndC5E6I3AmROyFyJ0TuhMidELkTcl7X9coTiL4a m4dZuc4rJ47uNldzWN1JkTshcidE7oTInRC5EyJ3QuROiNwJkTshcifkfOW0BvyvfwGuBP3/h3j1 KAAAAABJRU5ErkJggg== "
        x="184.61632"
        y="856.86121"
-       width="111.35797"
-       height="111.35797"
-       id="image3747-6-5-3" />
+       width="111.0"
+       height="111.0"
+       id="badge-qr" />
     <text
        x="16.181505"
        y="877.85913"
@@ -74,15 +74,15 @@
        style="font-size:17.9748764px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="16.181505"
          y="877.85913"
-         id="tspan3752-5-1-9"
+         id="badge-name"
          style="font-size:21.96929359px;font-family:Britannic Bold;-inkscape-font-specification:Britannic Bold">Janis Kalnins</tspan></text>
     <rect
        width="318.48285"
        height="64.346535"
        x="-0.06763117"
        y="987.35474"
-       id="rect3805-4-2-9"
-       style="fill:#162d50;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+       id="badge-color"
+       style="fill:#800000;fill-opacity:1;fill-rule:evenodd;stroke:none" />
     <text
        x="45.666599"
        y="1033.2008"
@@ -91,7 +91,7 @@
        style="font-size:71.89950562px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="45.666599"
          y="1033.2008"
-         id="tspan3809-0-0-1"
+         id="badge-type"
          style="font-size:35.94975281px;fill:#ffffff;font-family:Britannic Bold;-inkscape-font-specification:Britannic Bold">ATTENDEE</tspan></text>
     <g
        transform="matrix(0.44038449,0,0,0.44038449,674.27458,795.03122)"
@@ -125,7 +125,7 @@
        style="font-size:17.9748764px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="15.422378"
          y="900.7879"
-         id="tspan3752-8-6-1-3"
+         id="badge-company"
          style="font-size:17.9748764px;font-style:italic;font-family:Britannic Bold;-inkscape-font-specification:Britannic Bold">C.T.C.o</tspan></text>
   </g>
 </svg>
