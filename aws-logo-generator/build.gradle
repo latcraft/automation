@@ -1,0 +1,52 @@
+
+
+import org.apache.batik.transcoder.image.PNGTranscoder
+import static org.apache.batik.transcoder.image.PNGTranscoder.*
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+
+import static javax.imageio.ImageIO.*
+import java.awt.image.BufferedImage
+import java.awt.Font
+import java.awt.Color
+
+
+buildscript {
+  repositories { mavenCentral() }
+  dependencies {
+    classpath('batik:batik-transcoder:1.6-1') {
+      exclude module: 'fop'
+    }
+    classpath 'xerces:xercesImpl:2.11.0'
+  }
+}
+
+
+task generateImages << {
+  buildDir.mkdirs()
+  int i = 0
+  Font bbFont = Font.createFont(Font.TRUETYPE_FONT, file('bb.ttf'))
+  file("${projectDir}/sources").eachFile { File f ->
+    if (f.name.endsWith('.svg')) {
+      println "> Converting ${f.name}"
+      PNGTranscoder t = new PNGTranscoder()
+      t.addTranscodingHint(KEY_HEIGHT, new Float(1000))
+      t.addTranscodingHint(KEY_WIDTH, new Float(1000))
+      String svgURI = f.toURL().toString()
+      File targetFile = file("${buildDir}/aws${(++i).toString().padLeft(2, '0')}.png")
+      t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream(targetFile)))
+      BufferedImage image = read(targetFile)
+      def g = image.createGraphics()
+      g.setColor(Color.WHITE)
+      g.setFont(bbFont.deriveFont(Font.BOLD, 72))
+      String text = f.name.replaceAll('.svg', '') 
+      g.drawString(text, 500 - g.fontMetrics.stringWidth(text) / 2, 950)
+      write(image, "PNG", targetFile)
+    }
+  }
+}
+
+task clean(type: Delete) {
+  delete buildDir
+}
+
