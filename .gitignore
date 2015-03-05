@@ -1,5 +1,5 @@
 .gradle
-/*.png
+*.png
 build
 bin
-/*.jpg
+*.jpg
