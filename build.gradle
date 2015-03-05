@@ -4,11 +4,18 @@ import com.google.zxing.client.j2se.MatrixToImageWriter
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
 
+import org.apache.batik.transcoder.image.JPEGTranscoder
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+
 buildscript {
   repositories { mavenCentral() }
   dependencies {
     classpath 'com.google.zxing:core:3.2.0'
     classpath 'com.google.zxing:javase:3.2.0'
+    classpath('batik:batik-transcoder:1.6-1') {
+      exclude module: 'fop'
+    }
   }
 }
 
@@ -18,8 +25,17 @@ task generateQRCodes << {
   def width = 200
   String content = "http://google.com"
   BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, width, height)
-  MatrixToImageWriter.writeToFile(bitMatrix, "png", new File('test.png'))
+  MatrixToImageWriter.writeToFile(bitMatrix, "png", file('test.png'))
 }
 
 
+task generateBadge << {
+  JPEGTranscoder t = new JPEGTranscoder()
+  t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(1))
+  String svgURI = file('badge_template.svg').toURL().toString()
+  TranscoderInput input = new TranscoderInput(svgURI)
+  OutputStream ostream = new FileOutputStream("out.jpg")
+  TranscoderOutput output = new TranscoderOutput(ostream)
+  t.transcode(input, output)
+}
 
