@@ -31,11 +31,14 @@ task generateBadges << {
   File svgTemplate = file('badge_template.svg')
   forEachPerson { name, email, company, type ->
     logger.quiet "> Generating badge for ${name}"
+    // TODO: Figure out what to do with Latvian names, our font does not support Latvian characters
     String baseName = name.toLowerCase().replaceAll('[\\s-]', '_')
     File svgBadgeFile = file("${buildDir}/${baseName}_badge.svg")    
     File qrFile = renderQRCodeImage(getBadgeUrl(name, email, company), buildDir, baseName)
     svgBadgeFile.text = modifySVG(svgTemplate.text, name, email, company, type, qrFile)
+    qrFile.delete()
     renderBadgeImage(svgBadgeFile, buildDir, baseName)
+    svgBadgeFile.delete()
   }
 }
 
