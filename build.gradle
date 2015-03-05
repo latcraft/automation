@@ -21,3 +21,5 @@ task generateQRCodes << {
   MatrixToImageWriter.writeToFile(bitMatrix, "png", new File('test.png'))
 }
 
+
+
