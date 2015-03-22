@@ -12,6 +12,11 @@ import org.apache.batik.transcoder.TranscoderOutput
 import groovy.util.XmlSlurper
 import groovy.xml.XmlUtil
 
+import java.awt.image.BufferedImage
+import java.awt.Graphics2D
+
+import static javax.imageio.ImageIO.*
+
 
 buildscript {
   repositories { mavenCentral() }
@@ -31,8 +36,7 @@ task generateBadges << {
   File svgTemplate = file('badge_template.svg')
   forEachPerson { name, email, company, type ->
     logger.quiet "> Generating badge for ${name}"
-    // TODO: Figure out what to do with Latvian names, our font does not support Latvian characters
-    String baseName = name.toLowerCase().replaceAll('[\\s-]', '_')
+    String baseName = name.toLowerCase().replaceAll('[\\s-]', '_').replaceAll("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}]", "_")
     File svgBadgeFile = file("${buildDir}/${baseName}_badge.svg")    
     File qrFile = renderQRCodeImage(getBadgeUrl(name, email, company), buildDir, baseName)
     svgBadgeFile.text = modifySVG(svgTemplate.text, name, email, company, type, qrFile)
@@ -44,6 +48,23 @@ task generateBadges << {
 
 generateBadges.logging.captureStandardOutput LogLevel.INFO
 generateBadges.logging.captureStandardError LogLevel.INFO
+
+
+task concatenateBadges(dependsOn: generateBadges) << {
+  File pageDir = file("${buildDir}/pages")
+  pageDir.mkdirs()
+  buildDir.listFiles().findAll { it.name.endsWith('.jpg') }.collate(8).eachWithIndex { badgeGroup, groupIndex ->
+    BufferedImage page = read(new File('a4.jpg'))
+    Graphics2D pageGraphics = page.createGraphics()
+    println "> Generating page ${groupIndex}"
+    badgeGroup.eachWithIndex { File badgeFile, imageIndex ->
+      BufferedImage badgeImage = read(badgeFile)
+      println "> Adding ${imageIndex}:${badgeFile.name} to page"
+      pageGraphics.drawImage(badgeImage, null, (imageIndex % 2) * 1100 + 100, ((int)(imageIndex / 2)) * 720 + 100)
+    }
+    write(page, "JPG", new File(pageDir, "page${groupIndex.toString().padLeft(3, '0')}.jpg"))  
+  }
+}
 
 
 task clean(type: Delete) {
@@ -71,7 +92,7 @@ def renderBadgeImage(File svgFile, File baseDir, String baseName) {
 }
 
 
-File renderQRCodeImage(String content, baseDir, baseName, width = 111, height = 111) {
+File renderQRCodeImage(String content, baseDir, baseName, width = 300, height = 300) {
   File targetFile = file("${baseDir}/${baseName}_qr.png")
   def hints = new EnumMap<EncodeHintType, Object>(EncodeHintType)
   hints.put(EncodeHintType.CHARACTER_SET, "UTF-8")
