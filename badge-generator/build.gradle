@@ -74,13 +74,51 @@ task clean(type: Delete) {
 
 def modifySVG(String svgText, String name, String email, String company, String badgeType, File qrFile) {
   def svg = new XmlSlurper().parseText(svgText)
-  svg.depthFirst().find { it.@id == 'badge-name' }.replaceBody name
-  svg.depthFirst().find { it.@id == 'badge-company' }.replaceBody company
+  def badgeName = svg.depthFirst().find { it.@id == 'badge-name' }
+  badgeName.replaceBody(sanitizeName(name))
+  svg.depthFirst().find { it.@id == 'badge-company' }.replaceBody(sanitizeCompany(company))
   svg.depthFirst().find { it.@id == 'badge-type' }.replaceBody badgeType
   svg.depthFirst().find { it.@id == 'badge-qr' }.@'xlink:href' = "data:image/png;base64,${qrFile.bytes.encodeBase64().toString().toList().collate(76)*.join().join(' ')}".toString()
   def color = badgeType.startsWith('S') ? '225500' : badgeType.startsWith('O') ? '800000' : '162D50'
   svg.depthFirst().find { it.@id == 'badge-color' }.@style = "fill:#${color};fill-opacity:1;fill-rule:evenodd;stroke:none".toString()
   XmlUtil.serialize(svg)
+}
+
+
+String sanitizeName(String name) {
+  name.
+    trim().
+    split('\\s+').collect { 
+      it.
+        trim().
+        capitalize() 
+    }.
+    join(' ')
+}
+
+
+String sanitizeCompany(String company) {
+  sanitizeName(
+    company.
+      replaceAll('n/a', '').
+      replaceAll('LV', '').
+      replaceAll('Intelligent Technologies', 'IT').
+      replaceAll('VSIA', '').
+      replaceAll('vsia', '').
+      replaceAll('sia', '').
+      replaceAll('SIA', '').
+      replaceAll('LTD', '').
+      replaceAll('ltd', '').
+      replaceAll('Ltd.', '').
+      replaceAll('Self Employed', '').
+      replaceAll('GmbH', '').
+      replaceAll('No Company :\\(', '').
+      replaceAll('-', '').
+      replaceAll('Latvia', '').
+      replaceAll('private', '').
+      trim().
+      capitalize()
+  )
 }
 
 
@@ -104,8 +142,7 @@ File renderQRCodeImage(String content, baseDir, baseName, width = 300, height = 
 
 
 def getBadgeUrl(name, email, company) {
-  // TODO: use bit.ly to shorten the url
-  "http://aws-day.latcraft.lv/people/${name}/${email}/${company}"
+  "mailto:${email}"
 }
 
 
