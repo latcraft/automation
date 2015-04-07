@@ -14,6 +14,7 @@ import groovy.xml.XmlUtil
 
 import java.awt.image.BufferedImage
 import java.awt.Graphics2D
+import java.awt.Color
 
 import static javax.imageio.ImageIO.*
 
@@ -56,11 +57,18 @@ task concatenateBadges(dependsOn: generateBadges) << {
   buildDir.listFiles().findAll { it.name.endsWith('.jpg') }.collate(8).eachWithIndex { badgeGroup, groupIndex ->
     BufferedImage page = read(new File('a4.jpg'))
     Graphics2D pageGraphics = page.createGraphics()
+    pageGraphics.setColor(Color.LIGHT_GRAY)
     println "> Generating page ${groupIndex}"
     badgeGroup.eachWithIndex { File badgeFile, imageIndex ->
       BufferedImage badgeImage = read(badgeFile)
       println "> Adding ${imageIndex}:${badgeFile.name} to page"
-      pageGraphics.drawImage(badgeImage, null, (imageIndex % 2) * 1100 + 100, ((int)(imageIndex / 2)) * 720 + 100)
+      int x = (imageIndex % 2) * 1100 + 100
+      int y = ((int)(imageIndex / 2)) * 720 + 100 
+      pageGraphics.drawImage(badgeImage, null, x, y)
+      pageGraphics.drawLine(0, y, 10000, y)
+      pageGraphics.drawLine(0, y + 708, 10000, y + 708)
+      pageGraphics.drawLine(x, 0, x, 20000)
+      pageGraphics.drawLine(x + 1062, 0, x + 1062, 20000)
     }
     write(page, "JPG", new File(pageDir, "page${groupIndex.toString().padLeft(3, '0')}.jpg"))  
   }
