@@ -54,7 +54,13 @@ generateBadges.logging.captureStandardError LogLevel.INFO
 task concatenateBadges(dependsOn: generateBadges) << {
   File pageDir = file("${buildDir}/pages")
   pageDir.mkdirs()
-  buildDir.listFiles().findAll { it.name.endsWith('.jpg') }.collate(8).eachWithIndex { badgeGroup, groupIndex ->
+  int badgesPerPage = 16
+  int badgeHeight = 410
+  int badgeWidth = 1190
+  int badgeMargin = 6
+  int startX = 50
+  int startY = 50
+  buildDir.listFiles().findAll { it.name.endsWith('.jpg') }.collate(badgesPerPage).eachWithIndex { badgeGroup, groupIndex ->
     BufferedImage page = read(new File('a4.jpg'))
     Graphics2D pageGraphics = page.createGraphics()
     pageGraphics.setColor(Color.LIGHT_GRAY)
@@ -62,13 +68,13 @@ task concatenateBadges(dependsOn: generateBadges) << {
     badgeGroup.eachWithIndex { File badgeFile, imageIndex ->
       BufferedImage badgeImage = read(badgeFile)
       println "> Adding ${imageIndex}:${badgeFile.name} to page"
-      int x = (imageIndex % 2) * 1100 + 100
-      int y = ((int)(imageIndex / 2)) * 720 + 100 
+      int x = (imageIndex % 2) * (badgeWidth + badgeMargin * 2) + startX
+      int y = ((int)(imageIndex / 2)) * (badgeHeight + badgeMargin * 2) + startY
       pageGraphics.drawImage(badgeImage, null, x, y)
-      pageGraphics.drawLine(0, y, 10000, y)
-      pageGraphics.drawLine(0, y + 708, 10000, y + 708)
-      pageGraphics.drawLine(x, 0, x, 20000)
-      pageGraphics.drawLine(x + 1062, 0, x + 1062, 20000)
+      pageGraphics.drawLine(0, y, Integer.MAX_VALUE, y)
+      pageGraphics.drawLine(0, y + badgeHeight, Integer.MAX_VALUE, y + badgeHeight)
+      pageGraphics.drawLine(x, 0, x, Integer.MAX_VALUE)
+      pageGraphics.drawLine(x + badgeWidth, 0, x + badgeWidth, Integer.MAX_VALUE)
     }
     write(page, "JPG", new File(pageDir, "page${groupIndex.toString().padLeft(3, '0')}.jpg"))  
   }
@@ -85,10 +91,10 @@ def modifySVG(String svgText, String name, String email, String company, String 
   def badgeName = svg.depthFirst().find { it.@id == 'badge-name' }
   badgeName.replaceBody(sanitizeName(name))
   svg.depthFirst().find { it.@id == 'badge-company' }.replaceBody(sanitizeCompany(company))
-  svg.depthFirst().find { it.@id == 'badge-type' }.replaceBody badgeType
+  // svg.depthFirst().find { it.@id == 'badge-type' }.replaceBody badgeType
   svg.depthFirst().find { it.@id == 'badge-qr' }.@'xlink:href' = "data:image/png;base64,${qrFile.bytes.encodeBase64().toString().toList().collate(76)*.join().join(' ')}".toString()
-  def color = badgeType.startsWith('S') ? '225500' : badgeType.startsWith('O') ? '800000' : '162D50'
-  svg.depthFirst().find { it.@id == 'badge-color' }.@style = "fill:#${color};fill-opacity:1;fill-rule:evenodd;stroke:none".toString()
+  // def color = badgeType.startsWith('S') ? '225500' : badgeType.startsWith('O') ? '800000' : '162D50'
+  // svg.depthFirst().find { it.@id == 'badge-color' }.@style = "fill:#${color};fill-opacity:1;fill-rule:evenodd;stroke:none".toString()
   XmlUtil.serialize(svg)
 }
 
