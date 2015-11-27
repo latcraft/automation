@@ -35,9 +35,11 @@ buildscript {
 task generateBadges << {
   buildDir.mkdirs()
   File svgTemplate = file('badge_template.svg')
+  int fileIndex = 1
   forEachPerson { name, email, company, type ->
     logger.quiet "> Generating badge for ${name}"
-    String baseName = name.toLowerCase().replaceAll('[\\s-]', '_').replaceAll("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}]", "_")
+    String indexString = (fileIndex++).toString().padLeft(3, '0')
+    String baseName = indexString + '_' + name.toLowerCase().replaceAll('[\\s-]', '_').replaceAll("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}]", "_")
     File svgBadgeFile = file("${buildDir}/${baseName}_badge.svg")    
     File qrFile = renderQRCodeImage(getBadgeUrl(name, email, company), buildDir, baseName)
     svgBadgeFile.text = modifySVG(svgTemplate.text, name, email, company, type, qrFile)
@@ -80,6 +82,7 @@ task concatenateBadges(dependsOn: generateBadges) << {
   }
 }
 
+concatenateBadges.mustRunAfter generateBadges
 
 task clean(type: Delete) {
   delete buildDir
@@ -122,8 +125,10 @@ String sanitizeCompany(String company) {
       replaceAll('sia', '').
       replaceAll('SIA', '').
       replaceAll('LTD', '').
+      replaceAll('AS', '').
       replaceAll('ltd', '').
       replaceAll('Ltd.', '').
+      replaceAll('Trade & Finance Group', '').
       replaceAll('Self Employed', '').
       replaceAll('GmbH', '').
       replaceAll('No Company :\\(', '').
@@ -161,7 +166,7 @@ def getBadgeUrl(name, email, company) {
 
 
 def forEachPerson(Closure cl) {
-  def lines = file('data.csv').readLines().drop(1).collect { it.trim() }.findAll { it.contains(';') }
+  def lines = file(project.hasProperty('dataFile') ? project.dataFile : 'data.csv').readLines().drop(1).collect { it.trim() }.findAll { it.contains(';') }
   lines.each { String line ->
     def fields = line.split(';')
     cl(fields[0], fields[1], fields[2], fields[3])

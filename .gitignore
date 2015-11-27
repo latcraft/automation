@@ -3,3 +3,8 @@
 build
 bin
 *.jpg
+data.json
+/badge-generator/attendees.csv
+/badge-generator/get.groovy
+/badge-generator/speakers.csv
+/badge-generator/team.csv
