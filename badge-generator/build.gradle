@@ -57,11 +57,11 @@ task concatenateBadges(dependsOn: generateBadges) << {
   File pageDir = file("${buildDir}/pages")
   pageDir.mkdirs()
   int badgesPerPage = 16
-  int badgeHeight = 410
+  int badgeHeight = 408
   int badgeWidth = 1190
   int badgeMargin = 6
   int startX = 50
-  int startY = 50
+  int startY = 70
   buildDir.listFiles().findAll { it.name.endsWith('.jpg') }.collate(badgesPerPage).eachWithIndex { badgeGroup, groupIndex ->
     BufferedImage page = read(new File('a4.jpg'))
     Graphics2D pageGraphics = page.createGraphics()
@@ -73,10 +73,12 @@ task concatenateBadges(dependsOn: generateBadges) << {
       int x = (imageIndex % 2) * (badgeWidth + badgeMargin * 2) + startX
       int y = ((int)(imageIndex / 2)) * (badgeHeight + badgeMargin * 2) + startY
       pageGraphics.drawImage(badgeImage, null, x, y)
-      pageGraphics.drawLine(0, y, Integer.MAX_VALUE, y)
-      pageGraphics.drawLine(0, y + badgeHeight, Integer.MAX_VALUE, y + badgeHeight)
-      pageGraphics.drawLine(x, 0, x, Integer.MAX_VALUE)
-      pageGraphics.drawLine(x + badgeWidth, 0, x + badgeWidth, Integer.MAX_VALUE)
+      if (project.hasProperty('drawLines')) {
+        pageGraphics.drawLine(0, y, Integer.MAX_VALUE, y)
+        pageGraphics.drawLine(0, y + badgeHeight, Integer.MAX_VALUE, y + badgeHeight)
+        pageGraphics.drawLine(x, 0, x, Integer.MAX_VALUE)
+        pageGraphics.drawLine(x + badgeWidth, 0, x + badgeWidth, Integer.MAX_VALUE)
+      }
     }
     write(page, "JPG", new File(pageDir, "page${groupIndex.toString().padLeft(3, '0')}.jpg"))  
   }
