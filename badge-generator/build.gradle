@@ -36,13 +36,13 @@ task generateBadges << {
   buildDir.mkdirs()
   File svgTemplate = file('badge_template.svg')
   int fileIndex = 1
-  forEachPerson { name, email, company, type ->
-    logger.quiet "> Generating badge for ${name}"
+  forEachPerson { firstName, lastName, email, company, type ->
+    logger.quiet "> Generating badge for ${lastName}, ${firstName}"
     String indexString = (fileIndex++).toString().padLeft(3, '0')
-    String baseName = indexString + '_' + name.toLowerCase().replaceAll('[\\s-]', '_').replaceAll("[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cn}]", "_")
+    String baseName = "${indexString}_${lastName}"
     File svgBadgeFile = file("${buildDir}/${baseName}_badge.svg")    
-    File qrFile = renderQRCodeImage(getBadgeUrl(name, email, company), buildDir, baseName)
-    svgBadgeFile.text = modifySVG(svgTemplate.text, name, email, company, type, qrFile)
+    File qrFile = renderQRCodeImage(getBadgeUrl(firstName, lastName, email, company), buildDir, baseName)
+    svgBadgeFile.text = modifySVG(svgTemplate.text, firstName, lastName, email, company, type, qrFile)
     renderBadgeImage(svgBadgeFile, buildDir, baseName)
     qrFile.delete()
     svgBadgeFile.delete()
@@ -89,10 +89,12 @@ task clean(type: Delete) {
 }
 
 
-def modifySVG(String svgText, String name, String email, String company, String badgeType, File qrFile) {
+def modifySVG(String svgText, String firstName, String lastName, String email, String company, String badgeType, File qrFile) {
   def svg = new XmlSlurper().parseText(svgText)
-  def badgeName = svg.depthFirst().find { it.@id == 'badge-name' }
-  badgeName.replaceBody(sanitizeName(name))
+  def badgeFirstName = svg.depthFirst().find { it.@id == 'badge-first-name' }
+  def badgeLastName = svg.depthFirst().find { it.@id == 'badge-last-name' }
+  badgeFirstName.replaceBody(sanitizeName(firstName))
+  badgeLastName.replaceBody(sanitizeName(lastName))
   svg.depthFirst().find { it.@id == 'badge-company' }.replaceBody(sanitizeCompany(company))
   // svg.depthFirst().find { it.@id == 'badge-type' }.replaceBody badgeType
   svg.depthFirst().find { it.@id == 'badge-qr' }.@'xlink:href' = "data:image/png;base64,${qrFile.bytes.encodeBase64().toString().toList().collate(76)*.join().join(' ')}".toString()
@@ -160,7 +162,7 @@ File renderQRCodeImage(String content, baseDir, baseName, width = 300, height = 
 }
 
 
-def getBadgeUrl(name, email, company) {
+def getBadgeUrl(firstName, lastName, email, company) {
   "mailto:${email}"
 }
 
@@ -169,7 +171,7 @@ def forEachPerson(Closure cl) {
   def lines = file(project.hasProperty('dataFile') ? project.dataFile : 'data.csv').readLines().drop(1).collect { it.trim() }.findAll { it.contains(';') }
   lines.each { String line ->
     def fields = line.split(';')
-    cl(fields[0], fields[1], fields[2], fields[3])
+    cl(fields[0], fields[1], fields[2], fields[3], fields[3])
   }
 }
 

@@ -1,24 +1,24 @@
-Name;Email;Company;Role
-Janis Kalniņš;a@b.com;IBM;ATTENDEEE
-Andris Berzins;a@b.com;Google;SPEAKER
-Lauris Kreslins;a@b.com;Microsoft;ORGANIZER
-Maris Lazdins;a@b.com;Microsoft;ORGANIZER
-Janis Kalniņš;a@b.com;IBM;ATTENDEEE
-Janis2 Kalniņš;a@b.com;IBM;ATTENDEEE
-Janis4 Kalniņš;a@b.com;IBM;ATTENDEEE
-Jani3s Kalniņš;a@b.com;IBM;ATTENDEEE
-Lauris2 Kreslins;a@b.com;Microsoft;ORGANIZER
-Janis5 Kalniņš;a@b.com;IBM;ATTENDEEE
-Janis6 Kalniņš;a@b.com;IBM;ATTENDEEE
-Maris3 Lazdins;a@b.com;Microsoft;ORGANIZER
-Janis7 Kalniņš;a@b.com;IBM;ATTENDEEE
-Janis8 Kalniņš;a@b.com;IBM;ATTENDEEE
-Andris2 Berzins;a@b.com;Google;SPEAKER
-Janis9 Kalniņš;a@b.com;IBM;ATTENDEEE
-JanisA Kalniņš;a@b.com;IBM;ATTENDEEE
-JanisB Kalniņš;a@b.com;IBM;ATTENDEEE
-Andris1 Berzins;a@b.com;Google;SPEAKER
-JanisC Kalniņš;a@b.com;IBM;ATTENDEEE
-JanisD Kalniņš;a@b.com;IBM;ATTENDEEE
-JanisE Kalniņš;a@b.com;IBM;ATTENDEEE
-JanisF Kalniņš;a@b.com;IBM;ATTENDEEE
+First Name;Last Name;Email;Company;Role
+Janis;Kalniņš;a@b.com;IBM;ATTENDEEE
+Andris;Berzins;a@b.com;Google;SPEAKER
+Lauris;Kreslins;a@b.com;Microsoft;ORGANIZER
+Maris;Lazdins;a@b.com;Microsoft;ORGANIZER
+Janis;Kalniņš;a@b.com;IBM;ATTENDEEE
+Janis2;Kalniņš;a@b.com;IBM;ATTENDEEE
+Janis4;Kalniņš;a@b.com;IBM;ATTENDEEE
+Jani3s;Kalniņš;a@b.com;IBM;ATTENDEEE
+Lauris2;Kreslins;a@b.com;Microsoft;ORGANIZER
+Janis5;Kalniņš;a@b.com;IBM;ATTENDEEE
+Janis6;Kalniņš;a@b.com;IBM;ATTENDEEE
+Maris3;Lazdins;a@b.com;Microsoft;ORGANIZER
+Janis7;Kalniņš;a@b.com;IBM;ATTENDEEE
+Janis8;Kalniņš;a@b.com;IBM;ATTENDEEE
+Andris2;Berzins;a@b.com;Google;SPEAKER
+Janis9;Kalniņš;a@b.com;IBM;ATTENDEEE
+JanisA;Kalniņš;a@b.com;IBM;ATTENDEEE
+JanisB;Kalniņš;a@b.com;IBM;ATTENDEEE
+Andris1;Berzins;a@b.com;Google;SPEAKER
+JanisC;Kalniņš;a@b.com;IBM;ATTENDEEE
+JanisD;Kalniņš;a@b.com;IBM;ATTENDEEE
+JanisE;Kalniņš;a@b.com;IBM;ATTENDEEE
+JanisF;Kalniņš;a@b.com;IBM;ATTENDEEE
