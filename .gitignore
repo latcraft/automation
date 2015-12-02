@@ -9,3 +9,4 @@ data.json
 /badge-generator/speakers.csv
 /badge-generator/team.csv
 all.csv
+replacements.csv
