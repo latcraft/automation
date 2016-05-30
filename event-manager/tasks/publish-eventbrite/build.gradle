@@ -179,6 +179,7 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
         free: true,
         minimum_quantity: 1,
         maximum_quantity: 1,
+        // TODO: sales_end: event.time - 30 minutes,
         quantity_total: latcraftEventbriteCapacity
       ]
     ]) { data ->
@@ -192,6 +193,10 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
     }
 
   }  
+}
+
+task createEventReminder << {
+  // TODO: no API exists for reminders/invitations
 }
 
 task updateEventBriteDataInGitHub(dependsOn: getMasterData) << {
