@@ -5,7 +5,12 @@ import java.text.SimpleDateFormat
 ext {
 
   eventFile = file("${buildDir}/events.json")
+  timeZone = TimeZone.getTimeZone('Europe/Riga')
+  gmt = TimeZone.getTimeZone("GMT")
   dateFormat = new SimpleDateFormat('d MMMM, yyyy')
+  dateFormat.timeZone = timeZone
+  isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+  isoDateFormat.timeZone = timeZone
 
   getEvents = { 
     new JsonSlurper().parse(eventFile)
