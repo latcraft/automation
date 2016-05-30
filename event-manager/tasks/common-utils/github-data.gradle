@@ -1,0 +1,26 @@
+
+import groovy.json.JsonSlurper
+import java.text.SimpleDateFormat
+
+ext {
+
+  eventFile = file("${buildDir}/events.json")
+  dateFormat = new SimpleDateFormat('d MMMM, yyyy')
+
+  getEvents = { 
+    new JsonSlurper().parse(eventFile)
+  }
+
+  getFutureEvents = {     
+    new JsonSlurper().parse(eventFile).findAll { dateFormat.parse(it.date) > new Date() }
+  }
+
+}
+
+task getMasterData << {
+  buildDir.mkdirs()
+  eventFile.text = new URL(latcraftEventDataFile).text
+}
+
+getMasterData.outputs.file eventFile
+

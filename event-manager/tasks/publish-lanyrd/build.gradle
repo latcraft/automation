@@ -1,0 +1,14 @@
+
+apply from: '../common-utils/github-data.gradle'
+
+task checkLanyrd << {
+
+}
+
+
+// TODO: read data from events.json
+// TODO: read data from lanyrd
+// TODO: check if event exists
+// TODO: create/update event in lanyrd
+// TODO: update link in events.json if needed
+

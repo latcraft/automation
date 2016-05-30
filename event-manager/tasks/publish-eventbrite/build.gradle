@@ -1,0 +1,115 @@
+
+import groovyx.net.http.*
+import groovyx.net.http.Method
+import static groovyx.net.http.ContentType.*
+import static groovyx.net.http.Method.*
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
+  }
+}
+
+apply from: '../common-utils/github-data.gradle'
+
+ext {
+
+  eventbriteFile = file("${buildDir}/eventbrite.json")
+
+  templateEngine = new groovy.text.SimpleTemplateEngine()
+  defaultTemplateFile = file('templates/event_description.html')
+
+  eventbrite = { Method method, String path, Map jsonBody, Closure cl ->
+    def http = new HTTPBuilder('https://www.eventbriteapi.com/')
+    http.request(method, JSON) {
+      uri.path = "${path}"
+      uri.query = [ token: latcraftEventbriteToken ]
+      if (jsonBody) {
+        body = jsonBody
+      }
+      response.success = { _, json ->
+        if (cl) {
+          cl(json)
+        }
+      }
+    }
+  }
+
+  slack = {
+
+  }
+
+  github = {
+
+  }
+
+  getEventBriteEvents = { 
+    new JsonSlurper().parse(eventbriteFile).events
+  }
+
+}
+
+task getEventBriteData << {
+  buildDir.mkdirs()
+  eventbrite(GET, '/v3/users/me/owned_events', [:]) { data ->
+    eventbriteFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(data))
+  }
+}
+
+getEventBriteData.outputs.file eventbriteFile
+
+task makeEventBriteDescription(dependsOn: getMasterData) << {
+  buildDir.mkdirs()
+  getEvents().each { event ->    
+    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')    
+    File overridenTemplateFile = file("templates/event_description_${eventId}.html")
+    def template = templateEngine.createTemplate(overridenTemplateFile.exists() ? overridenTemplateFile : defaultTemplateFile)
+    def binding = [ event: event ]    
+    file("${buildDir}/event_description_${eventId}.html").text = template.make(binding).toString()
+  }  
+}
+
+task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, makeEventBriteDescription]) << {
+  getFutureEvents().each { event ->
+    String apiUrl = event.eventbriteEventId ? "/v3/events/${event.eventbriteEventId}" : "/v3/events"
+    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')    
+    println "Creating/updating ${event.title} (${eventId})"
+    eventbrite(POST, apiUrl, [
+      event: [
+        name: [
+          html: event.title
+        ],
+        description: [
+          html: file("${buildDir}/event_description_${eventId}.html")
+        ]
+      ]
+    ]) { data ->
+      if (!event.eventbriteEventId) {
+        def events = getEvents()
+        event.each { updatedEvent ->
+          if (dateFormat.parse(updatedEvent.date).format('yyyyMMdd') == eventId) {
+            updatedEvent.eventbriteEventId = data.id
+          }
+        }        
+        eventFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(events))
+        // TODO: update data in github
+      }
+      // TODO: notify slack channel
+    }
+  }  
+}
+
+task updateEventBriteDataInGitHub(dependsOn: getMasterData) << {
+  // TODO: https://developer.github.com/v3/repos/contents/#update-a-file
+  // "tickets": "https://www.eventbrite.com/e/latcraft-agile-retrospectives-tickets-25071939847",
+  // "eventbriteEventId": "25071939847",
+}
+
+updateEventBriteDataInGitHub.mustRunAfter synchronizeEventBriteData
+
+task build(dependsOn: [updateEventBriteDataInGitHub])
