@@ -1,0 +1,8 @@
+
+apply from: '../common-utils/github-data.gradle'
+
+task clean(type: Delete) {
+  delete buildDir
+}
+
+task build
