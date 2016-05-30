@@ -28,6 +28,7 @@ ext {
 
   eventbrite = { Method method, String path, Map jsonBody, Closure cl ->
     def http = new HTTPBuilder('https://www.eventbriteapi.com/')
+    http.ignoreSSLIssues()
     http.request(method, JSON) {
       uri.path = "${path}"
       uri.query = [ token: latcraftEventbriteToken ]
@@ -44,10 +45,6 @@ ext {
         throw new GradleException("Error details: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase} : ${resp?.entity?.content?.text}")
       }
     }
-  }
-
-  slack = {
-
   }
 
   github = { Method method, String path, Map jsonBody, Closure cl ->
@@ -72,6 +69,10 @@ ext {
         throw new GradleException("Error details: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase} : ${resp?.entity?.content?.text}")
       }
     }
+  }
+
+  slack = {
+
   }
 
   getEventBriteEvents = { 
