@@ -102,7 +102,11 @@ task makeEventBriteDescription(dependsOn: getMasterData) << {
 
 task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, makeEventBriteDescription]) << {
   getFutureEvents().each { event ->
+
+    // Calculate unique event ID used to distinguish this event from others in various data sources.
     String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
+
+    // Find EventBrite event ID if it is not yet set or missing.
     String eventbriteEventId = event.eventbriteEventId
     if (!eventbriteEventId) {
       getEventBriteEvents().each { eventbriteEvent ->        
@@ -111,10 +115,14 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
         }
       }
     }
+
+    // Calculate input parameters.
     String apiUrl = eventbriteEventId ? "/v3/events/${eventbriteEventId}/" : "/v3/events/"
     def startTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.time + ':00')
     def endTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.endTime + ':00')
-    println "> Creating/updating ${event.theme} (${eventId}, ${eventbriteEventId})"
+
+    // Create or update event information.
+    println "> Creating/updating \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId})"
     eventbrite(POST, apiUrl, [
       event: [
         name: [
@@ -129,6 +137,14 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
           utc: endTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
           timezone: 'Europe/Riga'
         ],
+        venue_id: latcraftEventbriteVenueId,
+        organizer_id: latcraftEventbriteOrganizerId,
+        logo_id: latcraftEventbriteLogoId,
+        category_id: latcraftEventbriteCategoryId,
+        subcategory_id: latcraftEventbriteSubcategoryId,
+        format_id: latcraftEventbriteFormatId,
+        capacity: latcraftEventbriteCapacity,
+        show_remaining: true,
         description: [
           html: file("${buildDir}/event_description_${eventId}.html").text
         ]
@@ -139,13 +155,41 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
         events.each { updatedEvent ->
           if (dateFormat.parse(updatedEvent.date).format('yyyyMMdd') == eventId) {
             updatedEvent.eventbriteEventId = data.id
-            // "tickets": "https://www.eventbrite.com/e/latcraft-agile-retrospectives-tickets-25071939847",
+            updatedEvent.tickets = data.url
+            eventbriteEventId = data.id
           }
         }        
         eventFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(events))
-      }
-      // TODO: notify slack channel
+      }     
     }
+
+    // Retrieve existing ticket classes.
+    apiUrl = "/v3/events/${eventbriteEventId}/ticket_classes/"
+    String eventbriteTicketClassId = null
+    eventbrite(GET, apiUrl, [:]) { data ->
+      eventbriteTicketClassId = data.ticket_classes?.find{ true }?.id
+    }
+
+    // Create or update ticket class.
+    apiUrl = eventbriteTicketClassId ? "/v3/events/${eventbriteEventId}/ticket_classes/${eventbriteTicketClassId}/" : "/v3/events/${eventbriteEventId}/ticket_classes/" 
+    eventbrite(POST, apiUrl, [
+      ticket_class: [
+        name: 'Free ticket',
+        free: true,
+        minimum_quantity: 1,
+        maximum_quantity: 1,
+        quantity_total: latcraftEventbriteCapacity
+      ]
+    ]) { data ->
+      logger.debug data.toString()
+    }
+
+    // Publish event.
+    apiUrl = "/v3/events/${eventbriteEventId}/publish/"
+    eventbrite(POST, apiUrl, [:]) { data ->
+      logger.debug data.toString()
+    }
+
   }  
 }
 
