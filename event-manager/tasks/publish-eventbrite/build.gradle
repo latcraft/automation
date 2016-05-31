@@ -47,34 +47,6 @@ ext {
     }
   }
 
-  github = { Method method, String path, Map jsonBody, Closure cl ->
-    def http = new HTTPBuilder('https://api.github.com')
-    http.ignoreSSLIssues()
-    http.request(method, JSON) {
-      headers.'Content-Type' = 'application/json'
-      headers.'Accept' = 'application/vnd.github.v3+json'
-      headers.'User-Agent' = 'Groovy HTTPBuilder'
-      uri.path = "${path}"
-      uri.query = [ access_token: latcraftGitHubToken ]
-      if (jsonBody) {
-        logger.debug JsonOutput.prettyPrint(JsonOutput.toJson(jsonBody))
-        body = jsonBody
-      }
-      response.success = { _, json ->
-        if (cl) {
-          cl(json)
-        }
-      }
-      response.failure = { resp ->
-        throw new GradleException("Error details: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase} : ${resp?.entity?.content?.text}")
-      }
-    }
-  }
-
-  slack = {
-
-  }
-
   getEventBriteEvents = { 
     new JsonSlurper().parse(eventbriteFile).events
   }
@@ -195,32 +167,6 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
   }  
 }
 
-task createEventReminder << {
-  // TODO: no API exists for reminders/invitations
-}
+updateMasterData.mustRunAfter synchronizeEventBriteData
 
-task updateEventBriteDataInGitHub(dependsOn: getMasterData) << {
-  String checksum = github(GET, '/repos/latcraft/website/contents/data/events.json', [:]) { data ->
-    return data.sha
-  }
-  String content = eventFile.bytes.encodeBase64().toString() 
-  github(PUT, '/repos/latcraft/website/contents/data/events.json', [
-    message: "updating event data",
-    committer: [
-      name: "Latcraft Event Manager",
-      email: "hello@latcraft.lv"
-    ],                     
-    content: content,
-    sha: checksum
-  ]) { data ->
-    logger.debug data.toString()
-  }
-}
-
-updateEventBriteDataInGitHub.mustRunAfter synchronizeEventBriteData
-
-task clean(type: Delete) {
-  delete buildDir
-}
-
-task build(dependsOn: [synchronizeEventBriteData, updateEventBriteDataInGitHub])
+task build(dependsOn: [synchronizeEventBriteData, updateMasterData])

@@ -1,8 +1,179 @@
 
-apply from: '../common-utils/github-data.gradle'
+import groovyx.net.http.*
+import groovyx.net.http.Method
+import static groovyx.net.http.ContentType.*
+import static groovyx.net.http.Method.*
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
-task clean(type: Delete) {
-  delete buildDir
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
+  }
 }
 
-task build
+apply from: '../common-utils/github-data.gradle'
+
+ext {
+
+  defaultSenderId = "37076"
+  defaultListId = "362055"
+
+  sendgrid = { Method method, String path, Map jsonBody, Closure cl ->
+    def http = new HTTPBuilder('https://api.sendgrid.com')
+    http.ignoreSSLIssues()
+    http.request(method, JSON) {
+      headers.'Content-Type' = 'application/json'
+      headers.'User-Agent' = 'Groovy HTTPBuilder'
+      headers.'Authorization' = "Bearer ${latcraftSendGridApiKey}"
+      uri.path = "${path}"
+      uri.query = [ access_token: latcraftGitHubToken ]
+      if (jsonBody) {
+        logger.debug JsonOutput.prettyPrint(JsonOutput.toJson(jsonBody))
+        body = jsonBody
+      }
+      response.success = { _, json ->
+        if (cl) {
+          cl(json)
+        }
+      }
+      response.failure = { resp ->
+        throw new GradleException("Error details: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase} : ${resp?.entity?.content?.text}")
+      }
+    }
+  }
+
+  findCampaignIdByName = { String campaignName ->
+    sendgrid(GET, '/v3/campaigns', [:]) { data ->
+      data.campaigns.find { campaign -> campaign.name == campaignName }?.id
+    }
+  }
+
+  findTemplateIdByName = { String templateName ->
+    sendgrid(GET, '/v3/templates', [:]) { data ->
+      data.templates.find { template -> template.name == templateName }?.id
+    }
+  }
+
+  getTemplateVersionId = { String templateId ->
+    sendgrid(GET, "/v3/templates/${templateId}", [:]) { data ->
+      data.versions.find { templateVersion -> templateVersion.active == 1 }?.id
+    }
+  }
+
+  updateTemplateContent = { String templateId, Map content ->
+    String templateVersionId = getTemplateVersionId(templateId)
+    if (templateVersionId) {
+      sendgrid(PATCH, "/v3/templates/${templateId}/versions/${templateVersionId}", content) { data ->
+        logger.debug data.toString()
+      }
+    } else {
+      sendgrid(POST, "/v3/templates/${templateId}/versions", content) { data ->
+        logger.debug data.toString()
+      }
+    }
+  }
+
+}
+
+task extractEmailsFromEventBrite << {
+
+}
+
+task synchronizeContactList(dependsOn: getMasterData) << {
+  getFutureEvents().each { event ->
+     // TODO: 
+  }
+}
+
+task synchronizeCampaigns(dependsOn: getMasterData) << {
+  getFutureEvents().each { event ->
+
+    // Calculate unique event ID used to distinguish this event from others in various data sources.
+    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
+
+    // Create invitation campaign.
+    String invitationCampaignName = "LatCraft | ${event.theme} Invitation (${eventId})"
+    String invitationCampaignId = findCampaignIdByName(invitationCampaignName)
+    if (!invitationCampaignId) {
+      sendgrid(POST, "/v3/campaigns", [ 
+        title: invitationCampaignName,
+        subject: "Personal Invitation"
+        sender_id: defaultSenderId,
+        list_id: defaultListId,
+        html_content: file('templates/invitation.html').text,
+        plain_content: file('templates/invitation.txt').text,
+      ]) { data ->
+        invitationCampaignId = data.id
+      }
+    }   
+
+  }
+}
+
+
+task synchronizeEmailTemplates(dependsOn: getMasterData) << {
+  getFutureEvents().each { event ->
+
+    // Calculate unique event ID used to distinguish this event from others in various data sources.
+    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
+
+    // Create invitation template.
+    String invitationTemplateName = "LatCraft | ${event.theme} Invitation (${eventId})"
+    String invitationTemplateId = findTemplateIdByName(invitationTemplateName)
+    if (!invitationTemplateId) {
+      sendgrid(POST, "/v3/templates", [ name: invitationTemplateName ]) { data ->
+        invitationTemplateId = data.id
+      }
+    }
+
+    // Set invitation template content.
+    updateTemplateContent(invitationTemplateId, [ 
+      name: invitationTemplateName,
+      subject: 'Personal Invitation',
+      html_content: file('templates/invitation.html').text,
+      plain_content: file('templates/invitation.txt').text,
+      active: 1
+    ])
+
+    // Create reminder template.
+    String reminderTemplateName = "Latcraft | ${event.theme} Reminder (${eventId})"
+    String reminderTemplateId = findTemplateIdByName(reminderTemplateName)
+    if (!reminderTemplateId) {
+      sendgrid(POST, "/v3/templates", [ name: reminderTemplateName ]) { data ->
+        reminderTemplateId = data.id
+      }
+    }
+
+    // Set reminder template content.
+    updateTemplateContent(invitationTemplateId, [ 
+      name: invitationTemplateName,
+      subject: 'Personal Invitation',
+      html_content: file('templates/reminder.html').text,
+      plain_content: file('templates/reminder.txt').text,
+      active: 1
+    ])
+   
+  }
+}
+
+
+
+
+
+
+task sendEventInvition << {
+
+
+
+}
+
+
+task sendEventReminder << {
+
+}
+
+task build(dependsOn: [ synchronizeCampaigns, , updateMasterData])

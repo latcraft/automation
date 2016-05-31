@@ -1,8 +1,15 @@
 
 apply from: '../common-utils/github-data.gradle'
 
+task notifyTwitter << {
+
+  // TODO: find tweets from last month and find event annoucements
+  // TODO: get inforgraphics data
+  // TODO: if no announcement found, then publish tweet
+}
+
 task clean(type: Delete) {
   delete buildDir
 }
 
-task build
+task build(dependsOn: notifyTwitter)

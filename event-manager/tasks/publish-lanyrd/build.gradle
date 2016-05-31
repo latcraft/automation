@@ -5,6 +5,12 @@ task checkLanyrd << {
 
 }
 
+task clean(type: Delete) {
+  delete buildDir
+}
+
+task build()
+
 
 // TODO: read data from events.json
 // TODO: read data from lanyrd
