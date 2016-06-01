@@ -15,14 +15,16 @@ buildscript {
   }
 }
 
-apply from: '../common-utils/github-data.gradle'
+apply from: '../common-utils/data-clients.gradle'
 
 ext {
 
   defaultSenderId = "37076"
   defaultListId = "362055"
 
-  sendgrid = { Method method, String path, Map jsonBody, Closure cl ->
+  contactFile = file("${buildDir}/contacts.csv")
+
+  sendgrid = { Method method, String path, jsonBody, Closure cl ->
     def http = new HTTPBuilder('https://api.sendgrid.com')
     http.ignoreSSLIssues()
     http.request(method, JSON) {
@@ -49,6 +51,19 @@ ext {
   findCampaignIdByName = { String campaignName ->
     sendgrid(GET, '/v3/campaigns', [:]) { data ->
       data.campaigns.find { campaign -> campaign.name == campaignName }?.id
+    }
+  }
+
+  updateCampaignContent = { String campaignName, Map content ->
+    String campaignId = findCampaignIdByName(campaignName)
+    if (campaignId) {
+      return sendgrid(PATCH, "/v3/campaigns/${campaignId}", content) { data ->
+        data.id
+      }
+    } else {
+      return sendgrid(POST, "/v3/campaigns", content) { data ->
+        data.id
+      }
     }
   }
 
@@ -79,13 +94,36 @@ ext {
 
 }
 
-task extractEmailsFromEventBrite << {
-
+task extractContactsFromEventBrite(dependsOn: getEventBriteData) << {
+  contactFile.withWriter { Writer writer ->
+    writer << "company;email;first_name;last_name;name;job_title\n"
+    getEventBriteEvents().each { eventBriteEvent ->
+      eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], 1) { data ->
+        def attendees = []
+        attendees.addAll(data.attendees)
+        for(int pageNumber = 1; pageNumber <= data.pagination.page_count; pageNumber++) {
+          eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], pageNumber) { pageData ->
+            attendees.addAll(pageData.attendees)
+          }
+        }
+        attendees.collectEntries{ [ it.email, it ] }.values().each { attendee ->
+          writer << "${attendee.profile.company ?: ''};${attendee.profile.email ?: ''};${attendee.profile.first_name ?: ''};${attendee.profile.last_name ?: ''};${attendee.profile.name ?: ''};${attendee.profile.job_title ?: ''};\n"
+        }
+      }
+    }
+  }
 }
 
-task synchronizeContactList(dependsOn: getMasterData) << {
-  getFutureEvents().each { event ->
-     // TODO: 
+
+extractContactsFromEventBrite.outputs.file contactFile
+
+
+task synchronizeContactList(dependsOn: extractContactsFromEventBrite) << {
+  def fields = [ 'company', 'email', 'first_name', 'last_name', 'name', 'job_title' ]
+  contactFile.readLines().drop(1).collate(1000).each { batch ->
+    sendgrid(POST, "/v3/contactdb/recipients", batch.collect{ [ fields, it.split(';') ].transpose().collectEntries{ it } }) { data ->
+      println data
+    }
   }
 }
 
@@ -97,83 +135,37 @@ task synchronizeCampaigns(dependsOn: getMasterData) << {
 
     // Create invitation campaign.
     String invitationCampaignName = "LatCraft | ${event.theme} Invitation (${eventId})"
-    String invitationCampaignId = findCampaignIdByName(invitationCampaignName)
-    if (!invitationCampaignId) {
-      sendgrid(POST, "/v3/campaigns", [ 
-        title: invitationCampaignName,
-        subject: "Personal Invitation"
-        sender_id: defaultSenderId,
-        list_id: defaultListId,
-        html_content: file('templates/invitation.html').text,
-        plain_content: file('templates/invitation.txt').text,
-      ]) { data ->
-        invitationCampaignId = data.id
-      }
-    }   
-
-  }
-}
-
-
-task synchronizeEmailTemplates(dependsOn: getMasterData) << {
-  getFutureEvents().each { event ->
-
-    // Calculate unique event ID used to distinguish this event from others in various data sources.
-    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
-
-    // Create invitation template.
-    String invitationTemplateName = "LatCraft | ${event.theme} Invitation (${eventId})"
-    String invitationTemplateId = findTemplateIdByName(invitationTemplateName)
-    if (!invitationTemplateId) {
-      sendgrid(POST, "/v3/templates", [ name: invitationTemplateName ]) { data ->
-        invitationTemplateId = data.id
-      }
-    }
-
-    // Set invitation template content.
-    updateTemplateContent(invitationTemplateId, [ 
-      name: invitationTemplateName,
-      subject: 'Personal Invitation',
+    String invitationCampaignId = updateCampaignContent(invitationCampaignName, [ 
+      title: "Personal Invitation to \"Latcraft | ${event.theme}\"",
+      subject: "Personal Invitation to \"Latcraft | ${event.theme}\"",
+      sender_id: defaultSenderId,
+      list_id: defaultListId,
       html_content: file('templates/invitation.html').text,
-      plain_content: file('templates/invitation.txt').text,
-      active: 1
+      plain_content: file('templates/invitation.txt').text
     ])
 
-    // Create reminder template.
-    String reminderTemplateName = "Latcraft | ${event.theme} Reminder (${eventId})"
-    String reminderTemplateId = findTemplateIdByName(reminderTemplateName)
-    if (!reminderTemplateId) {
-      sendgrid(POST, "/v3/templates", [ name: reminderTemplateName ]) { data ->
-        reminderTemplateId = data.id
-      }
-    }
-
-    // Set reminder template content.
-    updateTemplateContent(invitationTemplateId, [ 
-      name: invitationTemplateName,
-      subject: 'Personal Invitation',
+    // Create reminder campaign.
+    /*String reminderCampaignName = "LatCraft | ${event.theme} Reminder (${eventId})"
+    String reminderCampaignId = updateCampaignContent(reminderCampaignName, [ 
+      title: "Personal Invitation to \"Latcraft | ${event.theme}\"",
+      subject: "Personal Invitation to \"Latcraft | ${event.theme}\"",
+      sender_id: defaultSenderId,
+      list_id: defaultListId,
       html_content: file('templates/reminder.html').text,
-      plain_content: file('templates/reminder.txt').text,
-      active: 1
-    ])
-   
+      plain_content: file('templates/reminder.txt').text
+    ])*/
+
   }
 }
 
 
-
-
-
-
-task sendEventInvition << {
-
+task startInvitionCampaign << {
 
 
 }
 
-
-task sendEventReminder << {
+task scheduleReminderCampaign << {
 
 }
 
-task build(dependsOn: [ synchronizeCampaigns, , updateMasterData])
+task build(dependsOn: [ synchronizeCampaigns, synchronizeContactList, updateMasterData])

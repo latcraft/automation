@@ -16,51 +16,15 @@ buildscript {
   }
 }
 
-apply from: '../common-utils/github-data.gradle'
+apply from: '../common-utils/data-clients.gradle'
 
 ext {
 
-  eventbriteFile = file("${buildDir}/eventbrite.json")  
   sha1 = MessageDigest.getInstance("SHA1")
 
-  templateEngine = new groovy.text.SimpleTemplateEngine()
   defaultTemplateFile = file('templates/event_description.html')
 
-  eventbrite = { Method method, String path, Map jsonBody, Closure cl ->
-    def http = new HTTPBuilder('https://www.eventbriteapi.com/')
-    http.ignoreSSLIssues()
-    http.request(method, JSON) {
-      uri.path = "${path}"
-      uri.query = [ token: latcraftEventbriteToken ]
-      if (jsonBody) {
-        logger.debug JsonOutput.prettyPrint(JsonOutput.toJson(jsonBody))
-        body = jsonBody
-      }
-      response.success = { _, json ->
-        if (cl) {
-          cl(json)
-        }
-      }
-      response.failure = { resp ->
-        throw new GradleException("Error details: ${resp.statusLine.statusCode} : ${resp.statusLine.reasonPhrase} : ${resp?.entity?.content?.text}")
-      }
-    }
-  }
-
-  getEventBriteEvents = { 
-    new JsonSlurper().parse(eventbriteFile).events
-  }
-
 }
-
-task getEventBriteData << {
-  buildDir.mkdirs()
-  eventbrite(GET, '/v3/users/me/owned_events', [:]) { data ->
-    eventbriteFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(data))
-  }
-}
-
-getEventBriteData.outputs.file eventbriteFile
 
 task makeEventBriteDescription(dependsOn: getMasterData) << {
   buildDir.mkdirs()
@@ -122,7 +86,7 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
           html: file("${buildDir}/event_description_${eventId}.html").text
         ]
       ]
-    ]) { data ->
+    ], 1) { data ->
       if (!event.eventbriteEventId) {
         def events = getEvents()
         events.each { updatedEvent ->
@@ -139,7 +103,7 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
     // Retrieve existing ticket classes.
     apiUrl = "/v3/events/${eventbriteEventId}/ticket_classes/"
     String eventbriteTicketClassId = null
-    eventbrite(GET, apiUrl, [:]) { data ->
+    eventbrite(GET, apiUrl, [:], 1) { data ->
       eventbriteTicketClassId = data.ticket_classes?.find{ true }?.id
     }
 
@@ -154,13 +118,13 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
         // TODO: sales_end: event.time - 30 minutes,
         quantity_total: latcraftEventbriteCapacity
       ]
-    ]) { data ->
+    ], 1) { data ->
       logger.debug data.toString()
     }
 
     // Publish event.
     apiUrl = "/v3/events/${eventbriteEventId}/publish/"
-    eventbrite(POST, apiUrl, [:]) { data ->
+    eventbrite(POST, apiUrl, [:], 1) { data ->
       logger.debug data.toString()
     }
 
