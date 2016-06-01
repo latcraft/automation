@@ -97,19 +97,25 @@ ext {
 task extractContactsFromEventBrite(dependsOn: getEventBriteData) << {
   contactFile.withWriter { Writer writer ->
     writer << "company;email;first_name;last_name;name;job_title\n"
+    def attendees = []
     getEventBriteEvents().each { eventBriteEvent ->
-      eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], 1) { data ->
-        def attendees = []
+      eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], 1) { data ->        
         attendees.addAll(data.attendees)
         for(int pageNumber = 1; pageNumber <= data.pagination.page_count; pageNumber++) {
           eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], pageNumber) { pageData ->
             attendees.addAll(pageData.attendees)
           }
         }
-        attendees.collectEntries{ [ it.email, it ] }.values().each { attendee ->
-          writer << "${attendee.profile.company ?: ''};${attendee.profile.email ?: ''};${attendee.profile.first_name ?: ''};${attendee.profile.last_name ?: ''};${attendee.profile.name ?: ''};${attendee.profile.job_title ?: ''};\n"
-        }
       }
+    }
+    def filteredAttendees = [:] as TreeMap
+    attendees.each { attendee ->
+      if (attendee.profile.email) {
+        filteredAttendees.put(attendee.profile.email, attendee)
+      }
+    }
+    filteredAttendees.values().each { attendee ->
+      writer << "${attendee.profile.company ?: ''};${attendee.profile.email ?: ''};${attendee.profile.first_name ?: ''};${attendee.profile.last_name ?: ''};${attendee.profile.name ?: ''};${attendee.profile.job_title ?: ''};\n"
     }
   }
 }
@@ -122,7 +128,13 @@ task synchronizeContactList(dependsOn: extractContactsFromEventBrite) << {
   def fields = [ 'company', 'email', 'first_name', 'last_name', 'name', 'job_title' ]
   contactFile.readLines().drop(1).collate(1000).each { batch ->
     sendgrid(POST, "/v3/contactdb/recipients", batch.collect{ [ fields, it.split(';') ].transpose().collectEntries{ it } }) { data ->
-      println data
+      logger.quiet "> Errors: ${data.error_count}"
+      logger.quiet "> New contacts: ${data.new_count}"
+      if (data.errors) {
+        data.errors.each { error ->
+          logger.quiet "> Error: ${error.message}"
+        }
+      }
     }
   }
 }
