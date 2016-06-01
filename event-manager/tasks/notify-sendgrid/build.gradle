@@ -98,7 +98,8 @@ task extractContactsFromEventBrite(dependsOn: getEventBriteData) << {
   contactFile.withWriter { Writer writer ->
     writer << "company;email;first_name;last_name;name;job_title\n"
     def attendees = []
-    getEventBriteEvents().each { eventBriteEvent ->
+    getEventBriteEvents().findAll{ !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
+      logger.quiet "> Extracting attendees from: ${eventBriteEvent.name.text}"
       eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], 1) { data ->        
         attendees.addAll(data.attendees)
         for(int pageNumber = 1; pageNumber <= data.pagination.page_count; pageNumber++) {
@@ -111,7 +112,7 @@ task extractContactsFromEventBrite(dependsOn: getEventBriteData) << {
     def filteredAttendees = [:] as TreeMap
     attendees.each { attendee ->
       if (attendee.profile.email) {
-        filteredAttendees.put(attendee.profile.email, attendee)
+        filteredAttendees.put(attendee.profile.email.toLowerCase(), attendee)
       }
     }
     filteredAttendees.values().each { attendee ->
@@ -126,8 +127,9 @@ extractContactsFromEventBrite.outputs.file contactFile
 
 task synchronizeContactList(dependsOn: extractContactsFromEventBrite) << {
   def fields = [ 'company', 'email', 'first_name', 'last_name', 'name', 'job_title' ]
+  // TODO: ensure custom fields are created
   contactFile.readLines().drop(1).collate(1000).each { batch ->
-    sendgrid(POST, "/v3/contactdb/recipients", batch.collect{ [ fields, it.split(';') ].transpose().collectEntries{ it } }) { data ->
+    sendgrid(POST, "/v3/contactdb/recipients", batch.collect{ [ fields, it.split(';') ].transpose().collectEntries{ it } }) { data ->      
       logger.quiet "> Errors: ${data.error_count}"
       logger.quiet "> New contacts: ${data.new_count}"
       if (data.errors) {
@@ -135,15 +137,34 @@ task synchronizeContactList(dependsOn: extractContactsFromEventBrite) << {
           logger.quiet "> Error: ${error.message}"
         }
       }
+      sendgrid(POST, "/v3/contactdb/lists/${defaultListId}/recipients", data.persisted_recipients) { listData ->
+        logger.debug listData.toString()
+      }
     }
   }
 }
 
-task synchronizeCampaigns(dependsOn: getMasterData) << {
+
+task generateCampaignTemplates(dependsOn: getMasterData) << {
+  getEvents().each { event ->
+
+    String eventId = calculateEventId(event)
+    def binding = [ event: event ]    
+
+    // Generate invitation template.
+    File invitationTemplateFile = file('templates/invitation.html')
+    File overridenInvitationTemplateFile = file("templates/invitation_${eventId}.html")
+    def template = templateEngine.createTemplate(overridenInvitationTemplateFile.exists() ? overridenInvitationTemplateFile : invitationTemplateFile)
+    file("${buildDir}/invitation_${eventId}.html").text = template.make(binding).toString()
+
+  }
+}
+
+
+task synchronizeCampaigns(dependsOn: [ getMasterData, generateCampaignTemplates ]) << {
   getFutureEvents().each { event ->
 
-    // Calculate unique event ID used to distinguish this event from others in various data sources.
-    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
+    String eventId = calculateEventId(event)
 
     // Create invitation campaign.
     String invitationCampaignName = "LatCraft | ${event.theme} Invitation (${eventId})"
@@ -152,32 +173,16 @@ task synchronizeCampaigns(dependsOn: getMasterData) << {
       subject: "Personal Invitation to \"Latcraft | ${event.theme}\"",
       sender_id: defaultSenderId,
       list_id: defaultListId,
-      html_content: file('templates/invitation.html').text,
-      plain_content: file('templates/invitation.txt').text
+      html_content: file("${buildDir}/invitation_${eventId}.html").text
     ])
-
-    // Create reminder campaign.
-    /*String reminderCampaignName = "LatCraft | ${event.theme} Reminder (${eventId})"
-    String reminderCampaignId = updateCampaignContent(reminderCampaignName, [ 
-      title: "Personal Invitation to \"Latcraft | ${event.theme}\"",
-      subject: "Personal Invitation to \"Latcraft | ${event.theme}\"",
-      sender_id: defaultSenderId,
-      list_id: defaultListId,
-      html_content: file('templates/reminder.html').text,
-      plain_content: file('templates/reminder.txt').text
-    ])*/
 
   }
 }
 
 
 task startInvitionCampaign << {
-
-
-}
-
-task scheduleReminderCampaign << {
+  // TODO: start campaign
 
 }
 
-task build(dependsOn: [ synchronizeCampaigns, synchronizeContactList, updateMasterData])
+task build(dependsOn: [ synchronizeCampaigns, synchronizeContactList ])

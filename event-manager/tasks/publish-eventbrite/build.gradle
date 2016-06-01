@@ -3,8 +3,6 @@ import groovyx.net.http.*
 import groovyx.net.http.Method
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import java.security.MessageDigest
 
 buildscript {
@@ -96,7 +94,7 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
             eventbriteEventId = data.id
           }
         }        
-        eventFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(events))
+        eventFile.text = dumpJson(events)
       }     
     }
 

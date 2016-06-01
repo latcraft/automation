@@ -1,95 +1,675 @@
-<style type="text/css">
-  .header {
-    background: #8a8a8a;
-  }
-  .header .columns {
-    padding-bottom: 0;
-  }
-  .header p {
-    color: #fff;
-    padding-top: 15px;
-  }
-  .header .wrapper-inner {
-    padding: 20px;
-  }
-  .header .container {
-    background: transparent;
-  }
-  table.button.facebook table td {
-    background: #3B5998 !important;
-    border-color: #3B5998;
-  }
-  table.button.twitter table td {
-    background: #1daced !important;
-    border-color: #1daced;
-  }
-  table.button.google table td {
-    background: #DB4A39 !important;
-    border-color: #DB4A39;
-  }
-  .wrapper.secondary {
-    background: #f3f3f3;
-  }
-</style>
-
-<wrapper class="header">
-  <container>
-    <row class="collapse">
-      <columns small="6">
-        <img src="http://placehold.it/200x50/663399">
-      </columns>
-      <columns small="6">
-        <p class="text-right">HERO</p>
-      </columns>
-    </row>
-  </container>
-</wrapper>
-
-<container>
-
-  <spacer size="16"></spacer>
-
-  <row>
-    <columns small="12">
-      <h1>Hi, Elijah Baily</h1>
-      <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi impedit sapiente delectus molestias quia.</p>
-      <img src="http://placehold.it/580x300" alt="">
-      <callout class="primary">
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam assumenda, praesentium qui vitae voluptate dolores. <a href="#">Click it!</a></p>
-      </callout>
-      <h2>Title Ipsum <small>This is a note.</small></h2>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi repellat, harum. Quas nobis id aut, aspernatur, sequi tempora laborum corporis cum debitis, ullam, dolorem dolore quisquam aperiam! Accusantium, ullam, nesciunt. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus consequuntur commodi, aut sed, quas quam optio accusantium recusandae nesciunt, architecto veritatis. Voluptatibus sunt esse dolor ipsum voluptates, assumenda quisquam.</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Personal Invitation to "Latcraft | ${event.theme}"</title>
       
-      <button class="large secondary" href="#">Click Me!</button>
-
-    </columns>
-  </row>
-  
-  <wrapper class="secondary">
-
-    <spacer size="16"></spacer>
-
-    <row>
-      <columns large="6">
-        <h5>Connect With Us:</h5>
-        <button class="facebook expand" href="#">Facebook</button>
-        <button class="twitter expand" href="#">Twitter</button>
-        <button class="google expand" href="#">Google+</button>
-      </columns>
-      <columns large="6">
-        <h5>Contact Info:</h5>
-        <p>Phone: 408-341-0600</p>
-        <p>Email: <a href="mailto:foundation@zurb.com">foundation@zurb.com</a></p>
-      </columns>
-    </row>
-  </wrapper>
-      
-  <center>
-    <menu>
-      <item href="#">Terms</item>
-      <item href="#">Privacy</item>
-      <item href="#">Unsubscribe</item>
-    </menu>
-  </center>
-
-</container>
+      <style type="text/css">
+         /* Client-specific Styles */
+         div, p, a, li, td { -webkit-text-size-adjust:none; }
+         #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
+         html{width: 100%; }
+         body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
+         /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
+         .ExternalClass {width:100%;} /* Force Hotmail to display emails at full width */
+         .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} /* Force Hotmail to display normal line spacing. */
+         #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+         img {outline:none; text-decoration:none;border:none; -ms-interpolation-mode: bicubic;}
+         a img {border:none;}
+         .image_fix {display:block;}
+         p {margin: 0px 0px !important;}
+         table td {border-collapse: collapse;}
+         table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+         a {color: #33b9ff;text-decoration: none;text-decoration:none!important;}
+         /*STYLES*/
+         table[class=full] { width: 100%; clear: both; }
+         /*IPAD STYLES*/
+         @media only screen and (max-width: 640px) {
+         a[href^="tel"], a[href^="sms"] {
+         text-decoration: none;
+         color: #33b9ff; /* or whatever your want */
+         pointer-events: none;
+         cursor: default;
+         }
+         .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+         text-decoration: default;
+         color: #33b9ff !important;
+         pointer-events: auto;
+         cursor: default;
+         }
+         table[class=devicewidth] {width: 440px!important;text-align:center!important;}
+         table[class=devicewidthinner] {width: 420px!important;text-align:center!important;}
+         img[class=banner] {width: 440px!important;height:220px!important;}
+         img[class=col2img] {width: 440px!important;height:220px!important;}
+         
+         
+         }
+         /*IPHONE STYLES*/
+         @media only screen and (max-width: 480px) {
+         a[href^="tel"], a[href^="sms"] {
+         text-decoration: none;
+         color: #33b9ff; /* or whatever your want */
+         pointer-events: none;
+         cursor: default;
+         }
+         .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+         text-decoration: default;
+         color: #33b9ff !important; 
+         pointer-events: auto;
+         cursor: default;
+         }
+         table[class=devicewidth] {width: 280px!important;text-align:center!important;}
+         table[class=devicewidthinner] {width: 260px!important;text-align:center!important;}
+         img[class=banner] {width: 280px!important;height:140px!important;}
+         img[class=col2img] {width: 280px!important;height:140px!important;}
+         
+        
+         }
+      </style>
+   </head>
+   <body>
+<!-- Start of preheader -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="preheader" >
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td width="100%" height="20"></td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td width="100%" align="left" valign="middle" style="font-family: Helvetica, arial, sans-serif; font-size: 13px;color: #282828" st-content="preheader">
+                                    Can't see this Email? View it in your <a href="[weblink]" style="text-decoration: none; color: #800000">Browser </a> 
+                                 </td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td width="100%" height="20"></td>
+                              </tr>
+                              <!-- Spacing -->
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of preheader -->       
+<!-- Start of header -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table width="600" bgcolor="#800000" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <tr>
+                                 <td>
+                                    <!-- logo -->
+                                    <table bgcolor="#800000" width="140" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                       <tbody>
+                                          <tr>
+                                             <td width="140" height="50" align="center">
+                                                <div class="imgpop">
+                                                   <a target="_blank" href="#">
+                                                   <img src="http://latcraft.lv/img/newsletter/header_logo.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;">
+                                                   </a>
+                                                </div>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                    <!-- end of logo -->
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of Header -->
+<!-- Start of seperator -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td align="center" height="30" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of seperator --> 
+<!-- start of Full text -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="full-text">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table bgcolor="#ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td>
+                                    <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                       <tbody>
+                                          <!-- Title -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 30px; color: #282828; text-align:center; line-height: 24px;">
+                                                LatCraft | ${event.theme}
+                                             </td>
+                                          </tr>
+                                          <!-- End of Title -->
+                                          <!-- spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- End of spacing -->
+                                          <!-- content -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:center; line-height: 24px;">
+                                                ${event.desc}
+                                             </td>
+                                          </tr>
+                                          <!-- End of content -->
+                                          <!-- Spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- Spacing -->
+                                          <!-- Title -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 20px; color: #800000; text-align:center; line-height: 24px;">
+                                                ${event.date} ${event.time}
+                                             </td>
+                                          </tr>
+                                          <!-- End of Title -->
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                              <!-- read more -->
+                              <tr>
+                                 <td>
+                                    <table width="200" height="32" bgcolor="#800000" align="center" valign="middle" border="0" cellpadding="0" cellspacing="0" style="border-radius:3px;" st-button="learnmore">
+                                       <tbody>
+                                          <tr>
+                                             <td height="9" align="center" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                                          </tr>
+                                          <tr>
+                                             <td height="50" align="center" valign="middle" style="font-family: Helvetica, Arial, sans-serif; font-size: 25px; font-weight:bold;color: #ffffff; text-align:center; line-height: 14px; ; -webkit-text-size-adjust:none;" st-title="fulltext-btn">
+                                                <a style="text-decoration: none;color: #FCFCFC; text-align:center;" href="${event.tickets}">book a seat</a>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td height="9" align="center" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <!-- end of read more -->
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of Full Text -->
+<!-- Start of seperator -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td align="center" height="30" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of seperator -->
+<% event.schedule.each { entry -> %>
+<% if (entry.type == 'speech') { %> 
+<!-- Start of Left Image -->      
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="left-image">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <tr>
+                                 <td>
+                                    <!-- Start of left column -->
+                                    <table width="180" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                       <tbody>
+                                          <!-- image -->
+                                          <tr>
+                                             <td width="180" height="140" align="center" class="devicewidth">
+                                                <img src="http://latcraft.lv/${entry.img}" alt="" border="0" width="100" height="100" style="border-radius: 50%; display:block; border:none; outline:none; text-decoration:none;" >
+                                             </td>
+                                          </tr>
+                                          <!-- /image -->
+                                          <!-- Spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- /Spacing -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #282828; text-align:center; line-height: 24px;" width="180" align="center" class="devicewidth">
+                                                ${entry.name}
+                                             </td>
+                                          </tr>
+                                          <!-- Spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- /Spacing -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 12px; color: #585858; text-align:center; line-height: 24px;" width="180" align="center" class="devicewidth">
+                                                ${entry.bio}
+                                             </td>
+                                          </tr>
+                                          <!-- Spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- /Spacing -->
+                                       </tbody>
+                                    </table>
+                                    <!-- end of left column -->
+                                    <!-- spacing for mobile devices-->
+                                    <table align="left" border="0" cellpadding="0" cellspacing="0" class="mobilespacing">
+                                       <tbody>
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                    <!-- end of for mobile devices-->
+                                    <!-- start of right column -->
+                                    <table width="380" align="right" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                       <tbody>
+                                          <tr>
+                                             <td>
+                                                <table width="380" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                   <tbody>
+                                                      <!-- title -->
+                                                      <tr>
+                                                         <td style="font-family: Helvetica, arial, sans-serif; font-size: 22px; color: #282828; text-align:center; line-height: 24px;">
+                                                            ${entry.title}
+                                                         </td>
+                                                      </tr>
+                                                      <!-- end of title -->
+                                                      <!-- Spacing -->
+                                                      <tr>
+                                                         <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                      </tr>
+                                                      <!-- /Spacing -->
+                                                      <!-- content -->
+                                                      <tr>
+                                                         <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:left; line-height: 24px;">
+                                                            ${entry.description}                                                            
+                                                         </td>
+                                                      </tr>
+                                                      <!-- end of content -->
+                                                      <!-- Spacing -->
+                                                      <tr>
+                                                         <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                      </tr>
+                                                      <!-- /Spacing -->
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                    <!-- end of right column -->
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of Left Image -->      
+<!-- Start of seperator -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td align="center" height="30" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of seperator -->
+<% }} %>   
+<% if (event.announcements) { %>
+<% event.announcements.each { entry -> %>
+<!-- Start of Left Image -->      
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="left-image">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <tr>
+                                 <td>
+                                    <!-- Start of left column -->
+                                    <table width="80" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                       <tbody>
+                                          <!-- image -->
+                                          <tr>
+                                             <td width="80" height="140" align="center" class="devicewidth">
+                                                <img src="http://latcraft.lv/${entry.img}" alt="" border="0" width="100" height="100" style="border-radius: 50%; display:block; border:none; outline:none; text-decoration:none;" >
+                                             </td>
+                                          </tr>
+                                          <!-- /image -->
+                                          <!-- Spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- /Spacing -->
+                                       </tbody>
+                                    </table>
+                                    <!-- end of left column -->
+                                    <!-- spacing for mobile devices-->
+                                    <table align="left" border="0" cellpadding="0" cellspacing="0" class="mobilespacing">
+                                       <tbody>
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                    <!-- end of for mobile devices-->
+                                    <!-- start of right column -->
+                                    <table width="480" align="right" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                       <tbody>
+                                          <tr>
+                                             <td>
+                                                <table width="380" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                   <tbody>
+                                                      <!-- content -->
+                                                      <tr>
+                                                         <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:left; line-height: 24px;">
+                                                            ${entry.desc}
+                                                         </td>
+                                                      </tr>
+                                                      <!-- end of content -->
+                                                      <!-- Spacing -->
+                                                      <tr>
+                                                         <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                      </tr>
+                                                      <!-- /Spacing -->
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                    <!-- end of right column -->
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of Left Image -->      
+<% } %>   
+<!-- start of Full text -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="full-text">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table bgcolor="#ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td>
+                                    <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                       <tbody>
+                                          <!-- Title -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 30px; color: #282828; text-align:center; line-height: 24px;">
+                                                Announcements
+                                             </td>
+                                          </tr>
+                                          <!-- End of Title -->
+                                          <% event.announcements.each { entry -> %>
+                                          <!-- spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- End of spacing -->
+                                          <!-- content -->
+                                          <tr>
+                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 14px; color: #889098; text-align:center; line-height: 24px;">
+                                                ${entry.desc}
+                                             </td>
+                                          </tr>
+                                          <!-- End of content -->
+                                          <% } %>
+                                          <!-- Spacing -->
+                                          <tr>
+                                             <td width="100%" height="15" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                          </tr>
+                                          <!-- Spacing -->
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="20" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of Full Text -->
+<!-- Start of seperator -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="seperator">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" align="center" cellspacing="0" cellpadding="0" border="0" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td align="center" height="30" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of seperator -->
+<% } %>   
+<!-- Start of footer -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="footer">
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" bgcolor="#eacb3c" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <tr>
+                     <td width="100%">
+                        <table bgcolor="#800000" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                           <tbody>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td>
+                                    <!-- Social icons -->
+                                    <table  width="150" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                       <tbody>
+                                          <tr>
+                                             <td width="43" height="43" align="center">
+                                                <div class="imgpop">
+                                                   <a target="_blank" href="https://www.facebook.com/groups/latcraft">
+                                                   <img src="http://latcraft.lv/img/newsletter/facebook.png" alt="" border="0" width="43" height="43" style="display:block; border:none; outline:none; text-decoration:none;">
+                                                   </a>
+                                                </div>
+                                             </td>
+                                             <td align="left" width="20" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                                             <td width="43" height="43" align="center">
+                                                <div class="imgpop">
+                                                   <a target="_blank" href="https://twitter.com/latcraft">
+                                                   <img src="http://latcraft.lv/img/newsletter/twitter.png" alt="" border="0" width="43" height="43" style="display:block; border:none; outline:none; text-decoration:none;">
+                                                   </a>
+                                                </div>
+                                             </td>
+                                             <td align="left" width="20" style="font-size:1px; line-height:1px;">&nbsp;</td>
+                                             <td width="43" height="43" align="center">
+                                                <div class="imgpop">
+                                                   <a target="_blank" href="https://www.linkedin.com/groups/8187430">
+                                                   <img src="http://latcraft.lv/img/newsletter/linkedin.png" alt="" border="0" width="43" height="43" style="display:block; border:none; outline:none; text-decoration:none;">
+                                                   </a>
+                                                </div>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                    <!-- end of Social icons -->
+                                 </td>
+                              </tr>
+                              <!-- Spacing -->
+                              <tr>
+                                 <td height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                              </tr>
+                              <!-- Spacing -->
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of footer -->
+<!-- Start of Postfooter -->
+<table width="100%" bgcolor="#fcfcfc" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" >
+   <tbody>
+      <tr>
+         <td>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+               <tbody>
+                  <!-- Spacing -->
+                  <tr>
+                     <td width="100%" height="20"></td>
+                  </tr>
+                  <!-- Spacing -->
+                  <tr>
+                     <td align="center" valign="middle" style="font-family: Helvetica, arial, sans-serif; font-size: 13px;color: #282828" st-content="preheader">
+                        Don't want to receive invitations? <a href="[Unsubscribe]" style="text-decoration: none; color: #800000">Unsubscribe here </a> 
+                     </td>
+                  </tr>
+                  <!-- Spacing -->
+                  <tr>
+                     <td width="100%" height="20"></td>
+                  </tr>
+                  <!-- Spacing -->
+               </tbody>
+            </table>
+         </td>
+      </tr>
+   </tbody>
+</table>
+<!-- End of postfooter -->      
+   </body>
+   </html>

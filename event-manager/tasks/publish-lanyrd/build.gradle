@@ -1,5 +1,5 @@
 
-apply from: '../common-utils/github-data.gradle'
+apply from: '../common-utils/data-clients.gradle'
 
 task checkLanyrd << {
 

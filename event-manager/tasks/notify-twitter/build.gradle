@@ -1,11 +1,11 @@
 
-apply from: '../common-utils/github-data.gradle'
+apply from: '../common-utils/data-clients.gradle'
 
 task notifyTwitter << {
-
   // TODO: find tweets from last month and find event annoucements
   // TODO: get inforgraphics data
   // TODO: if no announcement found, then publish tweet
+  // TODO: save tweet link in master data
 }
 
 task clean(type: Delete) {

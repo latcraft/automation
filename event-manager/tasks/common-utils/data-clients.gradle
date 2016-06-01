@@ -30,6 +30,10 @@ ext {
 
   templateEngine = new groovy.text.SimpleTemplateEngine()
 
+  dumpJson = { obj ->
+    JsonOutput.prettyPrint(JsonOutput.toJson(obj))
+  }
+
   getEvents = { 
     new JsonSlurper().parse(eventFile)
   }
@@ -48,7 +52,7 @@ ext {
       uri.path = "${path}"
       uri.query = [ access_token: latcraftGitHubToken ]
       if (jsonBody) {
-        logger.debug JsonOutput.prettyPrint(JsonOutput.toJson(jsonBody))
+        logger.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->
@@ -68,6 +72,11 @@ ext {
     new JsonSlurper().parse(eventbriteFile).events
   }
 
+  calculateEventId = { event ->
+    // Calculate unique event ID used to distinguish this event from others in various data sources.
+    String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
+  }
+
   eventbrite = { Method method, String path, Map jsonBody, int pageNumber, Closure cl ->
     def http = new HTTPBuilder('https://www.eventbriteapi.com/')
     http.ignoreSSLIssues()
@@ -75,7 +84,7 @@ ext {
       uri.path = "${path}"
       uri.query = [ token: latcraftEventbriteToken, page: pageNumber ]
       if (jsonBody) {
-        logger.debug JsonOutput.prettyPrint(JsonOutput.toJson(jsonBody))
+        logger.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->
@@ -90,7 +99,7 @@ ext {
   }
 
   slack = {
-
+    // TODO: implement slack client
   }
 
 }
@@ -123,7 +132,7 @@ getMasterData.outputs.file eventFile
 task getEventBriteData << {
   buildDir.mkdirs()
   eventbrite(GET, '/v3/users/me/owned_events', [:], 1) { data ->
-    eventbriteFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(data))
+    eventbriteFile.text = dumpJson(data)
     // TODO: handle pagination
   }
 }
