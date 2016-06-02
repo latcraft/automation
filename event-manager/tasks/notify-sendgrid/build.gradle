@@ -3,8 +3,6 @@ import groovyx.net.http.*
 import groovyx.net.http.Method
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 
 buildscript {
   repositories {
@@ -29,12 +27,11 @@ ext {
     http.ignoreSSLIssues()
     http.request(method, JSON) {
       headers.'Content-Type' = 'application/json'
-      headers.'User-Agent' = 'Groovy HTTPBuilder'
+      headers.'User-Agent' = 'curl/7.9.8 (i686-pc-linux-gnu) libcurl 7.9.8 (OpenSSL 0.9.6b) (ipv6 enabled)'
       headers.'Authorization' = "Bearer ${latcraftSendGridApiKey}"
       uri.path = "${path}"
-      uri.query = [ access_token: latcraftGitHubToken ]
       if (jsonBody) {
-        logger.debug JsonOutput.prettyPrint(JsonOutput.toJson(jsonBody))
+        logger.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->
@@ -55,12 +52,14 @@ ext {
   }
 
   updateCampaignContent = { String campaignName, Map content ->
+    logger.quiet "> Preparing to create/update \"${campaignName}\""
     String campaignId = findCampaignIdByName(campaignName)
     if (campaignId) {
+      logger.quiet "> Updating \"${campaignId}\""
       return sendgrid(PATCH, "/v3/campaigns/${campaignId}", content) { data ->
         data.id
       }
-    } else {
+    } else {      
       return sendgrid(POST, "/v3/campaigns", content) { data ->
         data.id
       }
@@ -167,9 +166,9 @@ task synchronizeCampaigns(dependsOn: [ getMasterData, generateCampaignTemplates 
     String eventId = calculateEventId(event)
 
     // Create invitation campaign.
-    String invitationCampaignName = "LatCraft | ${event.theme} Invitation (${eventId})"
+    String invitationCampaignName = "LatCraft | ${event.theme} Invitation ${eventId}"
     String invitationCampaignId = updateCampaignContent(invitationCampaignName, [ 
-      title: "Personal Invitation to \"Latcraft | ${event.theme}\"",
+      title: invitationCampaignName,
       subject: "Personal Invitation to \"Latcraft | ${event.theme}\"",
       sender_id: defaultSenderId,
       list_id: defaultListId,
@@ -182,7 +181,6 @@ task synchronizeCampaigns(dependsOn: [ getMasterData, generateCampaignTemplates 
 
 task startInvitionCampaign << {
   // TODO: start campaign
-
 }
 
 task build(dependsOn: [ synchronizeCampaigns, synchronizeContactList ])
