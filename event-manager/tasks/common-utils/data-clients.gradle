@@ -42,6 +42,8 @@ ext {
     new JsonSlurper().parse(eventFile).findAll { dateFormat.parse(it.date) > new Date() }
   }
 
+  // TODO: convert github client to a class
+
   github = { Method method, String path, Map jsonBody, Closure cl ->
     def http = new HTTPBuilder('https://api.github.com')
     http.ignoreSSLIssues()
@@ -76,6 +78,8 @@ ext {
     // Calculate unique event ID used to distinguish this event from others in various data sources.
     String eventId = dateFormat.parse(event.date).format('yyyyMMdd')        
   }
+
+  // TODO: convert eventbrite client to a class
 
   eventbrite = { Method method, String path, Map jsonBody, int pageNumber, Closure cl ->
     def http = new HTTPBuilder('https://www.eventbriteapi.com/')
