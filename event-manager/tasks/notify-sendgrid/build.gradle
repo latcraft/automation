@@ -19,6 +19,7 @@ ext {
 
   defaultSenderId = "37076"
   defaultListId = "362055"
+  defaultUnsubscribeGroupId = "611"
 
   contactFile = file("${buildDir}/contacts.csv")
 
@@ -47,19 +48,19 @@ ext {
     }
   }
 
-  findCampaignIdByName = { String campaignName ->
+  findCampaignIdByTitle = { String campaignTitle ->
     sendgrid(GET, '/v3/campaigns', [:]) { data ->
-      data.campaigns.find { campaign -> campaign.name == campaignName }?.id
+      data.result.find { campaign -> campaign.title == campaignTitle }?.id
     }
   }
 
-  updateCampaignContent = { String campaignName, Map content ->
-    logger.quiet "> Preparing to create/update \"${campaignName}\""
-    String campaignId = findCampaignIdByName(campaignName)
+  updateCampaignContent = { Map content ->
+    logger.quiet "> Preparing to create/update \"${content.title}\""
+    String campaignId = findCampaignIdByTitle(content.title)
     sleep(1000)
     if (campaignId) {
-      logger.quiet "> Updating \"${campaignId}\""
-      return sendgrid(PATCH, "/v3/campaigns/${campaignId}", content) { data ->
+      logger.quiet "> Updating campaign with ID: ${campaignId}"
+      return sendgrid(PATCH, "/v3/campaigns/${campaignId}".toString(), content) { data ->
         data.id
       }
     } else {      
@@ -84,11 +85,11 @@ ext {
   updateTemplateContent = { String templateId, Map content ->
     String templateVersionId = getTemplateVersionId(templateId)
     if (templateVersionId) {
-      sendgrid(PATCH, "/v3/templates/${templateId}/versions/${templateVersionId}", content) { data ->
+      sendgrid(PATCH, "/v3/templates/${templateId}/versions/${templateVersionId}".toString(), content) { data ->
         logger.debug data.toString()
       }
     } else {
-      sendgrid(POST, "/v3/templates/${templateId}/versions", content) { data ->
+      sendgrid(POST, "/v3/templates/${templateId}/versions".toString(), content) { data ->
         logger.debug data.toString()
       }
     }
@@ -102,10 +103,10 @@ task extractContactsFromEventBrite(dependsOn: getEventBriteData) << {
     def attendees = []
     getEventBriteEvents().findAll{ !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
       logger.quiet "> Extracting attendees from: ${eventBriteEvent.name.text}"
-      eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], 1) { data ->        
+      eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/".toString(), [:], 1) { data ->        
         attendees.addAll(data.attendees)
         for(int pageNumber = 1; pageNumber <= data.pagination.page_count; pageNumber++) {
-          eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/", [:], pageNumber) { pageData ->
+          eventbrite(GET, "/v3/events/${eventBriteEvent.id}/attendees/".toString(), [:], pageNumber) { pageData ->
             attendees.addAll(pageData.attendees)
           }
         }
@@ -169,12 +170,13 @@ task synchronizeCampaigns(dependsOn: [ getMasterData, generateCampaignTemplates 
     String eventId = calculateEventId(event)
 
     // Create invitation campaign.
-    String invitationCampaignName = "LatCraft | ${event.theme} Invitation ${eventId}"
-    String invitationCampaignId = updateCampaignContent(invitationCampaignName, [ 
-      title: invitationCampaignName,
-      subject: "Personal Invitation to \"Latcraft | ${event.theme}\"",
+    String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
+    String invitationCampaignId = updateCampaignContent([ 
+      title: invitationCampaignTitle,
+      subject: "Personal Invitation to \"Latcraft | ${event.theme}\"".toString(),
       sender_id: defaultSenderId,
-      list_id: defaultListId,
+      suppression_group_id: defaultUnsubscribeGroupId,
+      list_ids: [ defaultListId ],
       html_content: file("${buildDir}/invitation_${eventId}.html").text
     ])
 
@@ -183,7 +185,23 @@ task synchronizeCampaigns(dependsOn: [ getMasterData, generateCampaignTemplates 
 
 
 task startInvitionCampaign << {
-  // TODO: start campaign
+  getFutureEvents().each { event ->
+
+    String eventId = calculateEventId(event)
+    String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
+    logger.quiet "> Starting ${invitationCampaignTitle}"
+
+    String campaignId = findCampaignIdByTitle(invitationCampaignTitle)
+    if (campaignId) {
+      logger.quiet "> Starting campaign with ID: ${campaignId}"
+      sendgrid(POST, "/v3/campaigns/${campaignId}/schedules/now".toString(), [:]) { data ->
+        logger.quiet "> Scheduling result: ${data.status}"
+      }
+    } else {
+      throw new GradleException("Campaign \"${invitationCampaignTitle}\" not found!")
+    }
+
+  }
 }
 
 task build(dependsOn: [ synchronizeCampaigns, synchronizeContactList ])
