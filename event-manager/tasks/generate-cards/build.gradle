@@ -1,0 +1,84 @@
+
+import org.apache.batik.transcoder.image.JPEGTranscoder
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+
+import groovy.util.XmlSlurper
+import groovy.xml.XmlUtil
+
+import java.awt.image.BufferedImage
+import java.awt.Graphics2D
+import java.awt.Color
+
+import static javax.imageio.ImageIO.*
+
+import groovyx.net.http.*
+import groovyx.net.http.Method
+import static groovyx.net.http.ContentType.*
+import static groovyx.net.http.Method.*
+
+buildscript {
+  repositories { mavenCentral() }
+  dependencies {
+    classpath('batik:batik-transcoder:1.6-1') {
+      exclude module: 'fop'
+    }
+    classpath "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
+    classpath 'xerces:xercesImpl:2.11.0'
+  }
+}
+
+apply from: '../common-utils/data-clients.gradle'
+
+task generateCards(dependsOn: getMasterData) << {
+  buildDir.mkdirs()
+  File svgTemplate = file("templates/normal_event_card.svg")
+  getEvents().each { event ->
+
+    String eventId = calculateEventId(event)
+    logger.quiet "> Generating card for ${eventId}"
+    File svgFile = file("${buildDir}/${eventId}.svg")    
+    svgFile.text = modifySVG(
+      svgTemplate.text, 
+      [
+        'event-title':    event.'short-theme' ?: event.theme,
+        'event-time':     event.time,
+        'event-date':     event.date,
+        'event-location': event.venue,
+      ]
+    )
+    renderImage(
+      svgFile, 
+      file("${buildDir}/normal_event_card"), 
+      eventId
+    )
+    svgFile.delete()
+
+  }
+}
+
+generateCards.logging.captureStandardOutput LogLevel.INFO
+generateCards.logging.captureStandardError LogLevel.INFO
+generateCards.outputs.dir file("${buildDir}")
+
+def modifySVG(String svgText, Map binding) {
+  def svg = new XmlSlurper().parseText(svgText)
+  binding.each { key, value ->
+    def element = svg.depthFirst().find { it.@id == key }
+    if (element) {
+      element.replaceBody(value)
+    }
+  }
+  XmlUtil.serialize(svg)
+}
+
+
+def renderImage(File svgFile, File baseDir, String baseName) {
+  baseDir.mkdirs()
+  JPEGTranscoder t = new JPEGTranscoder()
+  t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(1))
+  String svgURI = svgFile.toURL().toString()
+  t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}.jpg")))
+}
+
+
