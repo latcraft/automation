@@ -158,5 +158,8 @@ def renderImage(File svgFile, File baseDir, String baseName) {
   t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}.jpg")))
 }
 
+// TODO: implement task for updating GitHub data and adding new/missing images
+
+task build(dependsOn: [generateEventCards, generateSpeakerCards])
 
 
