@@ -13,3 +13,4 @@ replacements.csv
 gradle.properties
 /event-manager/tasks/publish-eventbrite/*.json
 /event-manager/tasks/publish-eventbrite/output.txt
+.idea/

@@ -38,8 +38,12 @@ ext {
     new JsonSlurper().parse(eventFile)
   }
 
+  isFutureEvent = {
+    dateFormat.parse(it.date) > new Date()
+  }
+
   getFutureEvents = {     
-    new JsonSlurper().parse(eventFile).findAll { dateFormat.parse(it.date) > new Date() }
+    new JsonSlurper().parse(eventFile).findAll { isFutureEvent(it) }
   }
 
   // TODO: convert github client to a class
