@@ -4,6 +4,7 @@ import groovyx.net.http.Method
 import static groovyx.net.http.ContentType.*
 import static groovyx.net.http.Method.*
 import java.security.MessageDigest
+import groovy.json.JsonSlurper
 
 buildscript {
   repositories {
@@ -28,8 +29,8 @@ task makeEventBriteDescription(dependsOn: getMasterData) << {
   buildDir.mkdirs()
   getEvents().each { event ->    
     String eventId = dateFormat.parse(event.date).format('yyyyMMdd')    
-    File overridenTemplateFile = file("templates/event_description_${eventId}.html")
-    def template = templateEngine.createTemplate(overridenTemplateFile.exists() ? overridenTemplateFile : defaultTemplateFile)
+    File overriddenTemplateFile = file("templates/event_description_${eventId}.html")
+    def template = templateEngine.createTemplate(overriddenTemplateFile.exists() ? overriddenTemplateFile : defaultTemplateFile)
     def binding = [ event: event ]    
     file("${buildDir}/event_description_${eventId}.html").text = template.make(binding).toString()
   }  
@@ -56,6 +57,13 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
     def startTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.time + ':00')
     def endTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.endTime + ':00')
 
+    // Load overridden event data.
+    File overriddenDataFile = file("data/${eventId}.json")
+    def overriddenData = [:]
+    if (overriddenDataFile.exists()) {
+      overriddenData = new JsonSlurper().parse(overriddenDataFile)
+    }
+
     // Create or update event information.
     println "> Creating/updating \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId})"
     eventbrite(POST, apiUrl, [
@@ -72,13 +80,13 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
           utc: endTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
           timezone: 'Europe/Riga'
         ],
-        venue_id: latcraftEventbriteVenueId,
+        venue_id: overriddenData?.venue_id ?: latcraftEventbriteVenueId,
         organizer_id: latcraftEventbriteOrganizerId,
-        logo_id: latcraftEventbriteLogoId,
-        category_id: latcraftEventbriteCategoryId,
-        subcategory_id: latcraftEventbriteSubcategoryId,
-        format_id: latcraftEventbriteFormatId,
-        capacity: latcraftEventbriteCapacity,
+        logo_id: overriddenData?.logo_id ?: latcraftEventbriteLogoId,
+        category_id: overriddenData?.category_id ?: latcraftEventbriteCategoryId,
+        subcategory_id: overriddenData?.subcategory_id ?: latcraftEventbriteSubcategoryId,
+        format_id: overriddenData?.format_id ?: latcraftEventbriteFormatId,
+        capacity: overriddenData?.capacity ?: latcraftEventbriteCapacity,
         show_remaining: true,
         description: [
           html: file("${buildDir}/event_description_${eventId}.html").text
