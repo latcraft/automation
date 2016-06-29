@@ -27,12 +27,8 @@ ext {
         new JsonSlurper().parse(twitterFile)
     }
 
-    twitterDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
-    twitterDateFormat.setLenient(true);
-
     twitter = { Closure cl ->
-        // The factory instance is re-useable and thread safe.
-        Twitter client = TwitterFactory.getSingleton();
+        Twitter client = new TwitterFactory().getInstance()
         client.setOAuthConsumer(latcraftTwitterConsumerKey, latcraftTwitterConsumerSecret)
 
         if (!latcraftTwitterOAuthToken || !latcraftTwitterOAuthSecret) {
@@ -134,18 +130,20 @@ task notifyTwitter(dependsOn: [getMasterData, getTwitterDataTask]) << {
         }
 
         if (tweetId) {
-            println("Announcement tweet detected: Event = ${event.date} / ${event.theme} -> ${tweetId} (https://twitter.com/latcraft/status/${tweetId})")
+            println("Tweet detected: Event = ${event.date} / ${event.theme} -> ${tweetId} (https://twitter.com/latcraft/status/${tweetId})")
             event.tweetId = tweetId
         } else if(isFutureEvent(event)){
-            println("Publishing Future event: Event = ${event.date} / ${event.theme}")
+            println("Publish Future event: Event = ${event.date} / ${event.theme}")
             twitter { Twitter api ->
-                def status = api.updateStatus(new StatusUpdate("OAUTH Test. Please Ignore. Will be deleted in matter of seconds.").media(new File("/home/leonids/Downloads/CmGtLojWgAAQMlv.jpg:large.jpeg")))
+                String status_text = "${event.tweet_text ?: 'Lets talk about'} ${event.theme}. Join us on the ${event.date}!\n${event.tickets}"
+                def infographics = new File("/home/leonids/Downloads/CmGtLojWgAAQMlv.jpg:large.jpeg")
+                def status = api.updateStatus(new StatusUpdate(status_text).media(infographics))
                 tweetId = status.id
             }
-            println("\t -> tweetId ${tweetId}")
+            println("\t tweetId -> ${tweetId}")
             event.tweetId = tweetId
         } else {
-            println("Skipping Past event: Event = ${event.date} / ${event.theme}")
+            println("Skip Past event: Event = ${event.date} / ${event.theme}")
         }
 
         event
