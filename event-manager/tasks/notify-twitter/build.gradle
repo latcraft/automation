@@ -110,7 +110,6 @@ getTwitterDataTask.outputs.file twitterFile
 
 task notifyTwitter(dependsOn: [getMasterData, getTwitterDataTask]) << {
 
-    // TODO: get inforgraphics data
     def twitter_tweets = getTwitterTweets()
     def updated_events = getEvents().collect { event ->
 
@@ -136,6 +135,7 @@ task notifyTwitter(dependsOn: [getMasterData, getTwitterDataTask]) << {
             println("Publish Future event: Event = ${event.date} / ${event.theme}")
             twitter { Twitter api ->
                 String status_text = "${event.tweet_text ?: 'Lets talk about'} ${event.theme}. Join us on the ${event.date}!\n${event.tickets}"
+                // TODO: get inforgraphics data
                 def infographics = new File("/home/leonids/Downloads/CmGtLojWgAAQMlv.jpg:large.jpeg")
                 def status = api.updateStatus(new StatusUpdate(status_text).media(infographics))
                 tweetId = status.id
@@ -158,6 +158,8 @@ task notifyTwitter(dependsOn: [getMasterData, getTwitterDataTask]) << {
 task twitterUpdateMasterData() << {
     println("twitterUpdateMasterData")
 }
+
+// TODO: uncomment this to make it publish master data
 //task twitterUpdateMasterData(dependsOn: [updateMasterData])
 
 twitterUpdateMasterData.mustRunAfter notifyTwitter
