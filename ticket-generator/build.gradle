@@ -1,0 +1,37 @@
+
+plugins {
+  id 'groovy'
+  id 'idea'
+  id 'jp.classmethod.aws.lambda' version '0.28'
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+repositories {
+  mavenCentral()
+}
+
+aws {
+  profileName = "default"
+  region = "eu-west-1"
+}
+
+lambda {
+  region = "eu-west-1"
+}
+
+dependencies {
+  compile 'org.codehaus.groovy:groovy-all:2.4.5'
+  compile 'com.google.zxing:core:3.2.0'
+  compile 'com.google.zxing:javase:3.2.0'
+  compile('batik:batik-transcoder:1.6-1') {
+    exclude module: 'fop'
+  }
+  compile 'xerces:xercesImpl:2.11.0'
+}
+
+// task deployFunction(type: AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+//   functionName = "foobar"
+//   role = "arn:aws:iam::${aws.accountId}:role/lambda-poweruser"
+//   zipFile = zip.archivePath
+//   handler = "DecodeBase64.handler"
+// }
