@@ -3,6 +3,9 @@
 build
 bin
 *.jpg
+*.ipr
+*.iws
+*.iml
 data.json
 /badge-generator/attendees.csv
 /badge-generator/get.groovy
