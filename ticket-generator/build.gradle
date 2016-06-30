@@ -24,10 +24,10 @@ dependencies {
   compile 'com.amazonaws:aws-lambda-java-core:1.0.0'
   compile 'com.google.zxing:core:3.2.0'
   compile 'com.google.zxing:javase:3.2.0'
-  compile('batik:batik-transcoder:1.6-1') {
-    exclude module: 'fop'
-  }
-  compile 'xerces:xercesImpl:2.11.0'
+  compile 'org.apache.xmlgraphics:batik-transcoder:1.8'
+  compile 'org.apache.xmlgraphics:batik-codec:1.7'
+  compile 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
+  compile 'org.apache.xmlgraphics:fop:2.1'
   testCompile 'junit:junit:4.12'
 }
 

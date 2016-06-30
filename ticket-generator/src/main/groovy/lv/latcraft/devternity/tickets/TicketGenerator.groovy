@@ -11,26 +11,39 @@ import groovy.xml.XmlUtil
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
+import org.apache.fop.svg.PDFTranscoder
 
 class TicketGenerator {
 
   static String generate(Map<String, String> data, Context context) {
-    context.logger.log "received in groovy: $data"
-    File qrFile = renderQRCodeImage(getQRData(data.name, data.email, data.company))
+    context.logger.log "Received data: $data"
     File svgFile = File.createTempFile('ticket', '.svg')
-    svgFile.text = modifySVG(getSvgTemplate(), data.name, data.email, data.company, data.type, qrFile)
+    svgFile.text = prepareSVG(
+      getSvgTemplate(),
+      data.name,
+      data.email,
+      data.company,
+      data.type,
+      renderQRCodeImage(
+        getQRData(
+          data.name,
+          data.email,
+          data.company
+        )
+      )
+    )
     renderImage(svgFile)
+    renderPDF(svgFile)
     svgFile.delete()
-    qrFile.delete()
   }
 
   static String getSvgTemplate() {
     getClass().getResource('/devternity_ticket.svg').text
   }
 
-  static String modifySVG(String svgText, String name, String email, String company, String badgeType, File qrFile) {
+  static String prepareSVG(String svgText, String name, String email, String company, String badgeType, File qrFile) {
     GPathResult svg = new XmlSlurper().parseText(svgText)
-    setElementValue(svg, 'ticket-name', sanitizeName(name))
+    setElementValue(svg, 'ticket-name', sanitizeName(name).toUpperCase())
     setElementValue(svg, 'ticket-company', sanitizeName(company))
     setAttributeValue(svg, 'ticket-qr', 'xlink:href', "data:image/png;base64,${qrFile.bytes.encodeBase64().toString().toList().collate(76)*.join('').join(' ')}".toString())
     XmlUtil.serialize(svg)
@@ -86,11 +99,27 @@ class TicketGenerator {
     JPEGTranscoder t = new JPEGTranscoder()
     t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(1))
     String svgURI = svgFile.toURI().toString()
-    t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("ticket.jpg")))
+    t.transcode(
+      new TranscoderInput(svgURI),
+      new TranscoderOutput(
+        new FileOutputStream("ticket.jpg")
+      )
+    )
+  }
+
+  static renderPDF(File svgFile) {
+    PDFTranscoder t = new PDFTranscoder()
+    String svgURI = svgFile.toURI().toString()
+    t.transcode(
+      new TranscoderInput(svgURI),
+      new TranscoderOutput(
+        new FileOutputStream("ticket.pdf")
+      )
+    )
   }
 
   static File renderQRCodeImage(String content, int width = 300, int height = 300) {
-    File targetFile = new File("qr.png")
+    File targetFile = new File("ticket-qr.png")
     EnumMap hints = new EnumMap<EncodeHintType, Object>(EncodeHintType)
     hints.put(EncodeHintType.CHARACTER_SET, "UTF-8")
     hints.put(EncodeHintType.MARGIN, 0)
