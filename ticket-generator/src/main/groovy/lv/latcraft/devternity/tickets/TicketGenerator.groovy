@@ -21,7 +21,7 @@ class TicketGenerator {
     File svgFile = file('ticket', '.svg')
     byte[] qrPngData = renderQRCodeImage(getQRData(ticket))
     svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
-    File qrFile = file('qr', '.png')
+    File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
     File jpegFile = renderJpeg(svgFile)
     File pdfFile = renderPDF(svgFile)
