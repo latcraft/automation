@@ -1,9 +1,10 @@
+import com.amazonaws.services.lambda.model.Runtime
+import jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask
 
 plugins {
   id 'groovy'
   id 'idea'
   id 'jp.classmethod.aws.lambda' version '0.28'
-  id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 repositories {
@@ -11,17 +12,13 @@ repositories {
 }
 
 aws {
-  profileName = "default"
-  region = "eu-west-1"
-}
-
-lambda {
   region = "eu-west-1"
 }
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all:2.4.5'
-  compile 'com.amazonaws:aws-lambda-java-core:1.0.0'
+  compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+  compile 'com.amazonaws:aws-lambda-java-events:1.1.0'
   compile 'com.google.zxing:core:3.2.0'
   compile 'com.google.zxing:javase:3.2.0'
   compile 'org.apache.xmlgraphics:batik-transcoder:1.8'
@@ -31,9 +28,23 @@ dependencies {
   testCompile 'junit:junit:4.12'
 }
 
-// task deployFunction(type: AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
-//   functionName = "foobar"
-//   role = "arn:aws:iam::${aws.accountId}:role/lambda-poweruser"
-//   zipFile = zip.archivePath
-//   handler = "DecodeBase64.handler"
-// }
+task buildZip(type: Zip, dependsOn: classes) {
+  from compileGroovy
+  from processResources
+  into('lib') {
+    from configurations.runtime
+  }           
+}
+
+build.dependsOn buildZip
+
+task deployFunction(type: AWSLambdaMigrateFunctionTask, dependsOn: buildZip) {
+  functionName        = "arn:aws:lambda:eu-west-1:${aws.accountId}:function:devternity_ticket_generator:\$LATEST"
+  role                = "arn:aws:iam::${aws.accountId}:role/latcraft_automation"
+  functionDescription = 'DevTernity ticket generator'
+  handler             = "lv.latcraft.devternity.tickets.TicketGenerator::generate"
+  zipFile             = buildZip.archivePath
+  runtime             = Runtime.Java8
+  timeout             = 60
+  memorySize          = 128
+}

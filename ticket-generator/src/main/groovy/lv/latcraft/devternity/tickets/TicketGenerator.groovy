@@ -15,37 +15,37 @@ import org.apache.fop.svg.PDFTranscoder
 
 class TicketGenerator {
 
-  static String generate(Map<String, String> data, Context context) {
-    context.logger.log "Received data: $data"
-    File svgFile = File.createTempFile('ticket', '.svg')
-    svgFile.text = prepareSVG(
-      getSvgTemplate(),
-      data.name,
-      data.email,
-      data.company,
-      data.type,
-      renderQRCodeImage(
-        getQRData(
-          data.name,
-          data.email,
-          data.company
-        )
-      )
-    )
-    renderImage(svgFile)
-    renderPDF(svgFile)
+  static Map<String, String> generate(Map<String, String> data, Context context) {
+    context.logger.log "Received data: ${data}"
+    TicketInfo ticket = new TicketInfo(data)
+    File svgFile = file('ticket', '.svg')
+    byte[] qrPngData = renderQRCodeImage(getQRData(ticket))
+    svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
+    File qrFile = file('qr', '.png')
+    qrFile.bytes = qrPngData
+    File jpegFile = renderJpeg(svgFile)
+    File pdfFile = renderPDF(svgFile)
+    // TODO: upload to s3
+    // TODO: update dynamoDb
     svgFile.delete()
+    [
+      status: 'OK'
+    ]
+  }
+
+  static file(String prefix, String suffix) {
+    File.createTempFile(prefix, suffix)
   }
 
   static String getSvgTemplate() {
-    getClass().getResource('/devternity_ticket.svg').text
+    getClass().getResource('/devternity_ticket.svg')?.text ?: new File('devternity_ticket.svg').text
   }
 
-  static String prepareSVG(String svgText, String name, String email, String company, String badgeType, File qrFile) {
+  static String prepareSVG(String svgText, TicketInfo ticket, byte[] qrImage) {
     GPathResult svg = new XmlSlurper().parseText(svgText)
-    setElementValue(svg, 'ticket-name', sanitizeName(name).toUpperCase())
-    setElementValue(svg, 'ticket-company', sanitizeName(company))
-    setAttributeValue(svg, 'ticket-qr', 'xlink:href', "data:image/png;base64,${qrFile.bytes.encodeBase64().toString().toList().collate(76)*.join('').join(' ')}".toString())
+    setElementValue(svg, 'ticket-name', sanitizeName(ticket.name).toUpperCase())
+    setElementValue(svg, 'ticket-company', sanitizeCompany(ticket.company))
+    setAttributeValue(svg, 'ticket-qr', 'xlink:href', "data:image/png;base64,${qrImage.encodeBase64().toString().toList().collate(76)*.join('').join(' ')}".toString())
     XmlUtil.serialize(svg)
   }
 
@@ -95,41 +95,45 @@ class TicketGenerator {
     )
   }
 
-  static renderImage(File svgFile) {
+  static File renderJpeg(File svgFile) {
     JPEGTranscoder t = new JPEGTranscoder()
     t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(1))
     String svgURI = svgFile.toURI().toString()
+    File jpegFile = file('ticket', '.jpg')
     t.transcode(
       new TranscoderInput(svgURI),
       new TranscoderOutput(
-        new FileOutputStream("ticket.jpg")
+        new FileOutputStream(jpegFile)
       )
     )
+    jpegFile
   }
 
-  static renderPDF(File svgFile) {
+  static File renderPDF(File svgFile) {
     PDFTranscoder t = new PDFTranscoder()
     String svgURI = svgFile.toURI().toString()
+    File pdfFile = file('ticket', '.pdf')
     t.transcode(
       new TranscoderInput(svgURI),
       new TranscoderOutput(
-        new FileOutputStream("ticket.pdf")
+        new FileOutputStream(pdfFile)
       )
     )
+    pdfFile
   }
 
-  static File renderQRCodeImage(String content, int width = 300, int height = 300) {
-    File targetFile = new File("ticket-qr.png")
+  static byte[] renderQRCodeImage(String content, int width = 300, int height = 300) {
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream()
     EnumMap hints = new EnumMap<EncodeHintType, Object>(EncodeHintType)
     hints.put(EncodeHintType.CHARACTER_SET, "UTF-8")
     hints.put(EncodeHintType.MARGIN, 0)
     BitMatrix bitMatrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, width, height, hints)
-    MatrixToImageWriter.writeToPath(bitMatrix, "png", targetFile.toPath())
-    targetFile
+    MatrixToImageWriter.writeToStream(bitMatrix, "png", byteStream)
+    byteStream.toByteArray()
   }
 
-  static getQRData(name, email, company) {
-    "mailto:${email}"
+  static getQRData(TicketInfo ticket) {
+    "mailto:${ticket.email}"
   }
 
 }
