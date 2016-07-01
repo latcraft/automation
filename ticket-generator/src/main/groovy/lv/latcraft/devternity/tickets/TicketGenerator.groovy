@@ -15,11 +15,14 @@ class TicketGenerator {
     TicketInfo ticket = new TicketInfo(data)
     File svgFile = file('ticket', '.svg')
     byte[] qrPngData = renderQRCodeImage(getQRData(ticket))
+    context.logger.log "Generated QR image"
     svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
-    File jpegFile = renderPng(svgFile)
+    File jpegFile = renderPNG(svgFile)
+    context.logger.log "Generated PNG ticket"
     File pdfFile = renderPDF(svgFile)
+    context.logger.log "Generated PDF ticket"
     // TODO: upload to s3
     // TODO: update dynamoDb
     svgFile.delete()

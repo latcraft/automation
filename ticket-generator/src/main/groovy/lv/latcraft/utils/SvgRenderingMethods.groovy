@@ -24,7 +24,7 @@ class SvgRenderingMethods {
     byteStream.toByteArray()
   }
 
-  static File renderPng(File svgFile) {
+  static File renderPNG(File svgFile) {
     PNGTranscoder t = new PNGTranscoder()
     String svgURI = svgFile.toURI().toString()
     File pngFile = file('temporary', '.png')
