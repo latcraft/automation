@@ -19,9 +19,11 @@ class TicketGenerator {
     File svgFile = file('ticket', '.svg')
     byte[] qrPngData = renderQRCodeImage(getQRData(ticket))
     context.logger.log "Generated QR image"
-    svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
+    context.logger.log "Saved QR image"
+    svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
+    context.logger.log "Pre-processed SVG template"
     // File pngFile = renderPNG(svgFile)
     // context.logger.log "Generated PNG ticket"
     File pdfFile = renderPDF(svgFile)
