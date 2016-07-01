@@ -45,6 +45,6 @@ task deployFunction(type: AWSLambdaMigrateFunctionTask, dependsOn: buildZip) {
   handler             = "lv.latcraft.devternity.tickets.TicketGenerator::generate"
   zipFile             = buildZip.archivePath
   runtime             = Runtime.Java8
-  timeout             = 180
+  timeout             = 600
   memorySize          = 256
 }

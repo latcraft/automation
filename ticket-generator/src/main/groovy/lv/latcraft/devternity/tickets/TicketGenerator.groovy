@@ -3,8 +3,11 @@ package lv.latcraft.devternity.tickets
 import com.amazonaws.services.lambda.runtime.Context
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
+import lv.latcraft.utils.SanitizationMethods
 
 import static lv.latcraft.utils.FileMethods.file
+import static lv.latcraft.utils.SanitizationMethods.sanitizeCompany
+import static lv.latcraft.utils.SanitizationMethods.sanitizeName
 import static lv.latcraft.utils.SvgRenderingMethods.*
 import static lv.latcraft.utils.XmlMethods.*
 
@@ -43,39 +46,6 @@ class TicketGenerator {
     XmlUtil.serialize(svg)
   }
 
-  static String sanitizeName(String name) {
-    name.
-      trim().
-      split('\\s+').
-      collect { String part -> part.trim().capitalize() }.
-      join(' ')
-  }
-
-  static String sanitizeCompany(String company) {
-    sanitizeName(
-      company.
-        replaceAll('n/a', '').
-        replaceAll('LV', '').
-        replaceAll('Intelligent Technologies', 'IT').
-        replaceAll('VSIA', '').
-        replaceAll('vsia', '').
-        replaceAll('sia', '').
-        replaceAll('SIA', '').
-        replaceAll('LTD', '').
-        replaceAll('AS', '').
-        replaceAll('ltd', '').
-        replaceAll('Ltd.', '').
-        replaceAll('Trade & Finance Group', '').
-        replaceAll('Self Employed', '').
-        replaceAll('GmbH', '').
-        replaceAll('No Company :\\(', '').
-        replaceAll('-', '').
-        replaceAll('Latvia', '').
-        replaceAll('private', '').
-        trim().
-        capitalize()
-    )
-  }
 
   static getQRData(TicketInfo ticket) {
     "mailto:${ticket.email}"
