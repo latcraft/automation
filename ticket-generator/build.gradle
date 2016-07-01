@@ -32,6 +32,9 @@ dependencies {
 task buildZip(type: Zip, dependsOn: classes) {
   from compileGroovy
   from processResources
+  into ('fonts') {
+    from file('fonts')
+  }
   into('lib') {
     from configurations.runtime
   }           
