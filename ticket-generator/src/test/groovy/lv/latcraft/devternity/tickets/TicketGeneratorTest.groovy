@@ -2,7 +2,7 @@ package lv.latcraft.devternity.tickets
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.LambdaLogger
-import groovy.mock.interceptor.MockFor
+import groovy.mock.interceptor.StubFor
 import org.junit.Test
 
 class TicketGeneratorTest {
@@ -10,17 +10,17 @@ class TicketGeneratorTest {
   @Test
   void testGenerator() {
     TicketGenerator.generate([
-      name: 'Andrey Adamovich',
+      name   : 'Andrey Adamovich',
       company: 'Aestas/IT',
-      email: 'andrey@aestasit.com',
+      email  : 'andrey@aestasit.com',
     ], context)
   }
 
   private static Context getContext() {
-    def context = new MockFor(Context)
-    def logger = new MockFor(LambdaLogger)
-    logger.demand.log { String message -> System.out.println message }
-    context.demand.getLogger { logger.proxyInstance() }
+    def context = new StubFor(Context)
+    def logger = new StubFor(LambdaLogger)
+    logger.demand.log(0..10) { String message -> System.out.println message }
+    context.demand.getLogger(0..10) { logger.proxyInstance() }
     (Context) context.proxyInstance()
   }
 
