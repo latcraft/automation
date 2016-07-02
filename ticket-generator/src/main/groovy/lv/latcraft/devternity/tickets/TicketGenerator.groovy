@@ -5,29 +5,28 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 
 import static lv.latcraft.utils.FileMethods.file
+import static lv.latcraft.utils.QRMethods.renderQRCodeImage
 import static lv.latcraft.utils.SanitizationMethods.sanitizeCompany
 import static lv.latcraft.utils.SanitizationMethods.sanitizeName
-import static lv.latcraft.utils.SvgRenderingMethods.*
+import static lv.latcraft.utils.SvgMethods.renderPDF
 import static lv.latcraft.utils.XmlMethods.setAttributeValue
 import static lv.latcraft.utils.XmlMethods.setElementValue
 
 class TicketGenerator {
 
   static Map<String, String> generate(Map<String, String> data, Context context) {
-    context.logger.log "Received data: ${data}"
+    context.logger.log "STEP 1: Received data: ${data}"
     TicketInfo ticket = new TicketInfo(data)
     File svgFile = file('ticket', '.svg')
     byte[] qrPngData = renderQRCodeImage(getQRData(ticket))
-    context.logger.log "Generated QR image"
+    context.logger.log "STEP 2: Generated QR image"
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
-    context.logger.log "Saved QR image"
+    context.logger.log "STEP 3: Saved QR image"
     svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
-    context.logger.log "Pre-processed SVG template"
-    // File pngFile = renderPNG(svgFile)
-    // context.logger.log "Generated PNG ticket"
+    context.logger.log "STEP 4: Pre-processed SVG template"
     File pdfFile = renderPDF(svgFile)
-    context.logger.log "Generated PDF ticket"
+    context.logger.log "STEP 5: Generated PDF ticket"
     // TODO: upload to s3
     // TODO: update dynamoDb
     svgFile.delete()
