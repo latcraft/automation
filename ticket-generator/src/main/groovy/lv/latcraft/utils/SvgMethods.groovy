@@ -56,7 +56,7 @@ class SvgMethods {
         }
         return new ByteArrayInputStream(XmlUtil.serialize(xml).getBytes(UTF_8))
       } else {
-        configFile.newInputStream()
+        return configFile.newInputStream()
       }
     } else {
       throw new RuntimeException('PDF renderer configuration is not found!')

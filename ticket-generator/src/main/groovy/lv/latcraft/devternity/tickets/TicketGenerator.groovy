@@ -5,7 +5,7 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 
 import static lv.latcraft.utils.FileMethods.file
-import static lv.latcraft.utils.QRMethods.renderQRCodeImage
+import static lv.latcraft.utils.QRMethods.renderQRCodePNGImage
 import static lv.latcraft.utils.SanitizationMethods.sanitizeCompany
 import static lv.latcraft.utils.SanitizationMethods.sanitizeName
 import static lv.latcraft.utils.SvgMethods.renderPDF
@@ -18,7 +18,7 @@ class TicketGenerator {
     context.logger.log "STEP 1: Received data: ${data}"
     TicketInfo ticket = new TicketInfo(data)
     File svgFile = file('ticket', '.svg')
-    byte[] qrPngData = renderQRCodeImage(getQRData(ticket))
+    byte[] qrPngData = renderQRCodePNGImage(getQRData(ticket))
     context.logger.log "STEP 2: Generated QR image"
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData

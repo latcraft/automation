@@ -8,7 +8,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 
 class QRMethods {
 
-  static byte[] renderQRCodeImage(String content, int width = 300, int height = 300) {
+  static byte[] renderQRCodePNGImage(String content, int width = 300, int height = 300) {
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream()
     EnumMap hints = new EnumMap<EncodeHintType, Object>(EncodeHintType)
     hints.put(EncodeHintType.CHARACTER_SET, "UTF-8")
