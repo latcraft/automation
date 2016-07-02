@@ -1,3 +1,4 @@
+
 import com.amazonaws.services.lambda.model.Runtime
 import jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask
 
@@ -50,5 +51,5 @@ task deployFunction(type: AWSLambdaMigrateFunctionTask, dependsOn: buildZip) {
   zipFile             = buildZip.archivePath
   runtime             = Runtime.Java8
   timeout             = 300
-  memorySize          = 256
+  memorySize          = 512
 }

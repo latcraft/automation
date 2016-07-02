@@ -1,6 +1,9 @@
 package lv.latcraft.devternity.tickets
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
 import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.s3.AmazonS3Client
+import groovy.util.logging.Commons
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 
@@ -12,33 +15,45 @@ import static lv.latcraft.utils.SvgMethods.renderPDF
 import static lv.latcraft.utils.XmlMethods.setAttributeValue
 import static lv.latcraft.utils.XmlMethods.setElementValue
 
+@Commons
 class TicketGenerator {
 
   static Map<String, String> generate(Map<String, String> data, Context context) {
-    context.logger.log "STEP 1: Received data: ${data}"
+    log.info "STEP 1: Received data: ${data}"
     TicketInfo ticket = new TicketInfo(data)
     File svgFile = file('ticket', '.svg')
     byte[] qrPngData = renderQRCodePNGImage(getQRData(ticket))
-    context.logger.log "STEP 2: Generated QR image"
+    log.info "STEP 2: Generated QR image"
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
-    context.logger.log "STEP 3: Saved QR image"
+    log.info "STEP 3: Saved QR image"
+    def qrResult = s3.putObject('latcraft.images', qrFile.name, qrFile)
+    log.info "STEP 4: Uploaded PDF ticket"
     svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
-    context.logger.log "STEP 4: Pre-processed SVG template"
+    log.info "STEP 5: Pre-processed SVG template"
     File pdfFile = renderPDF(svgFile)
-    context.logger.log "STEP 5: Generated PDF ticket"
-    // AmazonS3Client s3client = new AmazonS3Client()
-    // AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient()
-    // TODO: upload to s3
+    log.info "STEP 6: Generated PDF ticket"
+    def pdfResult = s3.putObject('latcraft.images', pdfFile.name, pdfFile)
+    log.info "STEP 7: Uploaded PDF ticket"
     // TODO: update dynamoDb
     svgFile.delete()
     [
-      status: 'OK'
+      status: 'OK',
+      qr: "${qrResult}",
+      pdf: "${pdfResult}"
     ]
   }
 
   static String getSvgTemplate() {
     getClass().getResource('/devternity_ticket.svg')?.text ?: new File('devternity_ticket.svg').text
+  }
+
+  static AmazonS3Client getS3() {
+    new AmazonS3Client()
+  }
+
+  static AmazonDynamoDBClient getDynamoDb() {
+    new AmazonDynamoDBClient()
   }
 
   static String prepareSVG(String svgText, TicketInfo ticket, byte[] qrImage) {
