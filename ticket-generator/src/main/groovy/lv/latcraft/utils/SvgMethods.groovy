@@ -1,9 +1,14 @@
 package lv.latcraft.utils
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.util.logging.Commons
+import groovy.util.logging.Slf4j
 import groovy.xml.XmlUtil
 import org.apache.avalon.framework.configuration.Configuration
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder
 import org.apache.avalon.framework.container.ContainerUtil
+import org.apache.batik.transcoder.TranscoderException
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.fop.svg.PDFTranscoder
@@ -17,6 +22,7 @@ import static org.apache.batik.transcoder.XMLAbstractTranscoder.KEY_XML_PARSER_V
 import static org.apache.fop.svg.AbstractFOPTranscoder.KEY_AUTO_FONTS
 import static org.apache.fop.svg.AbstractFOPTranscoder.KEY_STROKE_TEXT
 
+@Commons
 class SvgMethods {
 
   private static final int DEFAULT_DPI = 300
@@ -26,12 +32,20 @@ class SvgMethods {
     configureFonts(t)
     String svgURI = svgFile.toURI().toString()
     File pdfFile = file('temporary', '.pdf')
-    t.transcode(
-      new TranscoderInput(svgURI),
-      new TranscoderOutput(
-        new FileOutputStream(pdfFile)
+    try {
+      t.transcode(
+        new TranscoderInput(svgURI),
+        new TranscoderOutput(
+          new FileOutputStream(pdfFile)
+        )
       )
-    )
+    } catch (TranscoderException e) {
+      // Let's be very verbose about error logging, since it's very hard to debug FOP exceptions.
+      log.debug(e)
+      log.debug(e?.exception)
+      log.debug(e?.exception?.cause)
+      throw e
+    }
     pdfFile
   }
 
@@ -50,6 +64,7 @@ class SvgMethods {
     if (configFile.exists()) {
       println "DEBUG: Using PDF renderer configuration: ${configFile.absolutePath}"
       if (insideLambda) {
+        System.setProperty('user.home', System.getProperty('java.io.tmpdir'))
         def xml = new XmlParser().parse(configFile)
         xml.fonts.font.each {
           it.@'embed-url' = '/var/task/' + it.@'embed-url'

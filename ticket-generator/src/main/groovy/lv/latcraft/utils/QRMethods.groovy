@@ -5,7 +5,11 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.client.j2se.MatrixToImageWriter
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 
+@TypeChecked
+@CompileStatic
 class QRMethods {
 
   static byte[] renderQRCodePNGImage(String content, int width = 300, int height = 300) {

@@ -1,5 +1,10 @@
 package lv.latcraft.utils
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
+@CompileStatic
+@TypeChecked
 class SanitizationMethods {
 
   static String sanitizeName(String name) {

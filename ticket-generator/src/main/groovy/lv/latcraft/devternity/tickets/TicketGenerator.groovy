@@ -27,6 +27,8 @@ class TicketGenerator {
     context.logger.log "STEP 4: Pre-processed SVG template"
     File pdfFile = renderPDF(svgFile)
     context.logger.log "STEP 5: Generated PDF ticket"
+    // AmazonS3Client s3client = new AmazonS3Client()
+    // AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient()
     // TODO: upload to s3
     // TODO: update dynamoDb
     svgFile.delete()
