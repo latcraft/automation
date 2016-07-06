@@ -1,5 +1,5 @@
 
-import org.apache.batik.transcoder.image.JPEGTranscoder
+import org.apache.batik.transcoder.image.PNGTranscoder
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 
@@ -35,7 +35,7 @@ apply from: '../common-utils/data-clients.gradle'
 
 task generateEventCards(dependsOn: getMasterData) << {
   buildDir.mkdirs()
-  ['normal_event_card', 'workshop_event_card'].each { templateId ->
+  ['normal_event_card_v1', 'normal_event_card_v2', 'workshop_event_card_v1', 'workshop_event_card_v2', 'workshop_facebook_card'].each { templateId ->
     File svgTemplate = file("templates/${templateId}.svg")
     getEvents().each { event ->
 
@@ -152,10 +152,9 @@ def replaceImageInSVG(String svgText, String elementId, String url) {
 
 def renderImage(File svgFile, File baseDir, String baseName) {
   baseDir.mkdirs()
-  JPEGTranscoder t = new JPEGTranscoder()
-  t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(1))
+  PNGTranscoder t = new PNGTranscoder()
   String svgURI = svgFile.toURL().toString()
-  t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}.jpg")))
+  t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}.png")))
 }
 
 // TODO: implement task for updating GitHub data and adding new/missing images
