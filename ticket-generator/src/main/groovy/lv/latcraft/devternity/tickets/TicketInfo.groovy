@@ -12,6 +12,7 @@ class TicketInfo {
   String email
   String name
   String company
-  String type
+  String product
+  String ticketId
 
 }

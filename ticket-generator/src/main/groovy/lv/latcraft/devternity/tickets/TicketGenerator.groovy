@@ -27,15 +27,15 @@ class TicketGenerator {
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
     log.info "STEP 3: Saved QR image"
-    def qrResult = s3.putObject('latcraft.images', qrFile.name, qrFile)
+    def qrResult = s3.putObject('latcraft.images', "ticket-${ticket.ticketId}.png", qrFile)
     log.info "STEP 4: Uploaded PDF ticket"
-    svgFile.text = prepareSVG(getSvgTemplate(), ticket, qrPngData)
+    svgFile.text = prepareSVG(getSvgTemplate(ticket.product), ticket, qrPngData)
     log.info "STEP 5: Pre-processed SVG template"
     File pdfFile = renderPDF(svgFile)
     log.info "STEP 6: Generated PDF ticket"
-    def pdfResult = s3.putObject('latcraft.images', pdfFile.name, pdfFile)
+    def pdfResult = s3.putObject('latcraft.images', "ticket-${ticket.ticketId}.pdf", pdfFile)
     log.info "STEP 7: Uploaded PDF ticket"
-    // TODO: update dynamoDb
+    // TODO: generate s3 urls
     svgFile.delete()
     [
       status: 'OK',
@@ -44,16 +44,13 @@ class TicketGenerator {
     ]
   }
 
-  static String getSvgTemplate() {
-    getClass().getResource('/devternity_ticket.svg')?.text ?: new File('devternity_ticket.svg').text
+  static String getSvgTemplate(String product) {
+    String templateName = "DEVTERNITY_TICKET_${product}.svg"
+    getClass().getResource("/${templateName}")?.text ?: new File(templateName).text
   }
 
   static AmazonS3Client getS3() {
     new AmazonS3Client()
-  }
-
-  static AmazonDynamoDBClient getDynamoDb() {
-    new AmazonDynamoDBClient()
   }
 
   static String prepareSVG(String svgText, TicketInfo ticket, byte[] qrImage) {
@@ -65,7 +62,7 @@ class TicketGenerator {
   }
 
   static getQRData(TicketInfo ticket) {
-    "mailto:${ticket.email}"
+    "${ticket.ticketId}"
   }
 
 }
