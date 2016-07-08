@@ -3,6 +3,10 @@ package lv.latcraft.devternity.tickets
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.AccessControlList
+import com.amazonaws.services.s3.model.GroupGrantee
+import com.amazonaws.services.s3.model.Permission
+import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Commons
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
@@ -27,21 +31,28 @@ class TicketGenerator {
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
     log.info "STEP 3: Saved QR image"
-    def qrResult = s3.putObject('latcraft.images', "ticket-${ticket.ticketId}.png", qrFile)
+    s3.putObject(putRequest(ticket, qrFile))
     log.info "STEP 4: Uploaded PDF ticket"
     svgFile.text = prepareSVG(getSvgTemplate(ticket.product), ticket, qrPngData)
     log.info "STEP 5: Pre-processed SVG template"
     File pdfFile = renderPDF(svgFile)
     log.info "STEP 6: Generated PDF ticket"
-    def pdfResult = s3.putObject('latcraft.images', "ticket-${ticket.ticketId}.pdf", pdfFile)
+    s3.putObject(putRequest(ticket, pdfFile))
     log.info "STEP 7: Uploaded PDF ticket"
-    // TODO: generate s3 urls
     svgFile.delete()
     [
       status: 'OK',
-      qr: "${qrResult}",
-      pdf: "${pdfResult}"
+      qr: "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.png",
+      pdf: "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.pdf"
     ]
+  }
+
+  private static PutObjectRequest putRequest(TicketInfo ticket, File pdfFile) {
+    new PutObjectRequest('latcraft.images', "ticket-${ticket.ticketId}.pdf", pdfFile).withAccessControlList(anyoneWithTheLink())
+  }
+
+  private static anyoneWithTheLink() {
+    new AccessControlList().grantPermission(GroupGrantee.AllUsers, Permission.Read)
   }
 
   static String getSvgTemplate(String product) {
