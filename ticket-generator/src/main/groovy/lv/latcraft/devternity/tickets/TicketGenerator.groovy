@@ -1,6 +1,5 @@
 package lv.latcraft.devternity.tickets
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.AccessControlList
@@ -11,6 +10,8 @@ import groovy.util.logging.Commons
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 
+import static com.amazonaws.services.s3.model.GroupGrantee.AllUsers
+import static com.amazonaws.services.s3.model.Permission.Read
 import static lv.latcraft.utils.FileMethods.file
 import static lv.latcraft.utils.QRMethods.renderQRCodePNGImage
 import static lv.latcraft.utils.SanitizationMethods.sanitizeCompany
@@ -31,28 +32,30 @@ class TicketGenerator {
     File qrFile = file('ticket-qr', '.png')
     qrFile.bytes = qrPngData
     log.info "STEP 3: Saved QR image"
-    s3.putObject(putRequest(ticket, qrFile))
+    s3.putObject(putRequest(ticket, qrFile, 'png'))
     log.info "STEP 4: Uploaded PDF ticket"
     svgFile.text = prepareSVG(getSvgTemplate(ticket.product), ticket, qrPngData)
     log.info "STEP 5: Pre-processed SVG template"
     File pdfFile = renderPDF(svgFile)
     log.info "STEP 6: Generated PDF ticket"
-    s3.putObject(putRequest(ticket, pdfFile))
+    s3.putObject(putRequest(ticket, pdfFile, 'pdf'))
     log.info "STEP 7: Uploaded PDF ticket"
     svgFile.delete()
     [
       status: 'OK',
-      qr: "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.png",
-      pdf: "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.pdf"
+      qr    : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.png",
+      pdf   : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.pdf"
     ]
   }
 
-  private static PutObjectRequest putRequest(TicketInfo ticket, File pdfFile) {
-    new PutObjectRequest('latcraft.images', "ticket-${ticket.ticketId}.pdf", pdfFile).withAccessControlList(anyoneWithTheLink())
+  private static PutObjectRequest putRequest(TicketInfo ticket, File file, String extension) {
+    new PutObjectRequest('latcraft.images', "ticket-${ticket.ticketId}.${extension}" , file).withAccessControlList(anyoneWithTheLink())
   }
 
-  private static anyoneWithTheLink() {
-    new AccessControlList().grantPermission(GroupGrantee.AllUsers, Permission.Read)
+  private static AccessControlList anyoneWithTheLink() {
+    AccessControlList acl = new AccessControlList()
+    acl.grantPermission(AllUsers, Read)
+    acl
   }
 
   static String getSvgTemplate(String product) {
