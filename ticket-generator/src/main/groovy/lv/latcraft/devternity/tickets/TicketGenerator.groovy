@@ -41,13 +41,17 @@ class TicketGenerator {
     svgFile.delete()
     [
       status: 'OK',
-      qr    : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.png",
-      pdf   : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.pdf"
+      qr    : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.png".toString(),
+      pdf   : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.pdf".toString()
     ]
   }
 
   private static PutObjectRequest putRequest(TicketInfo ticket, File file, String extension) {
-    new PutObjectRequest('latcraft.images', "ticket-${ticket.ticketId}.${extension}", file).withAccessControlList(anyoneWithTheLink())
+    new PutObjectRequest(
+      'latcraft.images',
+      "ticket-${ticket.ticketId}.${extension}",
+      file
+    ).withAccessControlList(anyoneWithTheLink())
   }
 
   private static AccessControlList anyoneWithTheLink() {
