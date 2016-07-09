@@ -3,8 +3,6 @@ package lv.latcraft.devternity.tickets
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.AccessControlList
-import com.amazonaws.services.s3.model.GroupGrantee
-import com.amazonaws.services.s3.model.Permission
 import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Commons
 import groovy.util.slurpersupport.GPathResult
@@ -49,7 +47,7 @@ class TicketGenerator {
   }
 
   private static PutObjectRequest putRequest(TicketInfo ticket, File file, String extension) {
-    new PutObjectRequest('latcraft.images', "ticket-${ticket.ticketId}.${extension}" , file).withAccessControlList(anyoneWithTheLink())
+    new PutObjectRequest('latcraft.images', "ticket-${ticket.ticketId}.${extension}", file).withAccessControlList(anyoneWithTheLink())
   }
 
   private static AccessControlList anyoneWithTheLink() {

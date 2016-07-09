@@ -10,9 +10,11 @@ class TicketGeneratorTest {
   @Test
   void testGenerator() {
     TicketGenerator.generate([
-      name   : 'Andrey Adamovich',
-      company: 'Aestas/IT',
-      email  : 'andrey@aestasit.com',
+      name     : 'Andrey Adamovich',
+      ticketId : 'RVUhC4YTTonZqj1earUh',
+      product  : 'DVTRN2016',
+      company  : 'Aestas/IT',
+      email    : 'andrey@aestasit.com',
     ], context)
   }
 
