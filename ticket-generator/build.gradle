@@ -45,7 +45,7 @@ build.dependsOn buildZip
 
 task deployFunction(type: AWSLambdaMigrateFunctionTask, dependsOn: buildZip) {
   functionName        = "arn:aws:lambda:eu-west-1:${aws.accountId}:function:devternity_ticket_generator:\$LATEST"
-  role                = "arn:aws:iam::${aws.accountId}:role/latcraft_automation"
+  role                = "arn:aws:iam::${aws.accountId}:role/devternity_lambda_executor"
   functionDescription = 'DevTernity ticket generator'
   handler             = "lv.latcraft.devternity.tickets.TicketGenerator::generate"
   zipFile             = buildZip.archivePath
