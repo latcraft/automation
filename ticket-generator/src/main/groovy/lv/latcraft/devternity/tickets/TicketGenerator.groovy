@@ -21,6 +21,9 @@ import static lv.latcraft.utils.XmlMethods.setElementValue
 @Commons
 class TicketGenerator {
 
+
+  public static final String BUCKET_NAME = 'devternity-images'
+
   static Map<String, String> generate(Map<String, String> data, Context context) {
     log.info "STEP 1: Received data: ${data}"
     TicketInfo ticket = new TicketInfo(data)
@@ -41,14 +44,14 @@ class TicketGenerator {
     svgFile.delete()
     [
       status: 'OK',
-      qr    : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.png".toString(),
-      pdf   : "https://s3-eu-west-1.amazonaws.com/latcraft.images/ticket-${ticket.ticketId}.pdf".toString()
+      qr    : "https://s3-eu-west-1.amazonaws.com/${BUCKET_NAME}/ticket-${ticket.ticketId}.png".toString(),
+      pdf   : "https://s3-eu-west-1.amazonaws.com/${BUCKET_NAME}/ticket-${ticket.ticketId}.pdf".toString()
     ]
   }
 
   private static PutObjectRequest putRequest(TicketInfo ticket, File file, String extension) {
     new PutObjectRequest(
-      'latcraft.images',
+      BUCKET_NAME,
       "ticket-${ticket.ticketId}.${extension}",
       file
     ).withAccessControlList(anyoneWithTheLink())
