@@ -19,3 +19,6 @@ gradle.properties
 /badge-generator/team.csv
 /event-manager/tasks/publish-eventbrite/*.json
 /event-manager/tasks/publish-eventbrite/output.txt
+*.backup
+*.tfstate
+vars.tf
