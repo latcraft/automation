@@ -12,6 +12,16 @@ resource "aws_s3_bucket" "devternity_images" {
   acl                     = "private"
 }
 
+
+//    _                 _         _
+//   | |               | |       | |
+//   | | __ _ _ __ ___ | |__   __| | __ _
+//   | |/ _` | '_ ` _ \| '_ \ / _` |/ _` |
+//   | | (_| | | | | | | |_) | (_| | (_| |
+//   |_|\__,_|_| |_| |_|_.__/ \__,_|\__,_|
+//
+//
+
 resource "aws_iam_role" "devternity_lambda_executor" {
   name                    = "devternity_lambda_executor"
   assume_role_policy      = <<EOF
@@ -105,17 +115,15 @@ resource "aws_lambda_permission" "devternity_ticket_generator_api_gatewaypermiss
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
+//                _               _
+//               (_)             | |
+//     __ _ _ __  _    __ _  __ _| |_ _____      ____ _ _   _
+//    / _` | '_ \| |  / _` |/ _` | __/ _ \ \ /\ / / _` | | | |
+//   | (_| | |_) | | | (_| | (_| | ||  __/\ V  V / (_| | |_| |
+//    \__,_| .__/|_|  \__, |\__,_|\__\___| \_/\_/ \__,_|\__, |
+//         | |         __/ |                             __/ |
+//         |_|        |___/                             |___/
+//
 
 resource "aws_iam_role" "devternity_api_executor" {
   name                    = "devternity_api_executor"
@@ -233,6 +241,7 @@ resource "aws_api_gateway_resource" "DevTernityAPITicket" {
 }
 
 resource "aws_api_gateway_method" "DevTernityAPITicketPOST" {
+  api_key_required        = true
   rest_api_id             = "${aws_api_gateway_rest_api.DevTernityAPI.id}"
   resource_id             = "${aws_api_gateway_resource.DevTernityAPITicket.id}"
   http_method             = "POST"
@@ -276,10 +285,17 @@ resource "aws_api_gateway_integration_response" "DevTernityAPITicketPOSTIntegrat
   status_code             = "200"
 }
 
+resource "aws_api_gateway_api_key" "DevTernityAPIKey" {
+  name                    = "devternity_api_key"
+  description             = "Default DevTernity API key"
+  stage_key {
+    rest_api_id           = "${aws_api_gateway_rest_api.DevTernityAPI.id}"
+    stage_name            = "${aws_api_gateway_deployment.DevTernityAPIDeployment.stage_name}"
+  }
+}
+
 resource "aws_api_gateway_deployment" "DevTernityAPIDeployment" {
   rest_api_id             = "${aws_api_gateway_rest_api.DevTernityAPI.id}"
   stage_name              = "prod"
 }
-
-
 
