@@ -5,7 +5,7 @@ import static groovy.json.JsonOutput.toJson
 
 class Utils {
 
-  static void dumpJson(obj) {
+  static String dumpJson(obj) {
     prettyPrint(toJson(obj))
   }
 
