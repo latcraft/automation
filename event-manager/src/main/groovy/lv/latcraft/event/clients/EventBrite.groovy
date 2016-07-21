@@ -1,27 +1,32 @@
 package lv.latcraft.event.clients
 
-import groovy.util.logging.Log4j
-import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
-import static groovyx.net.http.ContentType.JSON
+import static groovyx.net.http.Method.GET
+import static lv.latcraft.event.Utils.dumpJson
+import static lv.latcraft.event.clients.Configuration.getEventbriteToken
 
-@Log4j
-class EventBrite {
+class EventBrite extends BaseJsonClient {
+
+  String getEvents() {
+    execute(GET, '/v3/users/me/owned_events', [:], 1) { data ->
+      return dumpJson(data)
+    }
+  }
 
   def execute(Method method, String path, Map jsonBody, int pageNumber, Closure cl) {
-    def http = new HTTPBuilder('https://www.eventbriteapi.com/')
-    http.ignoreSSLIssues()
-    http.request(method, JSON) {
+    uri = 'https://www.eventbriteapi.com/'
+    ignoreSSLIssues()
+    makeRequest(method) {
       uri.path = "${path}"
-      uri.query = [token: latcraftEventbriteToken, page: pageNumber]
+      uri.query = [token: eventbriteToken, page: pageNumber]
       if (jsonBody) {
         log.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->
         if (cl) {
-          cl(json)
+          return cl.call(json)
         }
       }
       response.failure = { resp ->
@@ -29,15 +34,5 @@ class EventBrite {
       }
     }
   }
-
-//
-//  task getEventBriteData << {
-//    buildDir.mkdirs()
-//    eventbrite(GET, '/v3/users/me/owned_events', [:], 1) { data ->
-//      eventbriteFile.text = dumpJson(data)
-//      // TODO: handle pagination
-//    }
-//  }
-//
 
 }

@@ -6,6 +6,9 @@ import groovyx.net.http.Method
 
 import static groovyx.net.http.ContentType.JSON
 
+import static lv.latcraft.event.clients.Configuration.*
+import static lv.latcraft.event.Utils.*
+
 @Log4j
 class GitHub {
 
