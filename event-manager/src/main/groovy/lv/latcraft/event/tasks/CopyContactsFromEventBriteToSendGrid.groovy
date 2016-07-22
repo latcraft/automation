@@ -1,6 +1,10 @@
 package lv.latcraft.event.tasks
 
-class CopyContactsFromEventBriteToSendGrid {
+class CopyContactsFromEventBriteToSendGrid extends BaseTask {
+
+  void execute() {
+
+  }
 
 //task extractContactsFromEventBrite(dependsOn: getEventBriteData) << {
 //  contactFile.withWriter { Writer writer ->

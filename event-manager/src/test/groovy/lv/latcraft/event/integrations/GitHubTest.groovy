@@ -1,4 +1,4 @@
-package lv.latcraft.event.clients
+package lv.latcraft.event.integrations
 
 import org.junit.Test
 

@@ -1,7 +1,10 @@
 package lv.latcraft.event.tasks
 
-class PublishSendGridCampaign {
+class PublishCampaignOnSendGrid extends BaseTask {
 
+  void execute() {
+
+  }
 
   //task generateCampaignTemplates(dependsOn: getMasterData) << {
 //  getEventData().each { event ->

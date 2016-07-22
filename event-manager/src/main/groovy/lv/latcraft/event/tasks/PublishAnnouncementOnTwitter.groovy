@@ -1,9 +1,10 @@
 package lv.latcraft.event.tasks
 
-import groovy.json.JsonSlurper
+class PublishAnnouncementOnTwitter extends BaseTask {
 
-class PublishOnTwitter {
+  void execute() {
 
+  }
 
 //  ext {
 //    twitterFile = file("${buildDir}/twitter.json")

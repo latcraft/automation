@@ -1,14 +1,14 @@
 package lv.latcraft.event.tasks
 
-class SendSendGridCampaign {
+class SendCampaignOnSendGrid extends BaseTask {
+
+  void execute() {
+
+  }
 
 //
 //
-
-//
-//
-//
-//task startInvitionCampaign << {
+//task startInvitationCampaign << {
 //  getFutureEvents().each { event ->
 //
 //    String eventId = calculateEventId(event)
