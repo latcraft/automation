@@ -46,3 +46,13 @@ task buildZip(type: Zip, dependsOn: classes) {
 
 build.dependsOn buildZip
 
+test {
+  systemProperties = System.getProperties().findAll { key, value ->
+    key.startsWith('latcraft')
+  } + project.properties.findAll { key, value ->
+    key.startsWith('latcraft')
+  } + gradle.properties.findAll { key, value ->
+    key.startsWith('latcraft')
+  }
+}
+

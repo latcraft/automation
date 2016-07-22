@@ -1,9 +1,5 @@
 package lv.latcraft.event.tasks
 
-import groovy.json.JsonSlurper
-
-import java.security.MessageDigest
-
 class PublishOnEventBrite {
 
 //  ext {
