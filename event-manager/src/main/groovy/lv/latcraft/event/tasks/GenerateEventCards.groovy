@@ -1,6 +1,9 @@
 package lv.latcraft.event.tasks
 
 import groovy.xml.XmlUtil
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+import org.apache.batik.transcoder.image.PNGTranscoder
 
 class GenerateEventCards {
 
@@ -99,35 +102,33 @@ class GenerateEventCards {
 //  }
 //}
 //
-//def replaceTextInSVG(String svgText, Map binding) {
-//  def svg = new XmlSlurper().parseText(svgText)
-//  binding.each { key, value ->
-//    def element = svg.depthFirst().find { it.@id == key }
-//    if (element) {
-//      element.replaceBody(value)
-//    }
-//  }
-//  XmlUtil.serialize(svg)
-//}
-//
-//def replaceImageInSVG(String svgText, String elementId, String url) {
-//  def svg = new XmlSlurper().parseText(svgText)
-//  def element = svg.depthFirst().find { it.@id == elementId }
-//  if (element) {
-//    element.@'xlink:href' = "data:image/png;base64,${new URL(url).bytes.encodeBase64().toString().toList().collate(76)*.join().join(' ')}".toString()
-//  }
-//  XmlUtil.serialize(svg)
-//}
-//
-//
-//def renderImage(File svgFile, File baseDir, String baseName) {
-//  baseDir.mkdirs()
-//  PNGTranscoder t = new PNGTranscoder()
-//  String svgURI = svgFile.toURL().toString()
-//  t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}.png")))
-//}
-//
-//// TODO: implement task for updating GitHub data and adding new/missing images
+  static replaceTextInSVG(String svgText, Map binding) {
+    def svg = new XmlSlurper().parseText(svgText)
+    binding.each { key, value ->
+      def element = svg.depthFirst().find { it.@id == key }
+      if (element) {
+        element.replaceBody(value)
+      }
+    }
+    XmlUtil.serialize(svg)
+  }
 
+  static replaceImageInSVG(String svgText, String elementId, String url) {
+    def svg = new XmlSlurper().parseText(svgText)
+    def element = svg.depthFirst().find { it.@id == elementId }
+    if (element) {
+      element.@'xlink:href' = "data:image/png;base64,${new URL(url).bytes.encodeBase64().toString().toList().collate(76)*.join().join(' ')}".toString()
+    }
+    XmlUtil.serialize(svg)
+  }
+
+  static renderImage(File svgFile, File baseDir, String baseName) {
+    baseDir.mkdirs()
+    PNGTranscoder t = new PNGTranscoder()
+    String svgURI = svgFile.toURL().toString()
+    t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}.png")))
+  }
+
+//// TODO: implement task for updating GitHub data and adding new/missing images
 
 }

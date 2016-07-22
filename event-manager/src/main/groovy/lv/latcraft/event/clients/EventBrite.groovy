@@ -8,10 +8,8 @@ import static lv.latcraft.event.clients.Configuration.getEventbriteToken
 
 class EventBrite extends BaseJsonClient {
 
-  String getEvents() {
-    execute(GET, '/v3/users/me/owned_events', [:], 1) { data ->
-      return dumpJson(data)
-    }
+  Map<String, ?> getEvents() {
+    execute(GET, '/v3/users/me/owned_events', [:], 1) { data -> data } as  Map<String, ?>
   }
 
   def execute(Method method, String path, Map jsonBody, int pageNumber, Closure cl) {
