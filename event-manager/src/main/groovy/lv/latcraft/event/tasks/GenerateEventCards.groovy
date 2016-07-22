@@ -1,50 +1,47 @@
 package lv.latcraft.event.tasks
 
+import groovy.util.logging.Log4j
 import groovy.xml.XmlUtil
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
 
-class GenerateEventCards {
+@Log4j
+class GenerateEventCards extends BaseTask {
 
-//
-//  ['normal_event_card_v1', 'normal_event_card_v2', 'workshop_event_card_v1', 'workshop_event_card_v2', 'workshop_facebook_card'].each { templateId ->
-//    File svgTemplate = file("templates/${templateId}.svg")
-//    getEvents().each { event ->
-//
-//      String eventId = calculateEventId(event)
-//      logger.quiet "> Generating '${templateId}' for ${event.theme} (${eventId})"
-//      File svgFile = file("${buildDir}/${eventId}.svg")
-//      svgFile.text = replaceTextInSVG(
-//        svgTemplate.text,
-//        [
-//          'event-title':    event.'short-theme' ?: event.theme,
-//          'event-time':     event.time,
-//          'event-date':     event.date,
-//          'event-location': event.venue,
-//        ]
-//      )
-//      renderImage(
-//        svgFile,
-//        file("${buildDir}/${templateId}"),
-//        eventId
-//      )
-//      svgFile.delete()
-//
-//    }
-//  }
-//}
-//
-//generateEventCards.logging.captureStandardOutput LogLevel.INFO
-//generateEventCards.logging.captureStandardError LogLevel.INFO
-//generateEventCards.outputs.dir file("${buildDir}")
+  void generate() {
+    ['normal_event_card_v1', 'normal_event_card_v2', 'workshop_event_card_v1', 'workshop_event_card_v2', 'workshop_facebook_card'].each { templateId ->
+      File svgTemplate = file("templates/${templateId}.svg")
+      events.each { event ->
+        String eventId = calculateEventId(event)
+        log.info "> Generating '${templateId}' for ${event.theme} (${eventId})"
+        File svgFile = file("${buildDir}/${eventId}.svg")
+        svgFile.text = replaceTextInSVG(
+          svgTemplate.text,
+          [
+            'event-title'   : event.'short-theme' ?: event.theme,
+            'event-time'    : event.time,
+            'event-date'    : event.date,
+            'event-location': event.venue,
+          ]
+        )
+        renderImage(
+          svgFile,
+          file("${buildDir}/${templateId}"),
+          eventId
+        )
+        svgFile.delete()
+      }
+    }
+  }
+
 //
 //
 //task generateSpeakerCards(dependsOn: getMasterData) << {
 //  buildDir.mkdirs()
 //  ['speaker_card'].each { templateId ->
 //    File svgTemplate = file("templates/${templateId}.svg")
-//    getEvents().each { event ->
+//    getEventData().each { event ->
 //
 //      String eventId = calculateEventId(event)
 //      event.schedule.each { session ->
@@ -91,16 +88,6 @@ class GenerateEventCards {
 //  }
 //}
 //
-//generateSpeakerCards.logging.captureStandardOutput LogLevel.INFO
-//generateSpeakerCards.logging.captureStandardError LogLevel.INFO
-//generateSpeakerCards.outputs.dir file("${buildDir}")
-//
-//
-//def wrapLines(String line) {
-//  line.each {
-//
-//  }
-//}
 //
   static replaceTextInSVG(String svgText, Map binding) {
     def svg = new XmlSlurper().parseText(svgText)

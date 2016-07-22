@@ -6,7 +6,7 @@ class EventBriteTest {
 
   @Test
   void testEventBrite() {
-    println(new EventBrite().events)
+    println(new EventBrite().eventData)
   }
 
 }

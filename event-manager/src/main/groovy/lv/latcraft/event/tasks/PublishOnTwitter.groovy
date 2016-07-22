@@ -96,7 +96,7 @@ class PublishOnTwitter {
 //  task notifyTwitter(dependsOn: [getMasterData, getTwitterDataTask]) << {
 //
 //    def twitter_tweets = getTwitterTweets()
-//    def updated_events = getEvents().collect { event ->
+//    def updated_events = getEventData().collect { event ->
 //
 //      // Calculate unique event ID used to distinguish this event from others in various data sources.
 //      String eventId = event.tickets

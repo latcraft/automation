@@ -8,7 +8,7 @@ import static lv.latcraft.event.clients.Configuration.getEventbriteToken
 
 class EventBrite extends BaseJsonClient {
 
-  Map<String, ?> getEvents() {
+  Map<String, ?> getEventData() {
     execute(GET, '/v3/users/me/owned_events', [:], 1) { data -> data } as  Map<String, ?>
   }
 

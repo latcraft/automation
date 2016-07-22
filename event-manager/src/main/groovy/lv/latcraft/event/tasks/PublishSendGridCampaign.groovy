@@ -4,7 +4,7 @@ class PublishSendGridCampaign {
 
 
   //task generateCampaignTemplates(dependsOn: getMasterData) << {
-//  getEvents().each { event ->
+//  getEventData().each { event ->
 //
 //    String eventId = calculateEventId(event)
 //    def binding = [ event: event ]
