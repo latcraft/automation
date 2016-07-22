@@ -1,4 +1,4 @@
-package lv.latcraft.event.clients
+package lv.latcraft.event.integrations
 
 class Configuration {
 
@@ -14,6 +14,9 @@ class Configuration {
     System.getProperty('latcraftSendGridApiKey')
   }
 
+  static String getEventDataFile() {
+    System.getProperty('latcraftEventDataFile')
+  }
 
   //  defaultSenderId = "37076"
 //  defaultListId = "362055"

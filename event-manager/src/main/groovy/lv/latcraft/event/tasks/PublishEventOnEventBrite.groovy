@@ -1,6 +1,10 @@
 package lv.latcraft.event.tasks
 
-class PublishOnEventBrite {
+class PublishEventOnEventBrite extends BaseTask {
+
+  void execute() {
+
+  }
 
 //  ext {
 //

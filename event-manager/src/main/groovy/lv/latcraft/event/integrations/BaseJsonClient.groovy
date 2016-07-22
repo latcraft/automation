@@ -1,4 +1,4 @@
-package lv.latcraft.event.clients
+package lv.latcraft.event.integrations
 
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method

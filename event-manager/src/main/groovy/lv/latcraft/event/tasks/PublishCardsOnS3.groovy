@@ -7,31 +7,40 @@ import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
 
 @Log4j
-class GenerateEventCards extends BaseTask {
+class PublishCardsOnS3 extends BaseTask {
 
-  void generate() {
+  void execute() {
+    // 1. generate cards
+    // 2. upload cards to s3
+    // 3. update data on github
+    // 4. notify slack
+
     ['normal_event_card_v1', 'normal_event_card_v2', 'workshop_event_card_v1', 'workshop_event_card_v2', 'workshop_facebook_card'].each { templateId ->
-      File svgTemplate = file("templates/${templateId}.svg")
-      events.each { event ->
-        String eventId = calculateEventId(event)
-        log.info "> Generating '${templateId}' for ${event.theme} (${eventId})"
-        File svgFile = file("${buildDir}/${eventId}.svg")
-        svgFile.text = replaceTextInSVG(
-          svgTemplate.text,
-          [
-            'event-title'   : event.'short-theme' ?: event.theme,
-            'event-time'    : event.time,
-            'event-date'    : event.date,
-            'event-location': event.venue,
-          ]
-        )
-        renderImage(
-          svgFile,
-          file("${buildDir}/${templateId}"),
-          eventId
-        )
-        svgFile.delete()
-      }
+      generateEventCard(templateId)
+    }
+  }
+
+  private static void generateEventCard(templateId) {
+    File svgTemplate = file("src/main/resources/cards/${templateId}.svg")
+    events.each { event ->
+      String eventId = calculateEventId(event)
+      println "> Generating '${templateId}' for ${event.theme} (${eventId})"
+      File svgFile = file("${eventId}.svg")
+      svgFile.text = replaceTextInSVG(
+        svgTemplate.text,
+        [
+          'event-title'   : event.'short-theme' ?: event.theme,
+          'event-time'    : event.time,
+          'event-date'    : event.date,
+          'event-location': event.venue,
+        ]
+      )
+      renderImage(
+        svgFile,
+        file("${templateId}"),
+        eventId
+      )
+      svgFile.delete()
     }
   }
 

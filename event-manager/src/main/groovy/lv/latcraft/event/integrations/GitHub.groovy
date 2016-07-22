@@ -1,11 +1,11 @@
-package lv.latcraft.event.clients
+package lv.latcraft.event.integrations
 
 import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.PUT
 import static lv.latcraft.event.Utils.dumpJson
-import static lv.latcraft.event.clients.Configuration.*
+import static lv.latcraft.event.integrations.Configuration.*
 
 class GitHub extends BaseJsonClient {
 
