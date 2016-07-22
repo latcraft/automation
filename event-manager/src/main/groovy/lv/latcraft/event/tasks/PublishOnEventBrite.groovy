@@ -12,7 +12,7 @@ class PublishOnEventBrite {
 //
 //  task makeEventBriteDescription(dependsOn: getMasterData) << {
 //    buildDir.mkdirs()
-//    getEvents().each { event ->
+//    getEventData().each { event ->
 //      String eventId = dateFormat.parse(event.date).format('yyyyMMdd')
 //      File overriddenTemplateFile = file("templates/event_description_${eventId}.html")
 //      def template = templateEngine.createTemplate(overriddenTemplateFile.exists() ? overriddenTemplateFile : defaultTemplateFile)
@@ -79,7 +79,7 @@ class PublishOnEventBrite {
 //        ]
 //      ], 1) { data ->
 //        if (!event.eventbriteEventId) {
-//          def events = getEvents()
+//          def events = getEventData()
 //          events.each { updatedEvent ->
 //            if (dateFormat.parse(updatedEvent.date).format('yyyyMMdd') == eventId) {
 //              updatedEvent.eventbriteEventId = data.id
