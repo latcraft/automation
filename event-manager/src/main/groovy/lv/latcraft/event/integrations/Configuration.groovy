@@ -18,10 +18,17 @@ class Configuration {
     System.getProperty('latcraftEventDataFile')
   }
 
-  //  defaultSenderId = "37076"
-//  defaultListId = "362055"
-//  defaultUnsubscribeGroupId = "611"
+  static String getSendGridDefaultListId() {
+    "362055"
+  }
 
+  static String getSendGridDefaultSenderId() {
+    "37076"
+  }
+
+  static String getSendGridDefaultUnsubscribeGroupId() {
+    "611"
+  }
 
   static String getGitCommitter() {
     "Latcraft Event Manager"

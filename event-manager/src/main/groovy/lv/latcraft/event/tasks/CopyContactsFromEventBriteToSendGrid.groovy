@@ -1,7 +1,10 @@
 package lv.latcraft.event.tasks
 
+import lv.latcraft.event.integrations.Configuration
+
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.POST
+import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
 import static lv.latcraft.event.utils.FileMethods.temporaryFile
 
 class CopyContactsFromEventBriteToSendGrid extends BaseTask {
@@ -40,12 +43,14 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
       }) { data ->
         println "> Errors: ${data.error_count}"
         println "> New contacts: ${data.new_count}"
+        // TODO: notify slack about new count
         if (data.errors) {
           data.errors.each { error ->
+            // TODO: notify slack about errors
             println "> Error: ${error.message}"
           }
         }
-        sendGrid.execute(POST, "/v3/contactdb/lists/${defaultListId}/recipients", data.persisted_recipients) { listData ->
+        sendGrid.execute(POST, "/v3/contactdb/lists/${sendGridDefaultListId}/recipients", data.persisted_recipients) { listData ->
           log.debug listData.toString()
         }
       }
