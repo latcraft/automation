@@ -13,10 +13,10 @@ class PublishCampaignOnSendGrid extends BaseTask {
 //    def binding = [ event: event ]
 //
 //    // Generate invitation template.
-//    File invitationTemplateFile = file('templates/invitation.html')
-//    File overridenInvitationTemplateFile = file("templates/invitation_${eventId}.html")
+//    File invitationTemplateFile = temporaryFile('templates/invitation.html')
+//    File overridenInvitationTemplateFile = temporaryFile("templates/invitation_${eventId}.html")
 //    def template = templateEngine.createTemplate(overridenInvitationTemplateFile.exists() ? overridenInvitationTemplateFile : invitationTemplateFile)
-//    file("${buildDir}/invitation_${eventId}.html").text = template.make(binding).toString()
+//    temporaryFile("${buildDir}/invitation_${eventId}.html").text = template.make(binding).toString()
 //
 //  }
 //}
@@ -35,7 +35,7 @@ class PublishCampaignOnSendGrid extends BaseTask {
 //      sender_id: defaultSenderId,
 //      suppression_group_id: defaultUnsubscribeGroupId,
 //      list_ids: [ defaultListId ],
-//      html_content: file("${buildDir}/invitation_${eventId}.html").text
+//      html_content: temporaryFile("${buildDir}/invitation_${eventId}.html").text
 //    ])
 //
 //  }

@@ -1,4 +1,4 @@
-package lv.latcraft.event
+package lv.latcraft.event.utils
 
 import groovy.text.SimpleTemplateEngine
 

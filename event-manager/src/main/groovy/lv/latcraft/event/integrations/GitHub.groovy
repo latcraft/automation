@@ -4,7 +4,7 @@ import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.PUT
-import static lv.latcraft.event.Utils.dumpJson
+import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.*
 
 class GitHub extends BaseJsonClient {

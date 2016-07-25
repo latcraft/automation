@@ -10,7 +10,7 @@ class PublishEventOnEventBrite extends BaseTask {
 //
 //    sha1 = MessageDigest.getInstance("SHA1")
 //
-//    defaultTemplateFile = file('templates/event_description.html')
+//    defaultTemplateFile = temporaryFile('templates/event_description.html')
 //
 //  }
 //
@@ -18,10 +18,10 @@ class PublishEventOnEventBrite extends BaseTask {
 //    buildDir.mkdirs()
 //    getEventData().each { event ->
 //      String eventId = dateFormat.parse(event.date).format('yyyyMMdd')
-//      File overriddenTemplateFile = file("templates/event_description_${eventId}.html")
+//      File overriddenTemplateFile = temporaryFile("templates/event_description_${eventId}.html")
 //      def template = templateEngine.createTemplate(overriddenTemplateFile.exists() ? overriddenTemplateFile : defaultTemplateFile)
 //      def binding = [ event: event ]
-//      file("${buildDir}/event_description_${eventId}.html").text = template.make(binding).toString()
+//      temporaryFile("${buildDir}/event_description_${eventId}.html").text = template.make(binding).toString()
 //    }
 //  }
 //
@@ -47,7 +47,7 @@ class PublishEventOnEventBrite extends BaseTask {
 //      def endTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.endTime + ':00')
 //
 //      // Load overridden event data.
-//      File overriddenDataFile = file("data/${eventId}.json")
+//      File overriddenDataFile = temporaryFile("data/${eventId}.json")
 //      def overriddenData = [:]
 //      if (overriddenDataFile.exists()) {
 //        overriddenData = new JsonSlurper().parse(overriddenDataFile)
@@ -78,7 +78,7 @@ class PublishEventOnEventBrite extends BaseTask {
 //          capacity: overriddenData?.capacity ?: latcraftEventbriteCapacity,
 //          show_remaining: true,
 //          description: [
-//            html: file("${buildDir}/event_description_${eventId}.html").text
+//            html: temporaryFile("${buildDir}/event_description_${eventId}.html").text
 //          ]
 //        ]
 //      ], 1) { data ->

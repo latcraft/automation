@@ -33,13 +33,13 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 //  }
 //}
 
-  //  contactFile = file("${buildDir}/contacts.csv")
+  //  contactFile = temporaryFile("${buildDir}/contacts.csv")
 //
 //
 //
 //
 //
-//extractContactsFromEventBrite.outputs.file contactFile
+//extractContactsFromEventBrite.outputs.temporaryFile contactFile
 //
 //
 //task synchronizeContactList(dependsOn: extractContactsFromEventBrite) << {

@@ -7,7 +7,7 @@ class PublishAnnouncementOnTwitter extends BaseTask {
   }
 
 //  ext {
-//    twitterFile = file("${buildDir}/twitter.json")
+//    twitterFile = temporaryFile("${buildDir}/twitter.json")
 //
 //    getTwitterTweets = {
 //      new JsonSlurper().parse(twitterFile)
@@ -88,7 +88,7 @@ class PublishAnnouncementOnTwitter extends BaseTask {
 //    getTwitterData()
 //  }
 //
-//  getTwitterDataTask.outputs.file twitterFile
+//  getTwitterDataTask.outputs.temporaryFile twitterFile
 //
 ////getTwitterDataTask.logging.captureStandardOutput LogLevel.INFO
 ////getTwitterDataTask.logging.captureStandardError LogLevel.INFO

@@ -3,7 +3,7 @@ package lv.latcraft.event.integrations
 import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
-import static lv.latcraft.event.Utils.dumpJson
+import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.getEventbriteToken
 
 class EventBrite extends BaseJsonClient {
