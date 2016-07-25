@@ -1,8 +1,5 @@
 package lv.latcraft.event.tasks
 
-import lv.latcraft.event.integrations.Configuration
-
-import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.POST
 import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
 import static lv.latcraft.event.utils.FileMethods.temporaryFile
@@ -14,16 +11,9 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     contactFile.withWriter { BufferedWriter writer ->
       writer << "company;email;first_name;last_name;name;job_title\n"
       def attendees = []
-      getEventBriteEvents().findAll { !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
+      eventBrite.events.findAll { !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
         println "> Extracting attendees from: ${eventBriteEvent.name.text}"
-        eventBrite.execute(GET, "/v3/events/${eventBriteEvent.id}/attendees/".toString(), [:], 1) { data ->
-          attendees.addAll(data.attendees as List)
-          for (int pageNumber = 1; data.pagination.page_count >= pageNumber; pageNumber++) {
-            eventBrite.execute(GET, "/v3/events/${eventBriteEvent.id}/attendees/".toString(), [:], pageNumber) { pageData ->
-              attendees.addAll(pageData.attendees as List)
-            }
-          }
-        }
+        attendees.addAll(eventBrite.getAttendees(eventBriteEvent.id as String))
       }
       def filteredAttendees = [:] as TreeMap
       attendees.each { attendee ->
@@ -31,7 +21,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
           filteredAttendees.put(attendee.profile.email.toLowerCase(), attendee)
         }
       }
-      filteredAttendees.values().each { attendee ->
+      filteredAttendees.values().each { Map attendee ->
         writer << "${attendee.profile.company ?: ''};${attendee.profile.email ?: ''};${attendee.profile.first_name ?: ''};${attendee.profile.last_name ?: ''};${attendee.profile.name ?: ''};${attendee.profile.job_title ?: ''};\n"
       }
     }
@@ -51,7 +41,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
           }
         }
         sendGrid.execute(POST, "/v3/contactdb/lists/${sendGridDefaultListId}/recipients", data.persisted_recipients) { listData ->
-          log.debug listData.toString()
+          // log.debug listData.toString()
         }
       }
     }

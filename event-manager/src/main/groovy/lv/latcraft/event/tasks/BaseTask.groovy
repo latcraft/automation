@@ -20,10 +20,6 @@ abstract class BaseTask {
 
   abstract void execute()
 
-  List<Map<String, ?>> getEventBriteEvents() {
-    eventBrite.eventData['events'] as List<Map<String, ?>>
-  }
-
   static List<Map<String, ?>> getMasterData() {
     new JsonSlurper().parse(new URL(eventDataFile).newInputStream()) as List<Map<String, ?>>
   }

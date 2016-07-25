@@ -12,6 +12,25 @@ class EventBrite extends BaseJsonClient {
     execute(GET, '/v3/users/me/owned_events', [:], 1) { data -> data } as  Map<String, ?>
   }
 
+  List<Map<String, ?>> getEvents() {
+    eventData['events'] as List<Map<String, ?>>
+  }
+
+  List<Map<String, ?>> getAttendees(String eventId) {
+    def attendees = []
+    execute(GET, "/v3/events/${eventId}/attendees/".toString(), [:], 1) { data ->
+      attendees.addAll(data.attendees as List)
+      for (int pageNumber = 1; data.pagination.page_count >= pageNumber; pageNumber++) {
+        execute(GET, "/v3/events/${eventId}/attendees/".toString(), [:], pageNumber) { pageData ->
+          attendees.addAll(pageData.attendees as List)
+        }
+      }
+    }
+    attendees
+  }
+
+
+
   def execute(Method method, String path, Map jsonBody, int pageNumber, Closure cl) {
     uri = 'https://www.eventbriteapi.com/'
     ignoreSSLIssues()
