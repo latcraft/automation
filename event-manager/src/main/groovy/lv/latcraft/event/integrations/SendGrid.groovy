@@ -55,6 +55,18 @@ class SendGrid extends BaseJsonClient {
     }
   }
 
+  def get(String path, Closure cl) {
+    execute(GET, path, [:], cl)
+  }
+
+  def post(String path, jsonBody) {
+    execute(POST, path, jsonBody, null)
+  }
+
+  def post(String path, jsonBody, Closure cl) {
+    execute(POST, path, jsonBody, cl)
+  }
+
   def execute(Method method, String path, jsonBody, Closure cl) {
     uri = 'https://api.sendgrid.com'
     ignoreSSLIssues()

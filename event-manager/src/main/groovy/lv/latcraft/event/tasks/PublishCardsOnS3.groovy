@@ -1,5 +1,6 @@
 package lv.latcraft.event.tasks
 
+import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
@@ -31,7 +32,7 @@ class PublishCardsOnS3 extends BaseTask {
     'speaker_card_v1'
   ]
 
-  void execute() {
+  Map<String, String> execute(Map<String, String> input, Context context) {
     futureEvents.each { Map<String, ?> event ->
       String eventId = calculateEventId(event)
       EVENT_CARDS.each { String templateId ->
@@ -57,6 +58,7 @@ class PublishCardsOnS3 extends BaseTask {
       // TODO: update data on github
       // TODO: notify slack
     }
+    [:]
   }
 
   static String getSvgTemplate(String templateId) {

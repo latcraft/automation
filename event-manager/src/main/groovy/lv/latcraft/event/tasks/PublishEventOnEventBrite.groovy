@@ -1,9 +1,11 @@
 package lv.latcraft.event.tasks
 
+import com.amazonaws.services.lambda.runtime.Context
+
 class PublishEventOnEventBrite extends BaseTask {
 
-  void execute() {
-
+  Map<String, String> execute(Map<String, String> input, Context context) {
+    [:]
   }
 
 //  ext {

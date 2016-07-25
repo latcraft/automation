@@ -1,13 +1,16 @@
 package lv.latcraft.event.tasks
 
+import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.utils.FileMethods
+
 class PublishAnnouncementOnTwitter extends BaseTask {
 
-  void execute() {
-
+  Map<String, String> execute(Map<String, String> input, Context context) {
+    File twitterFile = FileMethods.temporaryFile("twitter", ".json")
   }
 
 //  ext {
-//    twitterFile = temporaryFile("${buildDir}/twitter.json")
+//
 //
 //    getTwitterTweets = {
 //      new JsonSlurper().parse(twitterFile)
@@ -138,8 +141,6 @@ class PublishAnnouncementOnTwitter extends BaseTask {
 //    eventFile.text = dumpJson(updated_events)
 //  }
 //
-////notifyTwitter.logging.captureStandardOutput LogLevel.INFO
-////notifyTwitter.logging.captureStandardError LogLevel.INFO
 //
 //  task twitterUpdateMasterData() << {
 //    println("twitterUpdateMasterData")
@@ -151,6 +152,5 @@ class PublishAnnouncementOnTwitter extends BaseTask {
 //  twitterUpdateMasterData.mustRunAfter notifyTwitter
 //
 //  task build(dependsOn: [notifyTwitter, twitterUpdateMasterData])
-
 
 }

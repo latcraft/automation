@@ -1,36 +1,14 @@
 package lv.latcraft.event.tasks
 
-import static groovyx.net.http.Method.POST
+import com.amazonaws.services.lambda.runtime.Context
+
 import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
-import static lv.latcraft.event.utils.FileMethods.temporaryFile
 
 class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
-  void execute() {
-    File contactFile = temporaryFile("contacts", ".csv")
-    contactFile.withWriter { BufferedWriter writer ->
-      writer << "company;email;first_name;last_name;name;job_title\n"
-      def attendees = []
-      eventBrite.events.findAll { !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
-        println "> Extracting attendees from: ${eventBriteEvent.name.text}"
-        attendees.addAll(eventBrite.getAttendees(eventBriteEvent.id as String))
-      }
-      def filteredAttendees = [:] as TreeMap
-      attendees.each { attendee ->
-        if (attendee.profile.email) {
-          filteredAttendees.put(attendee.profile.email.toLowerCase(), attendee)
-        }
-      }
-      filteredAttendees.values().each { Map attendee ->
-        writer << "${attendee.profile.company ?: ''};${attendee.profile.email ?: ''};${attendee.profile.first_name ?: ''};${attendee.profile.last_name ?: ''};${attendee.profile.name ?: ''};${attendee.profile.job_title ?: ''};\n"
-      }
-    }
-    def fields = ['company', 'email', 'first_name', 'last_name', 'name', 'job_title']
-    // TODO: ensure custom fields are created
-    contactFile.readLines().drop(1).collate(1000).each { batch ->
-      sendGrid.execute(POST, "/v3/contactdb/recipients", batch.collect {
-        [fields, it.split(';')].transpose().collectEntries { it }
-      }) { data ->
+  Map<String, String> execute(Map<String, String> input, Context context) {
+    uniqueAttendees(findAllAttendees()).collect { fromEventBriteToSendGrid(it) }.collate(1000).each { batch ->
+      sendGrid.post("/v3/contactdb/recipients", batch) { data ->
         println "> Errors: ${data.error_count}"
         println "> New contacts: ${data.new_count}"
         // TODO: notify slack about new count
@@ -40,11 +18,40 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
             println "> Error: ${error.message}"
           }
         }
-        sendGrid.execute(POST, "/v3/contactdb/lists/${sendGridDefaultListId}/recipients", data.persisted_recipients) { listData ->
-          // log.debug listData.toString()
-        }
+        sendGrid.post("/v3/contactdb/lists/${sendGridDefaultListId}/recipients", data.persisted_recipients)
       }
     }
+    [:]
+  }
+
+  static Map<String, ?> fromEventBriteToSendGrid(Map attendee) {
+    [
+      company   : attendee.profile.company ?: '',
+      email     : attendee.profile.email ?: '',
+      first_name: attendee.profile.first_name ?: '',
+      last_name : attendee.profile.last_name ?: '',
+      name      : attendee.profile.name ?: '',
+      job_title : attendee.profile.job_title ?: ''
+    ]
+  }
+
+  static List<Map<String, ?>> uniqueAttendees(List<Map<String, ?>> attendees) {
+    def filteredAttendees = [:] as TreeMap
+    attendees.each { Map attendee ->
+      if (attendee.profile.email) {
+        filteredAttendees.put(attendee.profile.email.toLowerCase(), attendee)
+      }
+    }
+    filteredAttendees.values()
+  }
+
+  List<Map<String, ?>> findAllAttendees() {
+    List<Map<String, ?>> attendees = []
+    eventBrite.events.findAll { !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
+      println "> Extracting attendees from: ${eventBriteEvent.name.text}"
+      attendees.addAll(eventBrite.getAttendees(eventBriteEvent.id as String))
+    }
+    attendees
   }
 
 }

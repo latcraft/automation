@@ -1,5 +1,6 @@
 package lv.latcraft.event.tasks
 
+import com.amazonaws.services.lambda.runtime.Context
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 import lv.latcraft.event.integrations.EventBrite
@@ -18,7 +19,7 @@ abstract class BaseTask {
   GitHub gitHub = new GitHub()
   SendGrid sendGrid = new SendGrid()
 
-  abstract void execute()
+  abstract Map<String, String> execute(Map<String, String> input, Context context)
 
   static List<Map<String, ?>> getMasterData() {
     new JsonSlurper().parse(new URL(eventDataFile).newInputStream()) as List<Map<String, ?>>
