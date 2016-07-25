@@ -12,7 +12,7 @@ import org.apache.fop.svg.PDFTranscoder
 
 import static java.lang.Boolean.FALSE
 import static java.nio.charset.StandardCharsets.UTF_8
-import static lv.latcraft.utils.FileMethods.file
+import static lv.latcraft.utils.FileMethods.temporaryFile
 import static lv.latcraft.utils.LambdaMethods.insideLambda
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER
 import static org.apache.batik.transcoder.XMLAbstractTranscoder.KEY_XML_PARSER_VALIDATING
@@ -28,7 +28,7 @@ class SvgMethods {
     PDFTranscoder t = new PDFTranscoder()
     configureFonts(t)
     String svgURI = svgFile.toURI().toString()
-    File pdfFile = file('temporary', '.pdf')
+    File pdfFile = temporaryFile('temporary', '.pdf')
     try {
       t.transcode(
         new TranscoderInput(svgURI),

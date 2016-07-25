@@ -7,7 +7,7 @@ import groovy.transform.TypeChecked
 @TypeChecked
 class FileMethods {
 
-  static file(String prefix, String suffix) {
+  static temporaryFile(String prefix, String suffix) {
     File.createTempFile(prefix, suffix)
   }
 

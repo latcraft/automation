@@ -5,9 +5,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Commons
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
-import lv.latcraft.utils.S3Methods
 
-import static lv.latcraft.utils.FileMethods.file
+import static lv.latcraft.utils.FileMethods.temporaryFile
 import static lv.latcraft.utils.QRMethods.renderQRCodePNGImage
 import static lv.latcraft.utils.S3Methods.anyoneWithTheLink
 import static lv.latcraft.utils.S3Methods.s3
@@ -20,16 +19,15 @@ import static lv.latcraft.utils.XmlMethods.setElementValue
 @Commons
 class TicketGenerator {
 
-
   public static final String BUCKET_NAME = 'devternity-images'
 
   static Map<String, String> generate(Map<String, String> data, Context context) {
     log.info "STEP 1: Received data: ${data}"
     TicketInfo ticket = new TicketInfo(data)
-    File svgFile = file('ticket', '.svg')
+    File svgFile = temporaryFile('ticket', '.svg')
     byte[] qrPngData = renderQRCodePNGImage(getQRData(ticket))
     log.info "STEP 2: Generated QR image"
-    File qrFile = file('ticket-qr', '.png')
+    File qrFile = temporaryFile('ticket-qr', '.png')
     qrFile.bytes = qrPngData
     log.info "STEP 3: Saved QR image"
     s3.putObject(putRequest(ticket, qrFile, 'png'))
@@ -56,12 +54,10 @@ class TicketGenerator {
     ).withAccessControlList(anyoneWithTheLink())
   }
 
-
   static String getSvgTemplate(String product) {
     String templateName = "DEVTERNITY_TICKET_${product}.svg"
     getClass().getResource("/${templateName}")?.text ?: new File(templateName).text
   }
-
 
   static String prepareSVG(String svgText, TicketInfo ticket, byte[] qrImage) {
     GPathResult svg = new XmlSlurper().parseText(svgText)
