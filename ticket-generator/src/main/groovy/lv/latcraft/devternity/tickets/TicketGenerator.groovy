@@ -1,17 +1,16 @@
 package lv.latcraft.devternity.tickets
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.AccessControlList
 import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Commons
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
+import lv.latcraft.utils.S3Methods
 
-import static com.amazonaws.services.s3.model.GroupGrantee.AllUsers
-import static com.amazonaws.services.s3.model.Permission.Read
 import static lv.latcraft.utils.FileMethods.file
 import static lv.latcraft.utils.QRMethods.renderQRCodePNGImage
+import static lv.latcraft.utils.S3Methods.anyoneWithTheLink
+import static lv.latcraft.utils.S3Methods.s3
 import static lv.latcraft.utils.SanitizationMethods.sanitizeCompany
 import static lv.latcraft.utils.SanitizationMethods.sanitizeName
 import static lv.latcraft.utils.SvgMethods.renderPDF
@@ -49,7 +48,7 @@ class TicketGenerator {
     ]
   }
 
-  private static PutObjectRequest putRequest(TicketInfo ticket, File file, String extension) {
+  static PutObjectRequest putRequest(TicketInfo ticket, File file, String extension) {
     new PutObjectRequest(
       BUCKET_NAME,
       "ticket-${ticket.ticketId}.${extension}",
@@ -57,20 +56,12 @@ class TicketGenerator {
     ).withAccessControlList(anyoneWithTheLink())
   }
 
-  private static AccessControlList anyoneWithTheLink() {
-    AccessControlList acl = new AccessControlList()
-    acl.grantPermission(AllUsers, Read)
-    acl
-  }
 
   static String getSvgTemplate(String product) {
     String templateName = "DEVTERNITY_TICKET_${product}.svg"
     getClass().getResource("/${templateName}")?.text ?: new File(templateName).text
   }
 
-  static AmazonS3Client getS3() {
-    new AmazonS3Client()
-  }
 
   static String prepareSVG(String svgText, TicketInfo ticket, byte[] qrImage) {
     GPathResult svg = new XmlSlurper().parseText(svgText)
