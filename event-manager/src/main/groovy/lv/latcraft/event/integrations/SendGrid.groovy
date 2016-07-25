@@ -2,11 +2,9 @@ package lv.latcraft.event.integrations
 
 import groovyx.net.http.Method
 
-import static groovyx.net.http.Method.GET
-import static groovyx.net.http.Method.PATCH
-import static groovyx.net.http.Method.POST
-import static lv.latcraft.event.utils.JsonMethods.dumpJson
+import static groovyx.net.http.Method.*
 import static lv.latcraft.event.integrations.Configuration.sendGridApiKey
+import static lv.latcraft.event.utils.JsonMethods.dumpJson
 
 class SendGrid extends BaseJsonClient {
 
@@ -16,9 +14,9 @@ class SendGrid extends BaseJsonClient {
     }
   }
 
-  String updateCampaignContent (Map content) {
+  String updateCampaignContent(Map content) {
     log.info "> Preparing to create/update \"${content.title}\""
-    String campaignId = findCampaignIdByTitle(content.title)
+    String campaignId = findCampaignIdByTitle(content.title as String)
     sleep(1000)
     if (campaignId) {
       log.info "> Updating campaign with ID: ${campaignId}"
@@ -32,19 +30,19 @@ class SendGrid extends BaseJsonClient {
     }
   }
 
-  String findTemplateIdByName (String templateName) {
+  String findTemplateIdByName(String templateName) {
     execute(GET, '/v3/templates', [:]) { data ->
       data.templates.find { template -> template.name == templateName }?.id
     }
   }
 
-  String getTemplateVersionId (String templateId) {
+  String getTemplateVersionId(String templateId) {
     execute(GET, "/v3/templates/${templateId}", [:]) { data ->
       data.versions.find { templateVersion -> templateVersion.active == 1 }?.id
     }
   }
 
-  void updateTemplateContent (String templateId, Map content) {
+  void updateTemplateContent(String templateId, Map content) {
     String templateVersionId = getTemplateVersionId(templateId)
     if (templateVersionId) {
       execute(PATCH, "/v3/templates/${templateId}/versions/${templateVersionId}".toString(), content) { data ->
@@ -57,7 +55,7 @@ class SendGrid extends BaseJsonClient {
     }
   }
 
-  def execute(Method method, String path, Map jsonBody, Closure cl) {
+  def execute(Method method, String path, jsonBody, Closure cl) {
     uri = 'https://api.sendgrid.com'
     ignoreSSLIssues()
     makeRequest(method) {

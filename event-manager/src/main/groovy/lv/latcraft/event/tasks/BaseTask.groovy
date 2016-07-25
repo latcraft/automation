@@ -13,10 +13,10 @@ import static lv.latcraft.event.integrations.Configuration.eventDataFile
 @Log4j
 abstract class BaseTask {
 
-  private EventBrite eventBrite = new EventBrite()
-  private Slack slack = new Slack()
-  private GitHub gitHub = new GitHub()
-  private SendGrid sendGrid = new SendGrid()
+  EventBrite eventBrite = new EventBrite()
+  Slack slack = new Slack()
+  GitHub gitHub = new GitHub()
+  SendGrid sendGrid = new SendGrid()
 
   abstract void execute()
 

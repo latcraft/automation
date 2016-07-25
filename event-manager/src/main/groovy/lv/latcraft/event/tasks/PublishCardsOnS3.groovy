@@ -4,8 +4,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
-import lv.latcraft.event.utils.SanitizationMethods
-import lv.latcraft.event.utils.SvgMethods
 import org.apache.commons.lang.WordUtils
 
 import static lv.latcraft.event.utils.FileMethods.temporaryFile
@@ -34,9 +32,6 @@ class PublishCardsOnS3 extends BaseTask {
   ]
 
   void execute() {
-    // 3. update data on github
-    // 4. notify slack
-
     futureEvents.each { Map<String, ?> event ->
       String eventId = calculateEventId(event)
       EVENT_CARDS.each { String templateId ->
@@ -45,6 +40,7 @@ class PublishCardsOnS3 extends BaseTask {
         println "> Generating ${filePrefix}"
         cardFile.text = generateEventCard(getSvgTemplate(templateId), event)
         s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
+        // TODO: https://s3-eu-west-1.amazonaws.com/latcraft-images/event-normal_event_card_v2-20160803.png
       }
       event.schedule.each { Map<String, ?> session ->
         if (session.type == 'speech') {
@@ -58,6 +54,8 @@ class PublishCardsOnS3 extends BaseTask {
           }
         }
       }
+      // TODO: update data on github
+      // TODO: notify slack
     }
   }
 
