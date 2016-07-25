@@ -7,14 +7,17 @@ import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
 class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
   Map<String, String> execute(Map<String, String> input, Context context) {
+    log.info "STEP 1: Received data: ${input}"
     uniqueAttendees(findAllAttendees()).collect { fromEventBriteToSendGrid(it) }.collate(1000).each { batch ->
       sendGrid.post("/v3/contactdb/recipients", batch) { data ->
         println "> Errors: ${data.error_count}"
         println "> New contacts: ${data.new_count}"
-        // TODO: notify slack about new count
+        if (data.new_count.toString().toLong() > 0) {
+          slack.send("New contacts discovered, master! (${data.new_count})")
+        }
         if (data.errors) {
+          slack.send("I'm sorry, master, there are some errors found during contact import! (${data.errors.size()})")
           data.errors.each { error ->
-            // TODO: notify slack about errors
             println "> Error: ${error.message}"
           }
         }
@@ -47,8 +50,8 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
   List<Map<String, ?>> findAllAttendees() {
     List<Map<String, ?>> attendees = []
-    eventBrite.events.findAll { !it.name.text.toLowerCase().startsWith('devternity') }.each { eventBriteEvent ->
-      println "> Extracting attendees from: ${eventBriteEvent.name.text}"
+    eventBrite.events.findAll { !it.name.text.toLowerCase().startsWith('devternity') }.each { Map eventBriteEvent ->
+      println "STEP 2: Extracting attendees from: ${eventBriteEvent.name.text}"
       attendees.addAll(eventBrite.getAttendees(eventBriteEvent.id as String))
     }
     attendees

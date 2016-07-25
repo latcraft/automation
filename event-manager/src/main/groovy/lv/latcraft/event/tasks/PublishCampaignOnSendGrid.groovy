@@ -8,18 +8,19 @@ import static lv.latcraft.event.integrations.Configuration.*
 class PublishCampaignOnSendGrid extends BaseTask {
 
   Map<String, String> execute(Map<String, String> input, Context context) {
-    // TODO: generate campaign invitation from template (read template from classpath, filesystem, github, url inside event data)
+    log.info "STEP 1: Received data: ${input}"
+    // TODO: generate campaign invitation from template (read template from classpath, filesystem, gitHub, url inside event data)
     // TODO: publish result on S3
-    // TODO: syncronize campaign with sendgrid
-    // TODO: update github data with link to s3
+    // TODO: synchronize campaign with sendGrid
+    // TODO: update gitHub data with link to s3
     futureEvents.each { Map event ->
       String eventId = calculateEventId(event)
 
       // Generate invitation template.
       File invitationTemplateFile = new File('templates/invitation.html')
-      File overridenInvitationTemplateFile = new File("templates/invitation_${eventId}.html")
+      File overriddenInvitationTemplateFile = new File("templates/invitation_${eventId}.html")
 
-      def template = templateEngine.createTemplate(overridenInvitationTemplateFile.exists() ? overridenInvitationTemplateFile : invitationTemplateFile)
+      def template = templateEngine.createTemplate(overriddenInvitationTemplateFile.exists() ? overriddenInvitationTemplateFile : invitationTemplateFile)
       new File("invitation_${eventId}.html").text = template.make(event: event).toString()
 
       String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()

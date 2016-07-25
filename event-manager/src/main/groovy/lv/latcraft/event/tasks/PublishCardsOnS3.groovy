@@ -33,6 +33,7 @@ class PublishCardsOnS3 extends BaseTask {
   ]
 
   Map<String, String> execute(Map<String, String> input, Context context) {
+    log.info "STEP 1: Received data: ${input}"
     futureEvents.each { Map<String, ?> event ->
       String eventId = calculateEventId(event)
       EVENT_CARDS.each { String templateId ->

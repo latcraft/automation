@@ -38,4 +38,9 @@ class Configuration {
     "hello@latcraft.lv"
   }
 
+  static String getDefaultSlackHookUrl() {
+    // TODO: replace hook link with system property
+    "https://hooks.slack.com/services/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"
+  }
+
 }

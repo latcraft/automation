@@ -3,6 +3,8 @@ package lv.latcraft.event.integrations
 import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
+import static groovyx.net.http.Method.POST
+import static groovyx.net.http.Method.POST
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.getEventbriteToken
 
@@ -29,9 +31,27 @@ class EventBrite extends BaseJsonClient {
     attendees
   }
 
+  def get(String path, Closure cl) {
+    execute(GET, path, [:], 1, cl)
+  }
 
+  def post(String path) {
+    execute(POST, path, [:], 1, null)
+  }
 
-  def execute(Method method, String path, Map jsonBody, int pageNumber, Closure cl) {
+  def post(String path, Closure cl) {
+    execute(POST, path, [:], 1, cl)
+  }
+
+  def post(String path, jsonBody) {
+    execute(POST, path, jsonBody, 1, null)
+  }
+
+  def post(String path, jsonBody, Closure cl) {
+    execute(POST, path, jsonBody, 1, cl)
+  }
+
+  def execute(Method method, String path, jsonBody, int pageNumber, Closure cl) {
     uri = 'https://www.eventbriteapi.com/'
     ignoreSSLIssues()
     makeRequest(method) {
