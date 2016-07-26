@@ -74,7 +74,7 @@ class SvgMethods {
         System.setProperty('user.home', System.getProperty('java.io.tmpdir'))
         def xml = new XmlParser().parse(configFile)
         xml.fonts.font.each {
-          it.@'embed-url' = '/var/task/' + it.@'embed-url'
+          it.@'embed-url' = '/var/task/' + (it.@'embed-url' as String)
         }
         return new ByteArrayInputStream(XmlUtil.serialize(xml).getBytes(UTF_8))
       } else {

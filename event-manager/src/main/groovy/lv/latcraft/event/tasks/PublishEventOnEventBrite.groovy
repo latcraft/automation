@@ -3,7 +3,6 @@ package lv.latcraft.event.tasks
 import com.amazonaws.services.lambda.runtime.Context
 import groovy.json.JsonSlurper
 import lv.latcraft.event.Constants
-import lv.latcraft.event.integrations.Configuration
 
 import static lv.latcraft.event.Constants.dateFormat
 import static lv.latcraft.event.Constants.isoDateFormat
@@ -17,7 +16,7 @@ class PublishEventOnEventBrite extends BaseTask {
       String eventId = dateFormat.parse(event.date as String).format('yyyyMMdd')
       File overriddenTemplateFile = new File("templates/event_description_${eventId}.html")
       def template = Constants.templateEngine.createTemplate(overriddenTemplateFile.exists() ? overriddenTemplateFile : defaultTemplateFile)
-      def binding = [ event: event ]
+      def binding = [event: event]
       new File("event_description_${eventId}.html").text = template.make(binding).toString()
     }
     futureEvents.each { Map event ->
@@ -49,27 +48,27 @@ class PublishEventOnEventBrite extends BaseTask {
       println "> Creating/updating \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId})"
       eventBrite.post(apiUrl, [
         event: [
-          name: [
+          name          : [
             html: "LatCraft | ${event.theme}".toString()
           ],
-          currency: 'EUR',
-          start: [
-            utc: startTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
+          currency      : 'EUR',
+          start         : [
+            utc     : startTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
             timezone: 'Europe/Riga'
           ],
-          end: [
-            utc: endTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
+          end           : [
+            utc     : endTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
             timezone: 'Europe/Riga'
           ],
-          venue_id: overriddenData?.venue_id ?: latcraftEventbriteVenueId,
-          organizer_id: latcraftEventbriteOrganizerId,
-          logo_id: overriddenData?.logo_id ?: latcraftEventbriteLogoId,
-          category_id: overriddenData?.category_id ?: latcraftEventbriteCategoryId,
+          venue_id      : overriddenData?.venue_id ?: latcraftEventbriteVenueId,
+          organizer_id  : latcraftEventbriteOrganizerId,
+          logo_id       : overriddenData?.logo_id ?: latcraftEventbriteLogoId,
+          category_id   : overriddenData?.category_id ?: latcraftEventbriteCategoryId,
           subcategory_id: overriddenData?.subcategory_id ?: latcraftEventbriteSubcategoryId,
-          format_id: overriddenData?.format_id ?: latcraftEventbriteFormatId,
-          capacity: overriddenData?.capacity ?: latcraftEventbriteCapacity,
+          format_id     : overriddenData?.format_id ?: latcraftEventbriteFormatId,
+          capacity      : overriddenData?.capacity ?: latcraftEventbriteCapacity,
           show_remaining: true,
-          description: [
+          description   : [
             html: temporaryFile("${buildDir}/event_description_${eventId}.html").text
           ]
         ]
@@ -91,19 +90,19 @@ class PublishEventOnEventBrite extends BaseTask {
       apiUrl = "/v3/events/${eventbriteEventId}/ticket_classes/"
       String eventbriteTicketClassId = null
       eventBrite.get(apiUrl) { data ->
-        eventbriteTicketClassId = data.ticket_classes?.find{ true }?.id
+        eventbriteTicketClassId = data.ticket_classes?.find { true }?.id
       }
 
       // Create or update ticket class.
       apiUrl = eventbriteTicketClassId ? "/v3/events/${eventbriteEventId}/ticket_classes/${eventbriteTicketClassId}/" : "/v3/events/${eventbriteEventId}/ticket_classes/"
       eventBrite.post(apiUrl, [
         ticket_class: [
-          name: 'Free ticket',
-          free: true,
+          name            : 'Free ticket',
+          free            : true,
           minimum_quantity: 1,
           maximum_quantity: 1,
           // TODO: sales_end: event.time - 30 minutes,
-          quantity_total: latcraftEventbriteCapacity
+          quantity_total  : latcraftEventbriteCapacity
         ]
       ]) { data ->
         log.debug data.toString()
@@ -115,15 +114,5 @@ class PublishEventOnEventBrite extends BaseTask {
     }
     [:]
   }
-
-//
-//  task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, makeEventBriteDescription]) << {
-//    getFutureEvents().each { event ->
-//
-//      // Calculate unique event ID used to distinguish this event from others in various data sources.
-//
-//    }
-//  }
-//
 
 }
