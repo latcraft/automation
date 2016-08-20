@@ -1,14 +1,14 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
+import lv.latcraft.event.utils.S3Methods
 import org.apache.commons.lang.WordUtils
 
 import static lv.latcraft.event.utils.FileMethods.temporaryFile
-import static lv.latcraft.event.utils.S3Methods.anyoneWithTheLink
+import static lv.latcraft.event.utils.S3Methods.putRequest
 import static lv.latcraft.event.utils.S3Methods.s3
 import static lv.latcraft.event.utils.SanitizationMethods.replaceLatvianLetters
 import static lv.latcraft.event.utils.SvgMethods.renderPNG
@@ -18,7 +18,6 @@ import static lv.latcraft.event.utils.XmlMethods.setElementValue
 @Log4j
 class PublishCardsOnS3 extends BaseTask {
 
-  static final String BUCKET_NAME = 'latcraft-images'
 
   static final List<String> EVENT_CARDS = [
     'normal_event_card_v1',
@@ -33,13 +32,13 @@ class PublishCardsOnS3 extends BaseTask {
   ]
 
   Map<String, String> execute(Map<String, String> input, Context context) {
-    log.info "STEP 1: Received data: ${input}"
+    println "STEP 1: Received data: ${input}"
     futureEvents.each { Map<String, ?> event ->
       String eventId = calculateEventId(event)
       EVENT_CARDS.each { String templateId ->
         String filePrefix = "event-${templateId}-${eventId}"
         File cardFile = temporaryFile(filePrefix, '.svg')
-        println "> Generating ${filePrefix}"
+        println "STEP 2: Generating ${filePrefix}"
         cardFile.text = generateEventCard(getSvgTemplate(templateId), event)
         s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
         // TODO: https://s3-eu-west-1.amazonaws.com/latcraft-images/event-normal_event_card_v2-20160803.png
@@ -50,14 +49,14 @@ class PublishCardsOnS3 extends BaseTask {
           SPEAKER_CARDS.each { String templateId ->
             String filePrefix = "event-${templateId}-${eventId}-${speakerId}"
             File cardFile = temporaryFile(filePrefix, '.svg')
-            println "> Generating ${filePrefix}"
+            println "STEP 3: Generating ${filePrefix}"
             cardFile.text = generateSpeakerCard(getSvgTemplate(templateId), event, session)
             s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
           }
         }
       }
       // TODO: update data on github
-      // TODO: notify slack
+      slack.send('Good news, master! Event cards are uploaded to the cloud!')
     }
     [:]
   }
@@ -90,12 +89,5 @@ class PublishCardsOnS3 extends BaseTask {
     XmlUtil.serialize(svg)
   }
 
-  static PutObjectRequest putRequest(String targetFileName, File localFile) {
-    new PutObjectRequest(
-      BUCKET_NAME,
-      targetFileName,
-      localFile
-    ).withAccessControlList(anyoneWithTheLink())
-  }
 
 }

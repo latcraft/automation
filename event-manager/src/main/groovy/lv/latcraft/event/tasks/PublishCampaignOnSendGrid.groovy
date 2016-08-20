@@ -24,14 +24,14 @@ class PublishCampaignOnSendGrid extends BaseTask {
       new File("invitation_${eventId}.html").text = template.make(event: event).toString()
 
       String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
-      sendGrid.updateCampaignContent([
+      sendGrid.updateCampaignContent(
         title               : invitationCampaignTitle,
         subject             : "Personal Invitation to \"Latcraft | ${event.theme}\"".toString(),
         sender_id           : sendGridDefaultSenderId,
         suppression_group_id: sendGridDefaultUnsubscribeGroupId,
         list_ids            : [sendGridDefaultListId],
         html_content        : new File("invitation_${eventId}.html").text
-      ])
+      )
 
     }
     // TODO: return link to s3
