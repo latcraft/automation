@@ -51,6 +51,13 @@ class TicketGeneratorTest {
       company  : 'Aestas/IT',
       email    : 'andrey@aestasit.com',
     ], context)
+    println TicketGenerator.generate([
+      name     : 'Andrey Adamovich',
+      ticketId : 'wFHpiBRG98wA61T1BTIK',
+      product  : 'VAULT2016',
+      company  : 'Aestas/IT',
+      email    : 'andrey@aestasit.com',
+    ], context)
   }
 
   private static Context getContext() {
