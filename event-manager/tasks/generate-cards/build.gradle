@@ -35,9 +35,9 @@ apply from: '../common-utils/data-clients.gradle'
 
 task generateEventCards(dependsOn: getMasterData) << {
   buildDir.mkdirs()
-  ['normal_event_card_v1', 'normal_event_card_v2', 'workshop_event_card_v1', 'workshop_event_card_v2', 'workshop_facebook_card'].each { templateId ->
+  ['normal_event_card_v1', 'normal_event_card_v2', 'workshop_event_card_v1', 'workshop_event_card_v2', 'workshop_facebook_background', 'normal_event_facebook_background'].each { templateId ->
     File svgTemplate = file("templates/${templateId}.svg")
-    getEvents().each { event ->
+    getFutureEvents().each { event ->
 
       String eventId = calculateEventId(event)
       logger.quiet "> Generating '${templateId}' for ${event.theme} (${eventId})"
@@ -69,9 +69,9 @@ generateEventCards.outputs.dir file("${buildDir}")
 
 task generateSpeakerCards(dependsOn: getMasterData) << {
   buildDir.mkdirs()
-  ['speaker_card'].each { templateId ->
+  ['speaker_card_v1'].each { templateId ->
     File svgTemplate = file("templates/${templateId}.svg")
-    getEvents().each { event ->
+    getFutureEvents().each { event ->
 
       String eventId = calculateEventId(event)
       event.schedule.each { session ->
