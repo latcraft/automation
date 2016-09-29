@@ -128,15 +128,23 @@ task synchronizeEventBriteData(dependsOn: [getMasterData, getEventBriteData, mak
       logger.debug data.toString()
     }
 
+  }  
+}
+
+
+task publishEvent(dependsOn: [synchronizeEventBriteData]) << {
+  getFutureEvents().each { event ->
+
     // Publish event.
     apiUrl = "/v3/events/${eventbriteEventId}/publish/"
     eventbrite(POST, apiUrl, [:], 1) { data ->
       logger.debug data.toString()
     }
 
-  }  
+  }
 }
+
 
 updateMasterData.mustRunAfter synchronizeEventBriteData
 
-task build(dependsOn: [synchronizeEventBriteData, updateMasterData])
+task build(dependsOn: [synchronizeEventBriteData, updateMasterData, publishEvent])
