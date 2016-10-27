@@ -1,9 +1,6 @@
 package lv.latcraft.utils
 
-import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import groovy.util.logging.Commons
-import groovy.util.logging.Slf4j
 import groovy.xml.XmlUtil
 import org.apache.avalon.framework.configuration.Configuration
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder
@@ -13,9 +10,9 @@ import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.fop.svg.PDFTranscoder
 
-import static FileMethods.file
 import static java.lang.Boolean.FALSE
 import static java.nio.charset.StandardCharsets.UTF_8
+import static lv.latcraft.utils.FileMethods.temporaryFile
 import static lv.latcraft.utils.LambdaMethods.insideLambda
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER
 import static org.apache.batik.transcoder.XMLAbstractTranscoder.KEY_XML_PARSER_VALIDATING
@@ -31,7 +28,7 @@ class SvgMethods {
     PDFTranscoder t = new PDFTranscoder()
     configureFonts(t)
     String svgURI = svgFile.toURI().toString()
-    File pdfFile = file('temporary', '.pdf')
+    File pdfFile = temporaryFile('temporary', '.pdf')
     try {
       t.transcode(
         new TranscoderInput(svgURI),

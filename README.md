@@ -6,4 +6,4 @@
 - `aws-logo-generator` - utility script to generate AWS service logos for AWS day dashboard.
 - `event-manager` - automation tasks for event publishing and support.
 - `ticket-generator` - AWS Lambda function for DevTernity ticket generator. 
- 
+
