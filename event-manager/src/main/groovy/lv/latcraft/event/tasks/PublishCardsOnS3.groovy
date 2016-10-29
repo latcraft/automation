@@ -22,9 +22,10 @@ class PublishCardsOnS3 extends BaseTask {
   static final List<String> EVENT_CARDS = [
     'normal_event_card_v1',
     'normal_event_card_v2',
+    'normal_event_facebook_background',
     'workshop_event_card_v1',
     'workshop_event_card_v2',
-    'workshop_facebook_card'
+    'workshop_facebook_background',
   ]
 
   static final List<String> SPEAKER_CARDS = [

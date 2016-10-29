@@ -8,10 +8,10 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
   Map<String, String> execute(Map<String, String> input, Context context) {
     println "STEP 1: Received data: ${input}"
-    attendees.collate(1000).each { batch ->
-      sendGrid.post("/v3/contactdb/recipients", batch) { Map data ->
-        reportResult(data)
-        sendGrid.post("/v3/contactdb/lists/${sendGridDefaultListId}/recipients", data.persisted_recipients)
+    attendees.collate(1000).each { inputData ->
+      sendGrid.post("/v3/contactdb/recipients", inputData) { Map responseData ->
+        reportResult(inputData, responseData)
+        sendGrid.post("/v3/contactdb/lists/${sendGridDefaultListId}/recipients", responseData.persisted_recipients)
       }
     }
     [:]
@@ -21,20 +21,24 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     uniqueAttendees(allAttendees()).collect { fromEventBriteToSendGrid(it) }
   }
 
-  void reportResult(Map data) {
-    println "STEP 2: New contacts: ${data.new_count}"
-    if (data.new_count.toString().toLong() > 0) {
-      slack.send("New contacts discovered, master! (${data.new_count})")
+  void reportResult(List inputData, Map responseData) {
+    if (responseData.new_count.toString().toLong() > 0) {
+      println "STEP 3: New contacts: ${responseData.new_count}"
+      slack.send("New contacts discovered, master! (${responseData.new_count})")
     }
-    handleErrors(data)
+    handleErrors(inputData, responseData)
   }
 
-  void handleErrors(data) {
-    if (data.errors) {
-      println "STEP 2: Errors: ${data.error_count}"
-      slack.send("I'm sorry, master, there are some errors found during contact import! (${data.errors.size()})")
-      data.errors.each { error ->
-        println "STEP 2: Error: ${error.message}"
+  void handleErrors(inputData, responseData) {
+    if (responseData.errors) {
+      responseData.errors.each { error ->
+        if (!error.message.toString().contains("Email duplicated in request")) {
+          println "STEP 3: Error: ${error.message} = ${error.error_indices.size()}"
+          slack.send("I'm sorry, master, there are some errors found during contact import! (${error.message} = ${error.error_indices.size()})")
+          error.error_indices.each { index ->
+            println "STEP 3: Error: ${inputData[index].email}"
+          }
+        }
       }
     }
   }
@@ -56,6 +60,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     }.collectEntries { Map attendee ->
       [attendee.profile.email.toLowerCase(), attendee]
     }.values()
+    attendees
   }
 
   List<Map<String, ?>> allAttendees() {
@@ -67,6 +72,10 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
       attendees.addAll(eventBrite.getAttendees(eventBriteEvent.id as String))
     }
     attendees
+  }
+
+  public static void main(String[] args) {
+    new CopyContactsFromEventBriteToSendGrid().execute([:], null)
   }
 
 }

@@ -2,20 +2,33 @@ package lv.latcraft.event.integrations
 
 class Configuration {
 
+  private final static Properties LOCAL_PROPERTIES = new Properties()
+
+  static {
+    File localPropertiesFile = new File('local.properties')
+    if (localPropertiesFile.exists()) {
+      LOCAL_PROPERTIES.load(localPropertiesFile.newInputStream())
+    }
+  }
+
+  private static String getConfigProperty(String name) {
+    System.getProperty(name) ?: LOCAL_PROPERTIES.get(name)
+  }
+
   static String getEventbriteToken() {
-    System.getProperty('latcraftEventbriteToken')
+    getConfigProperty('latcraftEventbriteToken')
   }
 
   static String getGitHubToken() {
-    System.getProperty('latcraftGitHubToken')
+    getConfigProperty('latcraftGitHubToken')
   }
 
   static String getSendGridApiKey() {
-    System.getProperty('latcraftSendGridApiKey')
+    getConfigProperty('latcraftSendGridApiKey')
   }
 
   static String getEventDataFile() {
-    System.getProperty('latcraftEventDataFile')
+    getConfigProperty('latcraftEventDataFile')
   }
 
   static String getSendGridDefaultListId() {
@@ -40,7 +53,7 @@ class Configuration {
 
   static String getDefaultSlackHookUrl() {
     // TODO: replace hook link with system property
-    "https://hooks.slack.com/services/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"
+    "https://hooks.slack.com/services/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"
   }
 
 }

@@ -5,10 +5,15 @@ import groovyx.net.http.Method
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.POST
 import static groovyx.net.http.Method.POST
+import static lv.latcraft.event.integrations.Configuration.eventbriteToken
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.getEventbriteToken
 
 class EventBrite extends BaseJsonClient {
+
+  Map<String, ?> getVenueData(String venueId) {
+    execute(GET, "/v3/venues/${venueId}", [:], 1) { data -> data } as  Map<String, ?>
+  }
 
   Map<String, ?> getEventData() {
     execute(GET, '/v3/users/me/owned_events', [:], 1) { data -> data } as  Map<String, ?>

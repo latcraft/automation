@@ -13,6 +13,7 @@ data.json
 all.csv
 replacements.csv
 gradle.properties
+local.properties
 /badge-generator/attendees.csv
 /badge-generator/get.groovy
 /badge-generator/speakers.csv
