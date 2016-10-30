@@ -16,6 +16,30 @@ class SendGrid extends BaseJsonClient {
     }
   }
 
+  List<Map<String, ?>> getSuppressions() {
+    execute(GET, '/v3/asm/suppressions', [:]) { data ->
+      data
+    } as List<Map<String, ?>>
+  }
+
+  List<Map<String, ?>> getGlobalUnsubscribes() {
+    execute(GET, '/v3/suppression/unsubscribes', [:]) { data ->
+      data
+    } as List<Map<String, ?>>
+  }
+
+  List<Map<String, ?>> getInvalidEmails() {
+    execute(GET, '/v3/suppression/invalid_emails', [:]) { data ->
+      data
+    } as List<Map<String, ?>>
+  }
+
+  List<Map<String, ?>> getSpamReports() {
+    execute(GET, '/v3/suppression/spam_reports', [:]) { data ->
+      data
+    } as List<Map<String, ?>>
+  }
+
   String updateCampaignContent(Map content) {
     logger.info "Preparing to create/update \"${content.title}\""
     String campaignId = findCampaignIdByTitle(content.title as String)
