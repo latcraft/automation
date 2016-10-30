@@ -3,6 +3,7 @@ package lv.latcraft.event.tasks
 import com.amazonaws.services.lambda.runtime.Context
 import groovy.json.JsonSlurper
 import lv.latcraft.event.Constants
+import lv.latcraft.event.lambda.InternalContext
 
 import static lv.latcraft.event.Constants.dateFormat
 import static lv.latcraft.event.Constants.isoDateFormat
@@ -114,6 +115,10 @@ class PublishEventOnEventBrite extends BaseTask {
 
     }
     [:]
+  }
+
+  public static void main(String[] args) {
+    new PublishEventOnEventBrite().execute([:], new InternalContext())
   }
 
 }

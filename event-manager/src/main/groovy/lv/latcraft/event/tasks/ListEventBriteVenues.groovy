@@ -1,6 +1,7 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.lambda.InternalContext
 
 class ListEventBriteVenues extends BaseTask {
 
@@ -18,7 +19,7 @@ class ListEventBriteVenues extends BaseTask {
   }
 
   public static void main(String[] args) {
-    new ListEventBriteVenues().execute([:], null)
+    new ListEventBriteVenues().execute([:], new InternalContext())
   }
 
 }

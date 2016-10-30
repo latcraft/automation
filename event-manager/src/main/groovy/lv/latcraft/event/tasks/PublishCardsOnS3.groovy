@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
+import lv.latcraft.event.lambda.InternalContext
 import lv.latcraft.event.utils.S3Methods
 import org.apache.commons.lang.WordUtils
 
@@ -86,6 +87,10 @@ class PublishCardsOnS3 extends BaseTask {
     setElementValue(svg, 'event-location', event.venue as String)
     setAttributeValue(svg, 'speaker-image', 'xlink:href', "data:image/png;base64,${new URL("http://latcraft.lv/${session.img}").bytes.encodeBase64().toString().toList().collate(76)*.join('').join(' ')}".toString())
     XmlUtil.serialize(svg)
+  }
+
+  public static void main(String[] args) {
+    new PublishCardsOnS3().execute([:], new InternalContext())
   }
 
 }

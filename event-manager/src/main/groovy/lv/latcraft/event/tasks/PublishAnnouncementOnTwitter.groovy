@@ -1,6 +1,7 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.lambda.InternalContext
 import lv.latcraft.event.utils.FileMethods
 
 class PublishAnnouncementOnTwitter extends BaseTask {
@@ -154,5 +155,9 @@ class PublishAnnouncementOnTwitter extends BaseTask {
 //  twitterUpdateMasterData.mustRunAfter notifyTwitter
 //
 //  task build(dependsOn: [notifyTwitter, twitterUpdateMasterData])
+
+  public static void main(String[] args) {
+    new PublishAnnouncementOnTwitter().execute([:], new InternalContext())
+  }
 
 }

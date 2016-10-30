@@ -1,6 +1,7 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.lambda.InternalContext
 
 class SendCampaignOnSendGrid extends BaseTask {
 
@@ -21,6 +22,10 @@ class SendCampaignOnSendGrid extends BaseTask {
       }
     }
     [:]
+  }
+
+  public static void main(String[] args) {
+    new SendCampaignOnSendGrid().execute([:], new InternalContext())
   }
 
 }

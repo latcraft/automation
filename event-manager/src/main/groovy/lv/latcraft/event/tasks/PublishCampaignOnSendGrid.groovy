@@ -1,6 +1,7 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.lambda.InternalContext
 
 import static lv.latcraft.event.Constants.templateEngine
 import static lv.latcraft.event.integrations.Configuration.*
@@ -36,6 +37,10 @@ class PublishCampaignOnSendGrid extends BaseTask {
     }
     // TODO: return link to s3
     [:]
+  }
+
+  public static void main(String[] args) {
+    new PublishCampaignOnSendGrid().execute([:], new InternalContext())
   }
 
 }

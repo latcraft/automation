@@ -1,6 +1,7 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.lambda.InternalContext
 
 import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
 
@@ -75,7 +76,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
   }
 
   public static void main(String[] args) {
-    new CopyContactsFromEventBriteToSendGrid().execute([:], null)
+    new CopyContactsFromEventBriteToSendGrid().execute([:], new InternalContext())
   }
 
 }

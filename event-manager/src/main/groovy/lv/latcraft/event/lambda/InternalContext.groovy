@@ -8,47 +8,47 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger
 class InternalContext implements Context {
 
   String getAwsRequestId() {
-    return null
+    null
   }
 
   String getLogGroupName() {
-    return null
+    null
   }
 
   String getLogStreamName() {
-    return null
+    null
   }
 
   String getFunctionName() {
-    return null
+    null
   }
 
   String getFunctionVersion() {
-    return null
+    null
   }
 
   String getInvokedFunctionArn() {
-    return null
+    null
   }
 
   CognitoIdentity getIdentity() {
-    return null
+    null
   }
 
   ClientContext getClientContext() {
-    return null
+    new InternalClientContext()
   }
 
   int getRemainingTimeInMillis() {
-    return 0
+    0
   }
 
   int getMemoryLimitInMB() {
-    return 0
+    0
   }
 
   LambdaLogger getLogger() {
-    return null
+    new InternalLogger()
   }
 
 }
