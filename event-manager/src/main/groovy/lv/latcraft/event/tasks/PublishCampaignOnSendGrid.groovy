@@ -2,8 +2,10 @@ package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
 import groovy.util.logging.Log4j
+import lv.latcraft.event.integrations.Configuration
 import lv.latcraft.event.lambda.InternalContext
 
+import static lv.latcraft.event.Constants.templateEngine
 import static lv.latcraft.event.Constants.templateEngine
 import static lv.latcraft.event.integrations.Configuration.*
 
@@ -11,34 +13,31 @@ import static lv.latcraft.event.integrations.Configuration.*
 class PublishCampaignOnSendGrid extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
-    logger.info "STEP 1: Received data: ${request}"
-    // TODO: generate campaign invitation from template (read template from classpath, filesystem, gitHub, url inside event data)
-    // TODO: publish result on S3
-    // TODO: synchronize campaign with sendGrid
-    // TODO: update gitHub data with link to s3
     futureEvents.each { Map event ->
       String eventId = calculateEventId(event)
-
-      // Generate invitation template.
-      File invitationTemplateFile = new File('templates/invitation.html')
-      File overriddenInvitationTemplateFile = new File("templates/invitation_${eventId}.html")
-
-      def template = templateEngine.createTemplate(overriddenInvitationTemplateFile.exists() ? overriddenInvitationTemplateFile : invitationTemplateFile)
-      new File("invitation_${eventId}.html").text = template.make(event: event).toString()
-
       String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
       sendGrid.updateCampaignContent(
         title               : invitationCampaignTitle,
         subject             : "Personal Invitation to \"Latcraft | ${event.theme}\"".toString(),
-        sender_id           : sendGridDefaultSenderId,
-        suppression_group_id: sendGridDefaultUnsubscribeGroupId,
-        list_ids            : [sendGridDefaultListId],
-        html_content        : new File("invitation_${eventId}.html").text
+        sender_id           : Configuration.sendGridDefaultSenderId,
+        suppression_group_id: Configuration.sendGridDefaultUnsubscribeGroupId,
+        list_ids            : [Configuration.sendGridDefaultListId],
+        html_content        : createHtmlDescription(event)
       )
-
+      slack.send("Master, you are great! SendGrid campaign has been published (or updated) for \"Latcraft | ${event.theme}\"!")
+      // TODO: publish campaign invitation HTML result on S3
+      // TODO: update gitHub data with link to s3
+      // TODO: return link to s3
     }
-    // TODO: return link to s3
     [:]
+  }
+
+  private static String createHtmlDescription(Map event) {
+    String eventId = calculateEventId(event)
+    String defaultTemplate = getRemoteFileContents(new URL("${Configuration.newsletterTemplateBaseDir}/invitation.html"))
+    String overriddenTemplate = getRemoteFileContents(new URL("${Configuration.newsletterTemplateBaseDir}/invitation_${eventId}.html"))
+    def template = templateEngine.createTemplate(overriddenTemplate ?: defaultTemplate)
+    template.make([event: event]).toString()
   }
 
   public static void main(String[] args) {
