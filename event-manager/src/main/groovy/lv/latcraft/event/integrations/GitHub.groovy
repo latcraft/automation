@@ -1,5 +1,6 @@
 package lv.latcraft.event.integrations
 
+import groovy.util.logging.Log4j
 import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
@@ -7,6 +8,7 @@ import static groovyx.net.http.Method.PUT
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.*
 
+@Log4j("logger")
 class GitHub extends BaseJsonClient {
 
   String getChecksum(String path) {
@@ -24,7 +26,7 @@ class GitHub extends BaseJsonClient {
       content  : content,
       sha      : getChecksum(path)
     ]) { data ->
-      log.debug data.toString()
+      logger.debug data.toString()
     }
   }
 
@@ -38,7 +40,7 @@ class GitHub extends BaseJsonClient {
       uri.path = "${path}"
       uri.query = [access_token: gitHubToken]
       if (jsonBody) {
-        log.debug dumpJson(jsonBody)
+        logger.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->

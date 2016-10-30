@@ -2,16 +2,17 @@ package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
 import groovy.json.JsonSlurper
+import groovy.util.logging.Log4j
 import lv.latcraft.event.Constants
 import lv.latcraft.event.lambda.InternalContext
 
 import static lv.latcraft.event.Constants.dateFormat
 import static lv.latcraft.event.Constants.isoDateFormat
 
+@Log4j("logger")
 class PublishEventOnEventBrite extends BaseTask {
 
-  Map<String, String> execute(Map<String, String> input, Context context) {
-    log.info "STEP 1: Received data: ${input}"
+  Map<String, String> doExecute(Map<String, String> request, Context context) {
     File defaultTemplateFile = new File('templates/event_description.html')
     eventBrite.events.each { Map event ->
       String eventId = dateFormat.parse(event.date as String).format('yyyyMMdd')
@@ -46,7 +47,7 @@ class PublishEventOnEventBrite extends BaseTask {
       }
 
       // Create or update event information.
-      println "> Creating/updating \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId})"
+      logger.info "Creating/updating \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId})"
       eventBrite.post(apiUrl, [
         event: [
           name          : [
@@ -106,7 +107,7 @@ class PublishEventOnEventBrite extends BaseTask {
           quantity_total  : latcraftEventbriteCapacity
         ]
       ]) { data ->
-        log.debug data.toString()
+        logger.debug data.toString()
       }
 
       // Publish event.

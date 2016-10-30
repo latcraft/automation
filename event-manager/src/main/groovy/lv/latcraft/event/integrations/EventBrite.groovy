@@ -1,5 +1,6 @@
 package lv.latcraft.event.integrations
 
+import groovy.util.logging.Log4j
 import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
@@ -9,14 +10,15 @@ import static lv.latcraft.event.integrations.Configuration.eventbriteToken
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.getEventbriteToken
 
+@Log4j("logger")
 class EventBrite extends BaseJsonClient {
 
   Map<String, ?> getVenueData(String venueId) {
-    execute(GET, "/v3/venues/${venueId}", [:], 1) { data -> data } as  Map<String, ?>
+    execute(GET, "/v3/venues/${venueId}", [:], 1) { data -> data } as Map<String, ?>
   }
 
   Map<String, ?> getEventData() {
-    execute(GET, '/v3/users/me/owned_events', [:], 1) { data -> data } as  Map<String, ?>
+    execute(GET, '/v3/users/me/owned_events', [:], 1) { data -> data } as Map<String, ?>
   }
 
   List<Map<String, ?>> getEvents() {
@@ -63,7 +65,7 @@ class EventBrite extends BaseJsonClient {
       uri.path = "${path}"
       uri.query = [token: eventbriteToken, page: pageNumber]
       if (jsonBody) {
-        log.debug dumpJson(jsonBody)
+        logger.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->

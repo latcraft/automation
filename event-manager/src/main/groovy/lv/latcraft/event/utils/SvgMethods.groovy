@@ -69,7 +69,7 @@ class SvgMethods {
   private static InputStream getRendererConfiguration() {
     File configFile = new File(insideLambda ? "/var/task/fonts/pdf-renderer-cfg.xml" : "fonts/pdf-renderer-cfg.xml")
     if (configFile.exists()) {
-      println "DEBUG: Using PDF renderer configuration: ${configFile.absolutePath}"
+      log.debug "DEBUG: Using PDF renderer configuration: ${configFile.absolutePath}"
       if (insideLambda) {
         System.setProperty('user.home', System.getProperty('java.io.tmpdir'))
         def xml = new XmlParser().parse(configFile)

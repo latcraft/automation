@@ -1,13 +1,15 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import groovy.util.logging.Log4j
 import lv.latcraft.event.lambda.InternalContext
 import lv.latcraft.event.utils.FileMethods
 
+@Log4j("logger")
 class PublishAnnouncementOnTwitter extends BaseTask {
 
-  Map<String, String> execute(Map<String, String> input, Context context) {
-    log.info "STEP 1: Received data: ${input}"
+  Map<String, String> doExecute(Map<String, String> request, Context context) {
+    logger.info "STEP 1: Received data: ${request}"
     File twitterFile = FileMethods.temporaryFile("twitter", ".json")
     [:]
   }

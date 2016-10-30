@@ -1,15 +1,17 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import groovy.util.logging.Log4j
 import lv.latcraft.event.lambda.InternalContext
 
 import static lv.latcraft.event.Constants.templateEngine
 import static lv.latcraft.event.integrations.Configuration.*
 
+@Log4j("logger")
 class PublishCampaignOnSendGrid extends BaseTask {
 
-  Map<String, String> execute(Map<String, String> input, Context context) {
-    log.info "STEP 1: Received data: ${input}"
+  Map<String, String> doExecute(Map<String, String> request, Context context) {
+    logger.info "STEP 1: Received data: ${request}"
     // TODO: generate campaign invitation from template (read template from classpath, filesystem, gitHub, url inside event data)
     // TODO: publish result on S3
     // TODO: synchronize campaign with sendGrid

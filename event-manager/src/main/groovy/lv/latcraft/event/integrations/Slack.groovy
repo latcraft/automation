@@ -1,11 +1,13 @@
 package lv.latcraft.event.integrations
 
 import groovy.json.JsonBuilder
+import groovy.util.logging.Log4j
 
 import static groovyx.net.http.Method.POST
 import static lv.latcraft.event.integrations.Configuration.defaultSlackHookUrl
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 
+@Log4j("logger")
 class Slack extends BaseJsonClient {
 
   def send(String message, String userName = null, String icon = null, String channel = null) {
@@ -16,7 +18,7 @@ class Slack extends BaseJsonClient {
         'icon-emoji': icon,
         channel     : channel
     ]
-    log.debug dumpJson(payload)
+    logger.debug dumpJson(payload)
     makeRequest(POST) {
       contentType = 'text/plain'
       body = new JsonBuilder(payload).toString()

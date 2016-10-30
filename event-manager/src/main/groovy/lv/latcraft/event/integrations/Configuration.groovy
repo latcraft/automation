@@ -9,6 +9,7 @@ class Configuration {
     if (localPropertiesFile.exists()) {
       LOCAL_PROPERTIES.load(localPropertiesFile.newInputStream())
     }
+    // TODO: implement read from KMS if it is available
   }
 
   private static String getConfigProperty(String name) {

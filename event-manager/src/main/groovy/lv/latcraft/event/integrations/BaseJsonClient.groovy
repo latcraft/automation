@@ -1,5 +1,6 @@
 package lv.latcraft.event.integrations
 
+import groovy.util.logging.Log4j
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 

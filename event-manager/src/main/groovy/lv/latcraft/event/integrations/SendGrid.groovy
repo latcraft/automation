@@ -1,11 +1,13 @@
 package lv.latcraft.event.integrations
 
+import groovy.util.logging.Log4j
 import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.*
 import static lv.latcraft.event.integrations.Configuration.sendGridApiKey
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 
+@Log4j("logger")
 class SendGrid extends BaseJsonClient {
 
   String findCampaignIdByTitle(String campaignTitle) {
@@ -15,11 +17,11 @@ class SendGrid extends BaseJsonClient {
   }
 
   String updateCampaignContent(Map content) {
-    log.info "> Preparing to create/update \"${content.title}\""
+    logger.info "Preparing to create/update \"${content.title}\""
     String campaignId = findCampaignIdByTitle(content.title as String)
     sleep(1000)
     if (campaignId) {
-      log.info "> Updating campaign with ID: ${campaignId}"
+      logger.info "Updating campaign with ID: ${campaignId}"
       return execute(PATCH, "/v3/campaigns/${campaignId}".toString(), content) { data ->
         data.id
       }
@@ -46,11 +48,11 @@ class SendGrid extends BaseJsonClient {
     String templateVersionId = getTemplateVersionId(templateId)
     if (templateVersionId) {
       execute(PATCH, "/v3/templates/${templateId}/versions/${templateVersionId}".toString(), content) { data ->
-        log.debug data.toString()
+        logger.debug data.toString()
       }
     } else {
       execute(POST, "/v3/templates/${templateId}/versions".toString(), content) { data ->
-        log.debug data.toString()
+        logger.debug data.toString()
       }
     }
   }
@@ -76,7 +78,7 @@ class SendGrid extends BaseJsonClient {
       headers['Authorization'] = "Bearer ${sendGridApiKey}"
       uri.path = "${path}"
       if (jsonBody) {
-        log.debug dumpJson(jsonBody)
+        logger.debug dumpJson(jsonBody)
         body = jsonBody
       }
       response.success = { _, json ->

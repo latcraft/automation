@@ -16,6 +16,7 @@ import static lv.latcraft.event.utils.SvgMethods.renderPNG
 import static lv.latcraft.event.utils.XmlMethods.setAttributeValue
 import static lv.latcraft.event.utils.XmlMethods.setElementValue
 
+@Log4j("logger")
 class PublishCardsOnS3 extends BaseTask {
 
   static final List<String> EVENT_CARDS = [
@@ -31,14 +32,13 @@ class PublishCardsOnS3 extends BaseTask {
     'speaker_card_v1'
   ]
 
-  Map<String, String> execute(Map<String, String> input, Context context) {
-    println "STEP 1: Received data: ${input}"
+  Map<String, String> doExecute(Map<String, String> request, Context context) {
     futureEvents.each { Map<String, ?> event ->
       String eventId = calculateEventId(event)
       EVENT_CARDS.each { String templateId ->
         String filePrefix = "event-${templateId}-${eventId}"
         File cardFile = temporaryFile(filePrefix, '.svg')
-        println "STEP 2: Generating ${filePrefix}"
+        logger.info "Generating ${filePrefix}"
         cardFile.text = generateEventCard(getSvgTemplate(templateId), event)
         s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
         // TODO: https://s3-eu-west-1.amazonaws.com/latcraft-images/event-normal_event_card_v2-20160803.png
@@ -49,7 +49,7 @@ class PublishCardsOnS3 extends BaseTask {
           SPEAKER_CARDS.each { String templateId ->
             String filePrefix = "event-${templateId}-${eventId}-${speakerId}"
             File cardFile = temporaryFile(filePrefix, '.svg')
-            println "STEP 3: Generating ${filePrefix}"
+            logger.info "Generating ${filePrefix}"
             cardFile.text = generateSpeakerCard(getSvgTemplate(templateId), event, session)
             s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
           }

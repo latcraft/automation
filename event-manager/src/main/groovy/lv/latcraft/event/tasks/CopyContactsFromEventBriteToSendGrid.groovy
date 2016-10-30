@@ -1,14 +1,15 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import groovy.util.logging.Log4j
 import lv.latcraft.event.lambda.InternalContext
 
 import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
 
+@Log4j("logger")
 class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
-  Map<String, String> execute(Map<String, String> input, Context context) {
-    println "STEP 1: Received data: ${input}"
+  Map<String, String> doExecute(Map<String, String> input, Context context) {
     attendees.collate(1000).each { inputData ->
       sendGrid.post("/v3/contactdb/recipients", inputData) { Map responseData ->
         reportResult(inputData, responseData)
@@ -24,7 +25,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
   void reportResult(List<Map<String, ?>> inputData, Map responseData) {
     if (responseData.new_count.toString().toLong() > 0) {
-      println "STEP 3: New contacts: ${responseData.new_count}"
+      logger.info "New contacts: ${responseData.new_count}"
       slack.send("New contacts discovered, master! (${responseData.new_count})")
     }
     handleErrors(inputData, responseData)
@@ -34,10 +35,10 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     if (responseData.errors) {
       responseData.errors.each { error ->
         if (!error.message.toString().contains("Email duplicated in request")) {
-          println "STEP 3: Error: ${error.message} = ${error.error_indices.size()}"
+          logger.error "Error: ${error.message} = ${error.error_indices.size()}"
           slack.send("I'm sorry, master, there are some errors found during contact import! (${error.message} = ${error.error_indices.size()})")
           error.error_indices.each { index ->
-            println "STEP 3: Error: ${inputData[index.toString().toInteger()].email}"
+            logger.error "Error: ${inputData[index.toString().toInteger()].email}"
           }
         }
       }
@@ -69,7 +70,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     eventBrite.events.findAll { Map eventBriteEvent ->
       !eventBriteEvent.name.text.toLowerCase().startsWith('devternity')
     }.each { Map eventBriteEvent ->
-      println "STEP 2: Extracting attendees from: ${eventBriteEvent.name.text}"
+      logger.info "Extracting attendees from: ${eventBriteEvent.name.text}"
       attendees.addAll(eventBrite.getAttendees(eventBriteEvent.id as String))
     }
     attendees
