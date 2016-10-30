@@ -32,29 +32,64 @@ class Configuration {
     getConfigProperty('latcraftEventDataFile')
   }
 
+  static String getEventbriteTemplateBaseDir() {
+    getConfigProperty('latcraftEventBriteTemplateBaseDir')
+  }
+
+  static String getEventbriteVenueId() {
+    getConfigProperty('latcraftEventbriteVenueId')
+  }
+
+  static String getEventbriteCapacity() {
+    getConfigProperty('latcraftEventbriteCapacity')
+  }
+
+  static String getEventbriteOrganizerId() {
+    getConfigProperty('latcraftEventbriteOrganizerId')
+  }
+
+  static String getEventbriteLogoId() {
+    getConfigProperty('latcraftEventbriteLogoId')
+  }
+
+  static String getEventbriteCategoryId() {
+    getConfigProperty('latcraftEventbriteCategoryId')
+  }
+
+  static String getEventbriteSubcategoryId() {
+    getConfigProperty('latcraftEventbriteSubcategoryId')
+  }
+
+  static String getEventbriteFormatId() {
+    getConfigProperty('latcraftEventbriteFormatId')
+  }
+
   static String getDefaultSlackHookUrl() {
     getConfigProperty('latcraftSlackHookUrl')
   }
 
   static String getSendGridDefaultListId() {
-    "362055"
+    getConfigProperty('latcraftSendGridDefaultListId')
   }
 
   static String getSendGridDefaultSenderId() {
-    "37076"
+    getConfigProperty('latcraftSendGridDefaultSenderId')
   }
 
   static String getSendGridDefaultUnsubscribeGroupId() {
-    "611"
+    getConfigProperty('latcraftSendGridDefaultUnsubscribeGroupId')
+  }
+
+  static String getNewsletterTemplateBaseDir() {
+    getConfigProperty('latcraftNewsletterTemplateBaseDir')
   }
 
   static String getGitCommitter() {
-    "Latcraft Event Manager"
+    getConfigProperty('latcraftGitCommitter')
   }
 
   static String getGitEmail() {
-    "hello@latcraft.lv"
+    getConfigProperty('latcraftGitEmail')
   }
-
 
 }

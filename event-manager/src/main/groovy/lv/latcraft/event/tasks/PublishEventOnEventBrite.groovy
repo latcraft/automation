@@ -1,34 +1,26 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
-import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
-import lv.latcraft.event.Constants
+import lv.latcraft.event.integrations.Configuration
 import lv.latcraft.event.lambda.InternalContext
 
-import static lv.latcraft.event.Constants.dateFormat
-import static lv.latcraft.event.Constants.isoDateFormat
+import static lv.latcraft.event.Constants.*
 
 @Log4j("logger")
 class PublishEventOnEventBrite extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
-    File defaultTemplateFile = new File('templates/event_description.html')
-    eventBrite.events.each { Map event ->
-      String eventId = dateFormat.parse(event.date as String).format('yyyyMMdd')
-      File overriddenTemplateFile = new File("templates/event_description_${eventId}.html")
-      def template = Constants.templateEngine.createTemplate(overriddenTemplateFile.exists() ? overriddenTemplateFile : defaultTemplateFile)
-      def binding = [event: event]
-      new File("event_description_${eventId}.html").text = template.make(binding).toString()
-    }
+    Map response = [:]
     futureEvents.each { Map event ->
-      String eventId = dateFormat.parse(event.date as String).format('yyyyMMdd')
+
+      String eventId = calculateEventId(event)
 
       // Find EventBrite event ID if it is not yet set or missing.
       String eventbriteEventId = event.eventbriteEventId
       if (!eventbriteEventId) {
         eventBrite.events.each { Map eventbriteEvent ->
-          if (isoDateFormat.parse(eventbriteEvent.start.local).format('yyyyMMdd') == eventId) {
+          if (isoDateFormat.parse(eventbriteEvent.start.local as String).format('yyyyMMdd') == eventId) {
             eventbriteEventId = eventbriteEvent.id
           }
         }
@@ -36,15 +28,8 @@ class PublishEventOnEventBrite extends BaseTask {
 
       // Calculate input parameters.
       String apiUrl = eventbriteEventId ? "/v3/events/${eventbriteEventId}/" : "/v3/events/"
-      def startTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.time + ':00')
-      def endTime = isoDateFormat.parse(dateFormat.parse(event.date).format('yyyy-MM-dd') + 'T' + event.endTime + ':00')
-
-      // Load overridden event data.
-      File overriddenDataFile = new File("data/${eventId}.json")
-      def overriddenData = [:]
-      if (overriddenDataFile.exists()) {
-        overriddenData = new JsonSlurper().parse(overriddenDataFile)
-      }
+      def startTime = isoDateFormat.parse(dateFormat.parse(event.date as String).format('yyyy-MM-dd') + 'T' + event.time + ':00')
+      def endTime = isoDateFormat.parse(dateFormat.parse(event.date as String).format('yyyy-MM-dd') + 'T' + event.endTime + ':00')
 
       // Create or update event information.
       logger.info "Creating/updating \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId})"
@@ -62,29 +47,30 @@ class PublishEventOnEventBrite extends BaseTask {
             utc     : endTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
             timezone: 'Europe/Riga'
           ],
-          venue_id      : overriddenData?.venue_id ?: latcraftEventbriteVenueId,
-          organizer_id  : latcraftEventbriteOrganizerId,
-          logo_id       : overriddenData?.logo_id ?: latcraftEventbriteLogoId,
-          category_id   : overriddenData?.category_id ?: latcraftEventbriteCategoryId,
-          subcategory_id: overriddenData?.subcategory_id ?: latcraftEventbriteSubcategoryId,
-          format_id     : overriddenData?.format_id ?: latcraftEventbriteFormatId,
-          capacity      : overriddenData?.capacity ?: latcraftEventbriteCapacity,
+          venue_id      : event.venueId ?: Configuration.eventbriteVenueId,
+          capacity      : event.capacity ?: Configuration.eventbriteCapacity,
+          organizer_id  : event.eventBriteOrganizerId ?: Configuration.eventbriteOrganizerId,
+          logo_id       : event.eventBriteLogoId ?: Configuration.eventbriteLogoId,
+          category_id   : event.eventBriteCategoryId ?: Configuration.eventbriteCategoryId,
+          subcategory_id: event.eventBriteSubcategoryId ?: Configuration.eventbriteSubcategoryId,
+          format_id     : event.eventBriteFormatId ?: Configuration.eventbriteFormatId,
           show_remaining: true,
           description   : [
-            html: temporaryFile("${buildDir}/event_description_${eventId}.html").text
+            html: createHtmlDescription(event)
           ]
         ]
       ]) { data ->
         if (!event.eventbriteEventId) {
-          def events = getEventData()
-          events.each { updatedEvent ->
-            if (dateFormat.parse(updatedEvent.date).format('yyyyMMdd') == eventId) {
+          // Save EventBrite event ID and tickets URL in GitHub if it is missing.
+          List<Map<String, ?>> eventsToUpdate = events
+          eventsToUpdate.each { updatedEvent ->
+            if (dateFormat.parse(updatedEvent.date as String).format('yyyyMMdd') == eventId) {
               updatedEvent.eventbriteEventId = data.id
               updatedEvent.tickets = data.url
               eventbriteEventId = data.id
             }
           }
-          eventFile.text = dumpJson(events)
+          updateMasterData(eventsToUpdate)
         }
       }
 
@@ -103,19 +89,36 @@ class PublishEventOnEventBrite extends BaseTask {
           free            : true,
           minimum_quantity: 1,
           maximum_quantity: 1,
-          // TODO: sales_end: event.time - 30 minutes,
-          quantity_total  : latcraftEventbriteCapacity
+          sales_end       : startTime.format("yyyy-MM-dd'T'HH:mm:ss'Z'", gmt),
+          quantity_total  : event.capacity ?: Configuration.eventbriteCapacity
         ]
       ]) { data ->
         logger.debug data.toString()
       }
 
+      response['eventBriteEventId'] = eventbriteEventId
+
       // Publish event.
-      // TODO: test if event is already published
-      eventBrite.post("/v3/events/${eventbriteEventId}/publish/")
+      String eventStatus = eventBrite.get("/v3/events/${eventbriteEventId}") { data ->
+        data.status
+      }
+      logger.info "Event status: ${eventStatus}"
+      if (eventStatus == 'draft') {
+        eventBrite.post("/v3/events/${eventbriteEventId}/publish/")
+      }
+
+      slack.send("Congratulations, master! Event \"LatCraft | ${event.theme}\" (${eventId}, ${eventbriteEventId}) was published (or updated) on EventBrite!")
 
     }
-    [:]
+    response
+  }
+
+  private static String createHtmlDescription(Map event) {
+    String eventId = calculateEventId(event)
+    String defaultTemplate = getRemoteFileContents(new URL("${Configuration.eventbriteTemplateBaseDir}/event_description.html"))
+    String overriddenTemplate = getRemoteFileContents(new URL("${Configuration.eventbriteTemplateBaseDir}/event_description_${eventId}.html"))
+    def template = templateEngine.createTemplate(overriddenTemplate ?: defaultTemplate)
+    template.make([event: event]).toString()
   }
 
   public static void main(String[] args) {

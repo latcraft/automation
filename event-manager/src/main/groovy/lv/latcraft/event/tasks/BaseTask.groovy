@@ -8,6 +8,7 @@ import lv.latcraft.event.integrations.GitHub
 import lv.latcraft.event.integrations.SendGrid
 import lv.latcraft.event.integrations.Slack
 
+import static lv.latcraft.event.Utils.dumpJson
 import static lv.latcraft.event.utils.Constants.dateFormat
 import static lv.latcraft.event.integrations.Configuration.eventDataFile
 
@@ -18,6 +19,22 @@ abstract class BaseTask {
   Slack slack = new Slack()
   GitHub gitHub = new GitHub()
   SendGrid sendGrid = new SendGrid()
+
+  static String getRemoteFileContents(URL url) {
+    remoteURLExists(url) ? url.text : null
+  }
+
+  static boolean remoteURLExists(URL url) {
+    try {
+      HttpURLConnection.setFollowRedirects(false)
+      HttpURLConnection con = url.openConnection() as HttpURLConnection
+      con.requestMethod = "HEAD"
+      return con.getResponseCode() == HttpURLConnection.HTTP_OK
+    } catch (Exception e) {
+      baseLogger.debug("Remote URL ${url} does not exist!", e)
+      return false
+    }
+  }
 
   Map<String, String> execute(Map<String, String> request, Context context) {
     Map<String, String> response = [:]
@@ -41,6 +58,10 @@ abstract class BaseTask {
 
   static List<Map<String, ?>> getMasterData() {
     new JsonSlurper().parse(new URL(eventDataFile).newInputStream()) as List<Map<String, ?>>
+  }
+
+  void updateMasterData(List<Map<String, ?>> events) {
+    gitHub.updateFile('/repos/latcraft/website/contents/data/events.json', dumpJson(events))
   }
 
   static List<Map<String, ?>> getEvents() {

@@ -5,6 +5,9 @@ import groovyx.net.http.Method
 
 import static groovyx.net.http.Method.GET
 import static groovyx.net.http.Method.PUT
+import static lv.latcraft.event.integrations.Configuration.gitCommitter
+import static lv.latcraft.event.integrations.Configuration.gitEmail
+import static lv.latcraft.event.integrations.Configuration.gitHubToken
 import static lv.latcraft.event.utils.JsonMethods.dumpJson
 import static lv.latcraft.event.integrations.Configuration.*
 
@@ -15,8 +18,8 @@ class GitHub extends BaseJsonClient {
     execute(GET, path, [:]) { data -> data.sha }
   }
 
-  void updateFile(String path, File file) {
-    String content = file.bytes.encodeBase64().toString()
+  void updateFile(String path, String fileContents) {
+    String content = fileContents.bytes.encodeBase64().toString()
     execute(PUT, path, [
       message  : "updating event data",
       committer: [
