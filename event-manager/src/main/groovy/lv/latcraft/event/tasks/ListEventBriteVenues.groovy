@@ -7,9 +7,9 @@ class ListEventBriteVenues extends BaseTask {
   Map<String, String> execute(Map<String, String> input, Context context) {
     println "STEP 1: Received data: ${input}"
     Map<String, String> response = [:]
-    eventBrite.events.each { event ->
-      def venue = eventBrite.getVenueData(event.venue_id)
-      response.put(event.name.text as String, "venue_id=${event.venue_id}, capacity=${event.capacity}, address1=${venue.address.address_1}".toString())
+    eventBrite.events.each { Map event ->
+      Map<String, ?> venue = eventBrite.getVenueData(event.venue_id as String)
+      response.put(event.venue_id as String, "${venue.address.address_1}".toString())
     }
     response.each { key, value ->
       println "STEP 2: '${key}' -> ${value}"
@@ -20,6 +20,5 @@ class ListEventBriteVenues extends BaseTask {
   public static void main(String[] args) {
     new ListEventBriteVenues().execute([:], null)
   }
-
 
 }

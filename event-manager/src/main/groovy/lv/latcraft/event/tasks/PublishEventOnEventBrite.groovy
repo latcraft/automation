@@ -109,6 +109,7 @@ class PublishEventOnEventBrite extends BaseTask {
       }
 
       // Publish event.
+      // TODO: test if event is already published
       eventBrite.post("/v3/events/${eventbriteEventId}/publish/")
 
     }

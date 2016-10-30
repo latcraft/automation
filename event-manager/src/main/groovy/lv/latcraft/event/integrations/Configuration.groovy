@@ -31,6 +31,10 @@ class Configuration {
     getConfigProperty('latcraftEventDataFile')
   }
 
+  static String getDefaultSlackHookUrl() {
+    getConfigProperty('latcraftSlackHookUrl')
+  }
+
   static String getSendGridDefaultListId() {
     "362055"
   }
@@ -51,9 +55,5 @@ class Configuration {
     "hello@latcraft.lv"
   }
 
-  static String getDefaultSlackHookUrl() {
-    // TODO: replace hook link with system property
-    "https://hooks.slack.com/services/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"
-  }
 
 }

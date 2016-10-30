@@ -18,10 +18,10 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
   }
 
   List<Map<String, ?>> getAttendees() {
-    uniqueAttendees(allAttendees()).collect { fromEventBriteToSendGrid(it) }
+    uniqueAttendees(allEventBriteAttendees).collect { fromEventBriteToSendGrid(it) }
   }
 
-  void reportResult(List inputData, Map responseData) {
+  void reportResult(List<Map<String, ?>> inputData, Map responseData) {
     if (responseData.new_count.toString().toLong() > 0) {
       println "STEP 3: New contacts: ${responseData.new_count}"
       slack.send("New contacts discovered, master! (${responseData.new_count})")
@@ -29,14 +29,14 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     handleErrors(inputData, responseData)
   }
 
-  void handleErrors(inputData, responseData) {
+  void handleErrors(List<Map<String, ?>> inputData, Map responseData) {
     if (responseData.errors) {
       responseData.errors.each { error ->
         if (!error.message.toString().contains("Email duplicated in request")) {
           println "STEP 3: Error: ${error.message} = ${error.error_indices.size()}"
           slack.send("I'm sorry, master, there are some errors found during contact import! (${error.message} = ${error.error_indices.size()})")
           error.error_indices.each { index ->
-            println "STEP 3: Error: ${inputData[index].email}"
+            println "STEP 3: Error: ${inputData[index.toString().toInteger()].email}"
           }
         }
       }
@@ -63,7 +63,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
     attendees
   }
 
-  List<Map<String, ?>> allAttendees() {
+  List<Map<String, ?>> getAllEventBriteAttendees() {
     List<Map<String, ?>> attendees = []
     eventBrite.events.findAll { Map eventBriteEvent ->
       !eventBriteEvent.name.text.toLowerCase().startsWith('devternity')

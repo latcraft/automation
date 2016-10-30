@@ -15,9 +15,7 @@ import static lv.latcraft.event.utils.SvgMethods.renderPNG
 import static lv.latcraft.event.utils.XmlMethods.setAttributeValue
 import static lv.latcraft.event.utils.XmlMethods.setElementValue
 
-@Log4j
 class PublishCardsOnS3 extends BaseTask {
-
 
   static final List<String> EVENT_CARDS = [
     'normal_event_card_v1',
@@ -89,6 +87,5 @@ class PublishCardsOnS3 extends BaseTask {
     setAttributeValue(svg, 'speaker-image', 'xlink:href', "data:image/png;base64,${new URL("http://latcraft.lv/${session.img}").bytes.encodeBase64().toString().toList().collate(76)*.join('').join(' ')}".toString())
     XmlUtil.serialize(svg)
   }
-
 
 }
