@@ -4,32 +4,49 @@ import com.amazonaws.services.lambda.runtime.Context
 import groovy.util.logging.Log4j
 import lv.latcraft.event.integrations.Configuration
 import lv.latcraft.event.lambda.InternalContext
+import lv.latcraft.event.utils.S3Methods
 
 import static lv.latcraft.event.Constants.templateEngine
-import static lv.latcraft.event.Constants.templateEngine
-import static lv.latcraft.event.integrations.Configuration.*
+import static lv.latcraft.event.utils.FileMethods.temporaryFile
+import static lv.latcraft.event.utils.S3Methods.putRequest
 
 @Log4j("logger")
 class PublishCampaignOnSendGrid extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
+    Map<String, String> response = [:]
     futureEvents.each { Map event ->
+
+      // Prepare invitation data.
       String eventId = calculateEventId(event)
       String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
+      String invitationCampaignContent = createHtmlDescription(event)
+
+      // TODO: check if campaign has been already sent
+
+      // Publish invitation campaign on SendGrid.
       sendGrid.updateCampaignContent(
         title               : invitationCampaignTitle,
         subject             : "Personal Invitation to \"Latcraft | ${event.theme}\"".toString(),
         sender_id           : Configuration.sendGridDefaultSenderId,
         suppression_group_id: Configuration.sendGridDefaultUnsubscribeGroupId,
         list_ids            : [Configuration.sendGridDefaultListId],
-        html_content        : createHtmlDescription(event)
+        html_content        : invitationCampaignContent
       )
+
       slack.send("Master, you are great! SendGrid campaign has been published (or updated) for \"Latcraft | ${event.theme}\"!")
-      // TODO: publish campaign invitation HTML result on S3
-      // TODO: update gitHub data with link to s3
-      // TODO: return link to s3
+
+      // Save invitation campaign HTML on S3.
+      File localFile = temporaryFile("invitation_${eventId}", ".html")
+      localFile.text = invitationCampaignContent
+      S3Methods.s3.putObject(putRequest("invitation_${eventId}.html", localFile))
+      response['url'] = S3Methods.getObjectUrl("invitation_${eventId}.html")
+
+      slack.send("Please, verify the invitation content: ${response['url']}!")
+
+
     }
-    [:]
+    response
   }
 
   private static String createHtmlDescription(Map event) {

@@ -9,8 +9,7 @@ import lv.latcraft.event.utils.S3Methods
 import org.apache.commons.lang.WordUtils
 
 import static lv.latcraft.event.utils.FileMethods.temporaryFile
-import static lv.latcraft.event.utils.S3Methods.putRequest
-import static lv.latcraft.event.utils.S3Methods.s3
+import static lv.latcraft.event.utils.S3Methods.*
 import static lv.latcraft.event.utils.SanitizationMethods.replaceLatvianLetters
 import static lv.latcraft.event.utils.SvgMethods.renderPNG
 import static lv.latcraft.event.utils.XmlMethods.setAttributeValue
@@ -33,32 +32,67 @@ class PublishCardsOnS3 extends BaseTask {
   ]
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
+    Map<String, String> response = [:]
     futureEvents.each { Map<String, ?> event ->
+
       String eventId = calculateEventId(event)
+
+      event['cards'] = [:]
       EVENT_CARDS.each { String templateId ->
+
         String filePrefix = "event-${templateId}-${eventId}"
         File cardFile = temporaryFile(filePrefix, '.svg')
+
+        // Generate event card.
         logger.info "Generating ${filePrefix}"
         cardFile.text = generateEventCard(getSvgTemplate(templateId), event)
-        s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
-        // TODO: https://s3-eu-west-1.amazonaws.com/latcraft-images/event-normal_event_card_v2-20160803.png
+        S3Methods.s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
+
+        // Save result S3 object URLs.
+        response[filePrefix] = getObjectUrl("${filePrefix}.png")
+        event['cards'][filePrefix] = getObjectUrl("${filePrefix}.png")
+
       }
+
       event.schedule.each { Map<String, ?> session ->
         if (session.type == 'speech') {
+
           String speakerId = replaceLatvianLetters(session.name as String).trim().toLowerCase().replaceAll('[ ]', '_')
+          session['cards'] = [:]
           SPEAKER_CARDS.each { String templateId ->
+
             String filePrefix = "event-${templateId}-${eventId}-${speakerId}"
             File cardFile = temporaryFile(filePrefix, '.svg')
+
+            // Generate event card.
             logger.info "Generating ${filePrefix}"
             cardFile.text = generateSpeakerCard(getSvgTemplate(templateId), event, session)
-            s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
+            S3Methods.s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
+
+            // Save result S3 object URLs.
+            response[filePrefix] = getObjectUrl("${filePrefix}.png")
+            session['cards'][filePrefix] = getObjectUrl("${filePrefix}.png")
+
           }
         }
       }
-      // TODO: update data on github
-      slack.send('Good news, master! Event cards are uploaded to the cloud!')
+
+      // Update master data on GitHub.
+      List<Map<String, ?>> eventsToUpdate = events
+      eventsToUpdate.eachWithIndex  { eventToUpdate, i ->
+        if (calculateEventId(eventToUpdate) == eventId) {
+          eventsToUpdate[i] = event
+        }
+      }
+      updateMasterData(eventsToUpdate)
+
+      slack.send("Good news, master! Event cards are uploaded to AWS S3!")
+      response.sort { it.key }.each { key, value ->
+        slack.send(value)
+      }
+
     }
-    [:]
+    response
   }
 
   static String getSvgTemplate(String templateId) {

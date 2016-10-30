@@ -61,10 +61,10 @@ class PublishEventOnEventBrite extends BaseTask {
         ]
       ]) { data ->
         if (!event.eventbriteEventId) {
-          // Save EventBrite event ID and tickets URL in GitHub if it is missing.
+          // Save EventBrite event ID and tickets URL on GitHub if it is missing.
           List<Map<String, ?>> eventsToUpdate = events
           eventsToUpdate.each { updatedEvent ->
-            if (dateFormat.parse(updatedEvent.date as String).format('yyyyMMdd') == eventId) {
+            if (calculateEventId(updatedEvent) == eventId) {
               updatedEvent.eventbriteEventId = data.id
               updatedEvent.tickets = data.url
               eventbriteEventId = data.id

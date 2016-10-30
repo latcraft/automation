@@ -9,7 +9,6 @@ import lv.latcraft.event.utils.FileMethods
 class PublishAnnouncementOnTwitter extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
-    logger.info "STEP 1: Received data: ${request}"
     File twitterFile = FileMethods.temporaryFile("twitter", ".json")
     [:]
   }

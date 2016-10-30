@@ -57,11 +57,13 @@ abstract class BaseTask {
   abstract Map<String, String> doExecute(Map<String, String> input, Context context)
 
   static List<Map<String, ?>> getMasterData() {
+    baseLogger.info "Retrieving master data from GitHub"
     new JsonSlurper().parse(new URL(eventDataFile).newInputStream()) as List<Map<String, ?>>
   }
 
-  void updateMasterData(List<Map<String, ?>> events) {
-    gitHub.updateFile('/repos/latcraft/website/contents/data/events.json', dumpJson(events))
+  void updateMasterData(List<Map<String, ?>> eventsToUpdate) {
+    baseLogger.info "Updating master data in GitHub"
+    gitHub.updateFile('/repos/latcraft/website/contents/data/events.json', dumpJson(eventsToUpdate))
   }
 
   static List<Map<String, ?>> getEvents() {

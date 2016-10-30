@@ -32,4 +32,8 @@ class S3Methods {
     ).withAccessControlList(anyoneWithTheLink())
   }
 
+  static getObjectUrl(String targetFileName) {
+    "https://s3-eu-west-1.amazonaws.com/${BUCKET_NAME}/${targetFileName}"
+  }
+
 }

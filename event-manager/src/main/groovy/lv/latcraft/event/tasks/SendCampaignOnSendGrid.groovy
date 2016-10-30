@@ -8,11 +8,18 @@ import lv.latcraft.event.lambda.InternalContext
 class SendCampaignOnSendGrid extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
+    Map<String, String> response = [:]
     futureEvents.each { Map event ->
+
       String eventId = calculateEventId(event)
       String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
       logger.info "Found campaign ${invitationCampaignTitle}"
       String campaignId = sendGrid.findCampaignIdByTitle(invitationCampaignTitle)
+
+      // TODO: check if campaign has been already sent
+      // TODO: verify that announced flag is set and if not update it
+      // TODO: slack message
+
       if (campaignId) {
         logger.info "Starting campaign with ID: ${campaignId}"
         sendGrid.post("/v3/campaigns/${campaignId}/schedules/now".toString(), [:]) { data ->
@@ -21,8 +28,9 @@ class SendCampaignOnSendGrid extends BaseTask {
       } else {
         throw new RuntimeException("Campaign \"${invitationCampaignTitle}\" not found!")
       }
+
     }
-    [:]
+    response
   }
 
   public static void main(String[] args) {
