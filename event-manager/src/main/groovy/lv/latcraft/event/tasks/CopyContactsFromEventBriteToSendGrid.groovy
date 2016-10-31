@@ -34,7 +34,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
   void handleErrors(List<Map<String, ?>> inputData, Map responseData) {
     if (responseData.errors) {
       responseData.errors.each { error ->
-        if (!error.message.toString().contains("Email duplicated in request")) {
+        if (!error.message.toString().contains("Email duplicated in request") && !error.message.toString().contains("The email address you added is invalid")) {
           logger.error "Error: ${error.message} = ${error.error_indices.size()}"
           slack.send("I'm sorry, master, there are some errors found during contact import! (${error.message} = ${error.error_indices.size()})")
           error.error_indices.each { index ->

@@ -21,14 +21,17 @@ class PublishCardsOnS3 extends BaseTask {
   static final List<String> EVENT_CARDS = [
     'normal_event_card_v1',
     'normal_event_card_v2',
-    'normal_event_facebook_background',
+    'normal_event_card_v3',
+    'normal_event_facebook_background_v1',
+    'normal_event_facebook_background_v2',
     'workshop_event_card_v1',
     'workshop_event_card_v2',
-    'workshop_facebook_background',
+    'workshop_facebook_background_v1',
   ]
 
   static final List<String> SPEAKER_CARDS = [
-    'speaker_card_v1'
+    'speaker_card_v1',
+    'speaker_card_v2',
   ]
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
