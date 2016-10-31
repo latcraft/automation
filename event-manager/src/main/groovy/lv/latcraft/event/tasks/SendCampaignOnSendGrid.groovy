@@ -17,8 +17,7 @@ class SendCampaignOnSendGrid extends BaseTask {
 
       if (!event.announced) {
         logger.warn "Event is not yet announced: ${event.theme}"
-
-        // TODO: verify that announced flag is set and if not update it
+        slack.send("Master, I would like to warn you that \"${event.theme}\" is NOT marked as announced on the website!")
       }
 
       if (campaign.id) {

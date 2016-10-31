@@ -67,6 +67,7 @@ class PublishEventOnEventBrite extends BaseTask {
             if (calculateEventId(updatedEvent) == eventId) {
               updatedEvent.eventbriteEventId = data.id
               updatedEvent.tickets = data.url
+              updatedEvent.announced = "true"
               eventbriteEventId = data.id
             }
           }
