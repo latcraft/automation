@@ -81,6 +81,10 @@ abstract class BaseTask {
     dateFormat.parse(event['date'].toString()).format('yyyyMMdd')
   }
 
+  static String calculateInvitationCampaignTitle(Map event) {
+    "LatCraft ${event.theme} Invitation ${calculateEventId(event)}".toString()
+  }
+
   static boolean isFutureEvent(Map<String, ?> event) {
     dateFormat.parse(event['date'].toString()) > new Date()
   }

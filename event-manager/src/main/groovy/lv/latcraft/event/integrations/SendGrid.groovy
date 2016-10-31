@@ -16,6 +16,12 @@ class SendGrid extends BaseJsonClient {
     }
   }
 
+  Map<String, ?> findCampaignByTitle(String campaignTitle) {
+    execute(GET, '/v3/campaigns', [:]) { data ->
+      data.result.find { campaign -> campaign.title == campaignTitle }
+    } as Map<String, ?>
+  }
+
   List<Map<String, ?>> getSuppressions() {
     execute(GET, '/v3/asm/suppressions', [:]) { data ->
       data
@@ -42,12 +48,14 @@ class SendGrid extends BaseJsonClient {
 
   String updateCampaignContent(Map content) {
     logger.info "Preparing to create/update \"${content.title}\""
-    String campaignId = findCampaignIdByTitle(content.title as String)
+    Map<String, ?> campaign = findCampaignByTitle(content.title as String)
     sleep(1000)
-    if (campaignId) {
-      logger.info "Updating campaign with ID: ${campaignId}"
-      return execute(PATCH, "/v3/campaigns/${campaignId}".toString(), content) { data ->
-        data.id
+    if (campaign.id) {
+      if (campaign.status == 'Draft') {
+        logger.info "Updating campaign with ID: ${campaign.id}"
+        return execute(PATCH, "/v3/campaigns/${campaign.id}".toString(), content) { data ->
+          data.id
+        }
       }
     } else {
       return execute(POST, "/v3/campaigns", content) { data ->

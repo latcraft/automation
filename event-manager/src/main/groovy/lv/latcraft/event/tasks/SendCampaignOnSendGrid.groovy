@@ -11,19 +11,26 @@ class SendCampaignOnSendGrid extends BaseTask {
     Map<String, String> response = [:]
     futureEvents.each { Map event ->
 
-      String eventId = calculateEventId(event)
-      String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
+      String invitationCampaignTitle = calculateInvitationCampaignTitle(event)
       logger.info "Found campaign ${invitationCampaignTitle}"
-      String campaignId = sendGrid.findCampaignIdByTitle(invitationCampaignTitle)
+      Map<String, ?> campaign = sendGrid.findCampaignByTitle(invitationCampaignTitle)
 
-      // TODO: check if campaign has been already sent
-      // TODO: verify that announced flag is set and if not update it
-      // TODO: slack message
+      if (!event.announced) {
+        logger.warn "Event is not yet announced: ${event.theme}"
 
-      if (campaignId) {
-        logger.info "Starting campaign with ID: ${campaignId}"
-        sendGrid.post("/v3/campaigns/${campaignId}/schedules/now".toString(), [:]) { data ->
-          logger.info "Scheduling result: ${data.status}"
+        // TODO: verify that announced flag is set and if not update it
+      }
+
+      if (campaign.id) {
+        if (campaign.status == 'Draft') {
+          logger.info "Starting campaign with ID: ${campaign.id}"
+          sendGrid.post("/v3/campaigns/${campaign.id}/schedules/now".toString(), [:]) { data ->
+            logger.info "Scheduling result: ${data.status}"
+          }
+          slack.send("Master, as always you did a great job! Campaign \"${invitationCampaignTitle}\" has been scheduled to start NOW! ")
+        } else {
+          logger.info "Campaign \"${invitationCampaignTitle}\" has already been sent."
+          slack.send("Master, it is good that you've checked, but campaign \"${invitationCampaignTitle}\" has already been started! ")
         }
       } else {
         throw new RuntimeException("Campaign \"${invitationCampaignTitle}\" not found!")

@@ -19,31 +19,35 @@ class PublishCampaignOnSendGrid extends BaseTask {
 
       // Prepare invitation data.
       String eventId = calculateEventId(event)
-      String invitationCampaignTitle = "LatCraft ${event.theme} Invitation ${eventId}".toString()
+      String invitationCampaignTitle = calculateInvitationCampaignTitle(event)
       String invitationCampaignContent = createHtmlDescription(event)
 
-      // TODO: check if campaign has been already sent
+      Map<String, ?> campaign = sendGrid.findCampaignByTitle(invitationCampaignTitle)
+      if (!campaign || campaign.status == 'Draft') {
 
-      // Publish invitation campaign on SendGrid.
-      sendGrid.updateCampaignContent(
-        title               : invitationCampaignTitle,
-        subject             : "Personal Invitation to \"Latcraft | ${event.theme}\"".toString(),
-        sender_id           : Configuration.sendGridDefaultSenderId,
-        suppression_group_id: Configuration.sendGridDefaultUnsubscribeGroupId,
-        list_ids            : [Configuration.sendGridDefaultListId],
-        html_content        : invitationCampaignContent
-      )
+        // Publish invitation campaign on SendGrid.
+        sendGrid.updateCampaignContent(
+          title               : invitationCampaignTitle,
+          subject             : "Personal Invitation to \"Latcraft | ${event.theme}\"".toString(),
+          sender_id           : Configuration.sendGridDefaultSenderId,
+          suppression_group_id: Configuration.sendGridDefaultUnsubscribeGroupId,
+          list_ids            : [Configuration.sendGridDefaultListId],
+          html_content        : invitationCampaignContent
+        )
 
-      slack.send("Master, you are great! SendGrid campaign has been published (or updated) for \"Latcraft | ${event.theme}\"!")
+        slack.send("Master, you are great! SendGrid campaign has been published (or updated) for \"${invitationCampaignTitle}\"!")
 
-      // Save invitation campaign HTML on S3.
-      File localFile = temporaryFile("invitation_${eventId}", ".html")
-      localFile.text = invitationCampaignContent
-      S3Methods.s3.putObject(putRequest("invitation_${eventId}.html", localFile))
-      response['url'] = S3Methods.getObjectUrl("invitation_${eventId}.html")
+        // Save invitation campaign HTML on S3.
+        File localFile = temporaryFile("invitation_${eventId}", ".html")
+        localFile.text = invitationCampaignContent
+        S3Methods.s3.putObject(putRequest("invitation_${eventId}.html", localFile))
+        response['url'] = S3Methods.getObjectUrl("invitation_${eventId}.html")
 
-      slack.send("Please, verify the invitation content: ${response['url']}!")
+        slack.send("Please, verify the invitation content: ${response['url']}!")
 
+      } else {
+        slack.send("Master, I'm sorry, but campaign \"${invitationCampaignTitle}\" has already been started and therefore cannot be updated! ")
+      }
 
     }
     response

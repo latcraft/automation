@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 class Event {
 
   @JsonProperty
-  String ownerName
+  String venueId
 
 
 }
