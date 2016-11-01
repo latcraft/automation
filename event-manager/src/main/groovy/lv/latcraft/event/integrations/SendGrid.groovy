@@ -10,12 +10,6 @@ import static lv.latcraft.event.utils.JsonMethods.dumpJson
 @Log4j("logger")
 class SendGrid extends BaseJsonClient {
 
-  String findCampaignIdByTitle(String campaignTitle) {
-    execute(GET, '/v3/campaigns', [:]) { data ->
-      data.result.find { campaign -> campaign.title == campaignTitle }?.id
-    }
-  }
-
   Map<String, ?> findCampaignByTitle(String campaignTitle) {
     execute(GET, '/v3/campaigns', [:]) { data ->
       data.result.find { campaign -> campaign.title == campaignTitle }

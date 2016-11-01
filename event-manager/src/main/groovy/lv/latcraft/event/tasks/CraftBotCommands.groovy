@@ -1,12 +1,22 @@
 package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
+import lv.latcraft.event.lambda.InternalContext
 
 class CraftBotCommands extends BaseTask {
+
   Map<String, String> doExecute(Map<String, String> input, Context context) {
     // TODO: process commands and call other lambdas
+    // hello
+    // help <command> <subcommand>
     // list venues
     // list suppression
+    // status event
+    // status eventbrite
+    // status sendgrid
+    // status twitter
+    // status lanyrd
+    // sync contacts
     // publish eventbrite
     // publish sendgrid
     // publish cards
@@ -15,4 +25,9 @@ class CraftBotCommands extends BaseTask {
     // send reminder
     [:]
   }
+
+  public static void main(String[] args) {
+    new CraftBotCommands().execute([:], new InternalContext())
+  }
+
 }

@@ -2,14 +2,31 @@ package lv.latcraft.event.tasks
 
 import com.amazonaws.services.lambda.runtime.Context
 import groovy.util.logging.Log4j
+import lv.latcraft.event.integrations.Configuration
 import lv.latcraft.event.lambda.InternalContext
 import lv.latcraft.event.utils.FileMethods
+import twitter4j.Paging
+import twitter4j.Twitter
+import twitter4j.TwitterFactory
+import twitter4j.auth.AccessToken
 
 @Log4j("logger")
 class PublishAnnouncementOnTwitter extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
-    File twitterFile = FileMethods.temporaryFile("twitter", ".json")
+
+    Twitter client = new TwitterFactory().getInstance()
+
+    def timeline = client.getUserTimeline(new Paging(1).count(Configuration.twitterPagingCount.toInteger()).sinceId(Configuration.twitterPagingSinceBigBangMomentId.toLong()))
+//      )
+//      def data = timeline.toArray()
+//      twitterFile.text = dumpJson(data)
+//      result = data
+
+    // TODO: fix twitter publishing
+
+    client.setOAuthAccessToken(new AccessToken(Configuration.twitterOAuthToken, Configuration.latcraftTwitterOAuthSecret))
+
     [:]
   }
 

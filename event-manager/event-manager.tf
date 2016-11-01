@@ -92,3 +92,5 @@ resource "aws_iam_role_policy" "latcraft_lambda_executor_policy" {
 EOF
 }
 
+// TODO: add all lambda functions
+// TODO: add API gateway entry points

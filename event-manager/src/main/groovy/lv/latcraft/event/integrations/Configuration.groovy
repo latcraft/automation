@@ -1,5 +1,10 @@
 package lv.latcraft.event.integrations
 
+import com.amazonaws.services.kms.AWSKMS
+import com.amazonaws.services.kms.AWSKMSClient
+import com.amazonaws.services.kms.model.DecryptRequest
+import com.amazonaws.services.kms.model.DecryptResult
+
 class Configuration {
 
   private final static Properties LOCAL_PROPERTIES = new Properties()
@@ -10,6 +15,15 @@ class Configuration {
       LOCAL_PROPERTIES.load(localPropertiesFile.newInputStream())
     }
     // TODO: implement read from KMS if it is available
+  }
+
+  private static Properties decrypt() {
+    Properties props = new Properties()
+    DecryptRequest decryptRequest = new DecryptRequest()
+    // TODO: decrypt data in lambda context
+    DecryptResult result = new AWSKMSClient().decrypt(decryptRequest)
+    props.load(new ByteArrayInputStream(result.plaintext.array()))
+    props
   }
 
   private static String getConfigProperty(String name) {

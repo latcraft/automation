@@ -19,7 +19,7 @@ import static lv.latcraft.event.utils.XmlMethods.setElementValue
 class PublishCardsOnS3 extends BaseTask {
 
   static final List<String> EVENT_CARDS = [
-    'normal_event_card_v1',
+    'normal_event_card_v1',                // twitter, linkedin
     'normal_event_card_v2',
     'normal_event_card_v3',
     'normal_event_facebook_background_v1',
