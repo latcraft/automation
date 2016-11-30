@@ -126,7 +126,9 @@ String sanitizeCompany(String company) {
       replaceAll('Intelligent Technologies', 'IT').
       replaceAll('VSIA', '').
       replaceAll('vsia', '').
+      replaceAll('Latvijas Fili.*$', '').
       replaceAll('sia', '').
+      replaceAll('Entwicklungs', '').
       replaceAll('SIA', '').
       replaceAll('LTD', '').
       replaceAll('AS', '').

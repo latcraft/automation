@@ -24,3 +24,6 @@ local.properties
 *.tfstate
 vars.tf
 *.json
+attendees_a_j.csv
+attendees_k_p.csv
+attendees_r_z.csv
