@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg3322"
+   height="384"
+   width="1120"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="label_template_from.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1600"
+     inkscape:window-height="848"
+     id="namedview17"
+     showgrid="false"
+     inkscape:zoom="0.25982143"
+     inkscape:cx="-327.14776"
+     inkscape:cy="192"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3322" />
+  <defs
+     id="defs3324">
+    <clipPath
+       id="clipPath3171-0-4-4-0-7">
+      <rect
+         style="fill:#800000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect3173-9-9-0-1-7"
+         y="409.50421"
+         x="1713.2094"
+         ry="0"
+         height="419.46399"
+         width="745.71429" />
+    </clipPath>
+    <clipPath
+       id="clipPath3194-7-6-7-6-7">
+      <rect
+         style="fill:#800000;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect3196-4-3-6-5-7"
+         y="409.50421"
+         x="1713.2094"
+         ry="0"
+         height="419.46399"
+         width="745.71429" />
+    </clipPath>
+  </defs>
+  <metadata
+     id="metadata3327">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <text
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:29.52789879px;line-height:125%;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+     xml:space="preserve"
+     id="text3750-9-2-7-0"
+     y="248.13541"
+     x="203.09207"
+     sodipodi:linespacing="125%"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:50px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold'"
+       id="line2"
+       y="248.13541"
+       x="203.09207">Address line 2</tspan></text>
+  <text
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:80px;line-height:125%;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+     xml:space="preserve"
+     id="text3750-1-4-5-9"
+     y="170.27684"
+     x="203.09793"
+     sodipodi:linespacing="125%"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold'"
+       id="line1"
+       y="170.27684"
+       x="203.09793">Address line 1</tspan></text>
+  <text
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:80px;line-height:125%;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+     xml:space="preserve"
+     id="text3750-1-4-5-9-6"
+     y="92.418282"
+     x="201.29324"
+     sodipodi:linespacing="125%"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold'"
+       id="company"
+       y="92.418282"
+       x="201.29324">Company name</tspan></text>
+  <text
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:29.52789879px;line-height:125%;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+     xml:space="preserve"
+     id="text3750-9-2-7-0-1"
+     y="325.99396"
+     x="202.04968"
+     sodipodi:linespacing="125%"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold'"
+       id="person"
+       y="325.99396"
+       x="202.04968">Person name</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:60px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="116.21992"
+     y="99.491409"
+     id="text4145"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4147"
+       x="116.21992"
+       y="99.491409">NO:</tspan></text>
+</svg>

@@ -35,6 +35,7 @@ buildscript {
 task generateLabels << {
   buildDir.mkdirs()
   File svgTemplate = file('label_template.svg')
+  File svgTemplateFrom = file('label_template_from.svg')
   int fileIndex = 1
   forEachLabel { address ->
     logger.quiet "> Generating label for ${address[0]}"
@@ -43,6 +44,9 @@ task generateLabels << {
     File svgLabelFile = file("${buildDir}/${baseName}_label.svg")    
     svgLabelFile.text = modifySVG(svgTemplate.text, address)
     renderLabelImage(svgLabelFile, buildDir, baseName)
+    address = [ 'DevTernity', 'Ratsupites iela 3-72', 'Riga', 'Latvia', 'LV-1067', 'Eduards Sizovs' ]
+    svgLabelFile.text = modifySVG(svgTemplateFrom.text, address)
+    renderLabelImage(svgLabelFile, buildDir, baseName + '_from')
     svgLabelFile.delete()
   }
 }
