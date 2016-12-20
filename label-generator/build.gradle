@@ -1,0 +1,118 @@
+
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.client.j2se.MatrixToImageWriter
+import com.google.zxing.common.BitMatrix
+import com.google.zxing.qrcode.QRCodeWriter
+import com.google.zxing.EncodeHintType
+
+import org.apache.batik.transcoder.image.JPEGTranscoder
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+
+import groovy.util.XmlSlurper
+import groovy.xml.XmlUtil
+
+import java.awt.image.BufferedImage
+import java.awt.Graphics2D
+import java.awt.Color
+
+import static javax.imageio.ImageIO.*
+
+
+buildscript {
+  repositories { mavenCentral() }
+  dependencies {
+    classpath 'com.google.zxing:core:3.2.0'
+    classpath 'com.google.zxing:javase:3.2.0'
+    classpath('batik:batik-transcoder:1.6-1') {
+      exclude module: 'fop'
+    }
+    classpath 'xerces:xercesImpl:2.11.0'
+  }
+}
+
+
+task generateLabels << {
+  buildDir.mkdirs()
+  File svgTemplate = file('label_template.svg')
+  int fileIndex = 1
+  forEachLabel { address ->
+    logger.quiet "> Generating label for ${address[0]}"
+    String indexString = (fileIndex++).toString().padLeft(3, '0')
+    String baseName = "${indexString}"
+    File svgLabelFile = file("${buildDir}/${baseName}_label.svg")    
+    svgLabelFile.text = modifySVG(svgTemplate.text, address)
+    renderLabelImage(svgLabelFile, buildDir, baseName)
+    svgLabelFile.delete()
+  }
+}
+
+generateLabels.logging.captureStandardOutput LogLevel.INFO
+generateLabels.logging.captureStandardError LogLevel.INFO
+
+
+task concatenateLabels(dependsOn: generateLabels) << {
+  File pageDir = file("${buildDir}/pages")
+  pageDir.mkdirs()
+  int badgesPerPage = 16
+  int badgeHeight = 408
+  int badgeWidth = 1190
+  int badgeMargin = 6
+  int startX = 50
+  int startY = 70
+  buildDir.listFiles().findAll { it.name.endsWith('.jpg') }.collate(badgesPerPage).eachWithIndex { badgeGroup, groupIndex ->
+    BufferedImage page = read(new File('a4.jpg'))
+    Graphics2D pageGraphics = page.createGraphics()
+    pageGraphics.setColor(Color.LIGHT_GRAY)
+    println "> Generating page ${groupIndex}"
+    badgeGroup.eachWithIndex { File badgeFile, imageIndex ->
+      BufferedImage badgeImage = read(badgeFile)
+      println "> Adding ${imageIndex}:${badgeFile.name} to page"
+      int x = (imageIndex % 2) * (badgeWidth + badgeMargin * 2) + startX
+      int y = ((int)(imageIndex / 2)) * (badgeHeight + badgeMargin * 2) + startY
+      pageGraphics.drawImage(badgeImage, null, x, y)
+      if (project.hasProperty('drawLines')) {
+        pageGraphics.drawLine(0, y, Integer.MAX_VALUE, y)
+        pageGraphics.drawLine(0, y + badgeHeight, Integer.MAX_VALUE, y + badgeHeight)
+        pageGraphics.drawLine(x, 0, x, Integer.MAX_VALUE)
+        pageGraphics.drawLine(x + badgeWidth, 0, x + badgeWidth, Integer.MAX_VALUE)
+      }
+    }
+    write(page, "JPG", new File(pageDir, "page${groupIndex.toString().padLeft(3, '0')}.jpg"))  
+  }
+}
+
+concatenateLabels.mustRunAfter generateLabels
+
+task clean(type: Delete) {
+  delete buildDir
+}
+
+def renderLabelImage(File svgFile, File baseDir, String baseName) {
+  JPEGTranscoder t = new JPEGTranscoder()
+  t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(1))
+  String svgURI = svgFile.toURL().toString()
+  t.transcode(new TranscoderInput(svgURI), new TranscoderOutput(new FileOutputStream("${baseDir}/${baseName}_badge.jpg")))
+}
+
+
+def modifySVG(String svgText, address) {
+  def svg = new XmlSlurper().parseText(svgText)
+  replaceValue(svg, 'company', "${address[0]}")
+  replaceValue(svg, 'line1', "${address[1]}, ${address[2]}")
+  replaceValue(svg, 'line2', "${address[3]}, ${address[4]}")
+  replaceValue(svg, 'person', address[5])
+  XmlUtil.serialize(svg)
+}
+
+def replaceValue(svg, String id, String value) {
+  svg.depthFirst().find { it.@id == id }.replaceBody(value)
+}
+
+def forEachLabel(Closure cl) {
+  def lines = file(project.hasProperty('dataFile') ? project.dataFile : 'data.csv').readLines().drop(1).collect { it.trim() }.findAll { it }
+  lines.each { String line ->
+    cl(line.split(';'))
+  }
+}
+
