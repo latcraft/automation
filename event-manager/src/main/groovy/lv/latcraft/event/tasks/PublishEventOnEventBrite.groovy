@@ -12,6 +12,7 @@ class PublishEventOnEventBrite extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
     Map response = [:]
+    // TODO: validate we do not have duplicate eventbrite ids and links in the data
     futureEvents.each { Map event ->
 
       String eventId = calculateEventId(event)
