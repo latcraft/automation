@@ -11,7 +11,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> input, Context context) {
     attendees.collate(300).each { inputData ->
-      logger.info "Inserting next batch of contacts..."
+      logger.info "Inserting next batch of ${inputData.size()} contact(s)..."
       sendGrid.post("/v3/contactdb/recipients", inputData) { Map responseData ->
         reportResult(inputData, responseData)
         sleep(1000)
@@ -23,7 +23,7 @@ class CopyContactsFromEventBriteToSendGrid extends BaseTask {
   }
 
   List<Map<String, ?>> getAttendees() {
-    uniqueAttendees(allEventBriteAttendees).collect { fromEventBriteToSendGrid(it) }
+    uniqueAttendees(allEventBriteAttendees).collect { fromEventBriteToSendGrid(it) }.findAll { it.email }
   }
 
   void reportResult(List<Map<String, ?>> inputData, Map responseData) {
