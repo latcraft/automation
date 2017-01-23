@@ -44,7 +44,7 @@ class SendGrid extends BaseJsonClient {
     logger.info "Preparing to create/update \"${content.title}\""
     Map<String, ?> campaign = findCampaignByTitle(content.title as String)
     sleep(1000)
-    if (campaign.id) {
+    if (campaign?.id) {
       if (campaign.status == 'Draft') {
         logger.info "Updating campaign with ID: ${campaign.id}"
         return execute(PATCH, "/v3/campaigns/${campaign.id}".toString(), content) { data ->

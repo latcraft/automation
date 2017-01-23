@@ -10,10 +10,13 @@ import static lv.latcraft.event.integrations.Configuration.sendGridDefaultListId
 class CopyContactsFromEventBriteToSendGrid extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> input, Context context) {
-    attendees.collate(1000).each { inputData ->
+    attendees.collate(300).each { inputData ->
+      logger.info "Inserting next batch of contacts..."
       sendGrid.post("/v3/contactdb/recipients", inputData) { Map responseData ->
         reportResult(inputData, responseData)
+        sleep(1000)
         sendGrid.post("/v3/contactdb/lists/${sendGridDefaultListId}/recipients", responseData.persisted_recipients)
+        sleep(1000)
       }
     }
     [:]
