@@ -116,7 +116,7 @@ class PublishEventOnEventBrite extends BaseTask {
   }
 
   private static void validateEventBriteData() {
-    List<String> eventbriteEventIds = events.collect { Map event -> event.eventbriteEventId }
+    List<String> eventbriteEventIds = events.collect { Map event -> event.eventbriteEventId }.findAll { it }
     if (eventbriteEventIds.size() != eventbriteEventIds.unique().size()) {
       throw new RuntimeException("Duplicate EventBrite ids found in data!")
     }
