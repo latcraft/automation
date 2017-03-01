@@ -12,7 +12,7 @@ class PublishEventOnEventBrite extends BaseTask {
 
   Map<String, String> doExecute(Map<String, String> request, Context context) {
     Map response = [:]
-    // TODO: validate we do not have duplicate eventbrite ids and links in the data
+    validateEventBriteData()
     futureEvents.each { Map event ->
 
       String eventId = calculateEventId(event)
@@ -113,6 +113,13 @@ class PublishEventOnEventBrite extends BaseTask {
 
     }
     response
+  }
+
+  private static void validateEventBriteData() {
+    List<String> eventbriteEventIds = events.collect { Map event -> event.eventbriteEventId }
+    if (eventbriteEventIds.size() != eventbriteEventIds.unique().size()) {
+      throw new RuntimeException("Duplicate EventBrite ids found in data!")
+    }
   }
 
   private static String createHtmlDescription(Map event) {
