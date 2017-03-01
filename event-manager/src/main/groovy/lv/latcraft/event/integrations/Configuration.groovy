@@ -98,6 +98,14 @@ class Configuration {
     getConfigProperty('latcraftNewsletterTemplateBaseDir')
   }
 
+  static String getAwsAccessKeyId() {
+    getConfigProperty('latcraftAwsAccessKeyId')
+  }
+
+  static String getAwsSecretAccessKey() {
+    getConfigProperty('latcraftAwsSecretAccessKey')
+  }
+
   static String getGitCommitter() {
     getConfigProperty('latcraftGitCommitter')
   }
