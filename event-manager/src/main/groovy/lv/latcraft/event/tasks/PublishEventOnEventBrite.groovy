@@ -5,7 +5,7 @@ import groovy.util.logging.Log4j
 import lv.latcraft.event.integrations.Configuration
 import lv.latcraft.event.lambda.InternalContext
 
-import static lv.latcraft.event.Constants.*
+import static lv.latcraft.event.utils.Constants.*
 
 @Log4j("logger")
 class PublishEventOnEventBrite extends BaseTask {

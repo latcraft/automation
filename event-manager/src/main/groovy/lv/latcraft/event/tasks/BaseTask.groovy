@@ -8,7 +8,7 @@ import lv.latcraft.event.integrations.GitHub
 import lv.latcraft.event.integrations.SendGrid
 import lv.latcraft.event.integrations.Slack
 
-import static lv.latcraft.event.Utils.dumpJson
+import static lv.latcraft.event.utils.Utils.dumpJson
 import static lv.latcraft.event.utils.Constants.dateFormat
 import static lv.latcraft.event.integrations.Configuration.eventDataFile
 

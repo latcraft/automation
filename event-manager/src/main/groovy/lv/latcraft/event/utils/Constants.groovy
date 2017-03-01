@@ -9,7 +9,6 @@ import static java.util.TimeZone.getTimeZone
 
 class Constants {
 
-  static eventFile = new File("build/events.json")
   static templateEngine = new SimpleTemplateEngine()
   static timeZone = getTimeZone('Europe/Riga')
   static gmt = getTimeZone("GMT")

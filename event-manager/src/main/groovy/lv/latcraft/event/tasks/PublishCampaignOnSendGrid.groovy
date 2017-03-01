@@ -6,7 +6,7 @@ import lv.latcraft.event.integrations.Configuration
 import lv.latcraft.event.lambda.InternalContext
 import lv.latcraft.event.utils.S3Methods
 
-import static lv.latcraft.event.Constants.templateEngine
+import static lv.latcraft.event.utils.Constants.templateEngine
 import static lv.latcraft.event.utils.FileMethods.temporaryFile
 import static lv.latcraft.event.utils.S3Methods.putRequest
 
