@@ -49,7 +49,7 @@ class PublishCardsOnS3 extends BaseTask {
         // Generate event card.
         logger.info "Generating ${filePrefix}"
         cardFile.text = generateEventCard(getSvgTemplate(templateId), event)
-        S3Methods.s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
+        s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
 
         // Save result S3 object URLs.
         response[filePrefix] = getObjectUrl("${filePrefix}.png")
@@ -70,7 +70,7 @@ class PublishCardsOnS3 extends BaseTask {
             // Generate event card.
             logger.info "Generating ${filePrefix}"
             cardFile.text = generateSpeakerCard(getSvgTemplate(templateId), event, session)
-            S3Methods.s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
+            s3.putObject(putRequest("${filePrefix}.png", renderPNG(cardFile)))
 
             // Save result S3 object URLs.
             response[filePrefix] = getObjectUrl("${filePrefix}.png")
