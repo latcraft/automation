@@ -14,7 +14,7 @@ aws {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.7'
+  compile 'org.codehaus.groovy:groovy-all:2.4.8'
   compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
   compile 'com.amazonaws:aws-lambda-java-events:1.3.0'
@@ -57,7 +57,13 @@ test {
   }
 }
 
-task execute(type: JavaExec) {
-  main = mainClass
-  classpath = sourceSets.main.runtimeClasspath
+file('src/main/groovy/lv/latcraft/event/tasks').eachFile {
+  if (it.file && it.name.endsWith('.groovy') && !it.name.startsWith('BaseTask')) {
+    String className = it.name.replaceAll('.groovy$', '')
+    String taskName = className.substring(0, 1).toLowerCase() + className.substring(1)
+    task(taskName, type: JavaExec, group: "event manager") {
+      main = "lv.latcraft.event.tasks.${className}"
+      classpath = sourceSets.main.runtimeClasspath
+    }
+  }
 }
