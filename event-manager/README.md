@@ -1,9 +1,9 @@
 
 Automation tasks for event publishing and support.
 
-## Event publishing
-
 > **NOTE:** For running automation tasks locally, copy contents of the `gradle.properties` file from the `latcraft/passwords` project to the `local.propeties` file.
+
+## Event publishing
 
 Event publishing process consists of the following steps: 
  
@@ -59,40 +59,50 @@ Event publishing process consists of the following steps:
 
 ## Event cards
 
-- `normal_event_card_v1` (**DEPRECATED**): use for Twitter, Linked, features: Periscope Video  
+- `normal_event_card_v1` (**DEPRECATED**): use for Twitter, LinkedIn; features: **Periscope Video**  
 
     > **WARNING:** Only use this card if we go back to using Periscope. Otherwise use cards with Facebook video streaming.
 
-    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v1-20170307.png" width="100">
+    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v1-20170307.png" width="200">
 
-- `normal_event_card_v2` (**DEPRECATED**): use for Twitter, Linked, features: Periscope Video  
+- `normal_event_card_v2` (**DEPRECATED**): use for Twitter, LinkedIn; features: **Periscope Video**  
                                            
     > **WARNING:** Only use this card if we go back to using Periscope. Otherwise use cards with Facebook video streaming.
 
-    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v2-20170307.png" width="100">
+    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v2-20170307.png" width="200">
 
-- `normal_event_card_v3`: use for Twitter, Linked, features: Facebook Video
+- `normal_event_card_v3`: use for Twitter, LinkedIn; features: **Facebook Video**
 
-   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png" width="100">
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png" width="200">
 
-- `normal_event_facebook_background_v1`: 
+- `normal_event_facebook_background_v1`: (**DEPRECATED**): use for **Facebook Event Page background**; features: **Periscope Video**  
 
-   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_facebook_background_v1-20170307.png" width="100">
+    > **WARNING:** Only use this card if we go back to using Periscope. Otherwise use cards with Facebook video streaming.
+    
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_facebook_background_v1-20170307.png" width="200">
 
-- `normal_event_facebook_background_v2`:
+- `normal_event_facebook_background_v2`: use for **Facebook Event Page background**; features: **Facebook Video**
 
-   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_facebook_background_v2-20170307.png" width="100">
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_facebook_background_v2-20170307.png" width="200">
 
-- `workshop_facebook_background_v1`:
+- `workshop_facebook_background_v1`: use for **Facebook Event Page background**; features: **Bring Laptop**
 
-   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_facebook_background_v1-20170307.png" width="100">
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_facebook_background_v1-20170307.png" width="200">
 
-- `workshop_event_card_v1`:
+- `workshop_event_card_v1`: use for Twitter, LinkedIn; features: **Bring Laptop**
 
-   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v1-20170307.png" width="100">
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v1-20170307.png" width="200">
 
-- `workshop_event_card_v2`:
+- `workshop_event_card_v2`: use for Twitter, LinkedIn; features: **Bring Laptop**
 
-   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v2-20170307.png" width="100">
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v2-20170307.png" width="200">
+   
+- `speaker_card_v1` (**DEPRECATED**): use for Twitter, LinkedIn, Facebook; features: **Periscope Video** 
+
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-speaker_card_v1-20170307-antons_mislevics.png" width="200">
+
+- `speaker_card_v1`: use for Twitter, LinkedIn, Facebook; features: **Facebook Video** 
+   
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-speaker_card_v2-20170307-antons_mislevics.png" width="200">
 
 
