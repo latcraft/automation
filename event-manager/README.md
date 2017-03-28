@@ -36,7 +36,11 @@ Event publishing process consists of the following steps:
 4. **Automated:** Create invitation e-mail on SendGrid using the following task:
   
         gradlew publishCampaignOnSendGrid
-        
+ 
+    Link to the e-mail HTML will be published inside `#craftbot` channel in Slack.
+      
+     > **WARNING:** Verify e-mail's content and layout before executing next task.   
+       
     It is safe to run this task several times.    
         
 5. **Automated:** Send the invitation letter using the following task:
@@ -55,36 +59,40 @@ Event publishing process consists of the following steps:
 
 ## Event cards
 
-- normal_event_card_v1
+- `normal_event_card_v1` (**DEPRECATED**): use for Twitter, Linked, features: Periscope Video  
 
-![normal_event_card_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v1-20170307.png)
+    > **WARNING:** Only use this card if we go back to using Periscope. Otherwise use cards with Facebook video streaming.
 
-- normal_event_card_v2
+    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v1-20170307.png" width="100">
 
-![normal_event_card_v2](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v2-20170307.png)
+- `normal_event_card_v2` (**DEPRECATED**): use for Twitter, Linked, features: Periscope Video  
+                                           
+    > **WARNING:** Only use this card if we go back to using Periscope. Otherwise use cards with Facebook video streaming.
 
-- normal_event_card_v3
+    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v2-20170307.png" width="100">
 
-![normal_event_card_v3](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png)
+- `normal_event_card_v3`: use for Twitter, Linked, features: Facebook Video
 
-- normal_event_facebook_background_v1
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png" width="100">
 
-![normal_event_facebook_background_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png)
+- `normal_event_facebook_background_v1`: 
 
-- normal_event_facebook_background_v2
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_facebook_background_v1-20170307.png" width="100">
 
-![normal_event_facebook_background_v2](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png)
+- `normal_event_facebook_background_v2`:
 
-- workshop_facebook_background_v1
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_facebook_background_v2-20170307.png" width="100">
 
-![workshop_facebook_background_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_facebook_background_v1-20170307.png)
+- `workshop_facebook_background_v1`:
 
-- workshop_event_card_v1
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_facebook_background_v1-20170307.png" width="100">
 
-![workshop_event_card_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v1-20170307.png)
+- `workshop_event_card_v1`:
 
-- workshop_event_card_v2
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v1-20170307.png" width="100">
 
-![workshop_event_card_v2](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v2-20170307.png)
+- `workshop_event_card_v2`:
+
+   <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v2-20170307.png" width="100">
 
 
