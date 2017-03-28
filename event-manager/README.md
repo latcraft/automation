@@ -56,12 +56,35 @@ Event publishing process consists of the following steps:
 ## Event cards
 
 - normal_event_card_v1
+
+![normal_event_card_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v1-20170307.png)
+
 - normal_event_card_v2
+
+![normal_event_card_v2](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v2-20170307.png)
+
 - normal_event_card_v3
+
+![normal_event_card_v3](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png)
+
 - normal_event_facebook_background_v1
+
+![normal_event_facebook_background_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png)
+
 - normal_event_facebook_background_v2
-- workshop_event_card_v1
-- workshop_event_card_v2
+
+![normal_event_facebook_background_v2](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-normal_event_card_v3-20170307.png)
+
 - workshop_facebook_background_v1
+
+![workshop_facebook_background_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_facebook_background_v1-20170307.png)
+
+- workshop_event_card_v1
+
+![workshop_event_card_v1](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v1-20170307.png)
+
+- workshop_event_card_v2
+
+![workshop_event_card_v2](https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-workshop_event_card_v2-20170307.png)
 
 
