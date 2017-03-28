@@ -4,7 +4,6 @@ build/
 bin/
 out/
 *.pdf
-*.png
 *.ipr
 *.iws
 *.iml
