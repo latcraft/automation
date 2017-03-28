@@ -49,13 +49,13 @@ Event publishing process consists of the following steps:
 
     > **WARNING:** This task can executed only once and is not reversible.
     
-6. **Manual:** Tweet about the event and speakers using LatCraft Twitter account and cards generated above. Pin the tweet about event.
+6. **Manual:** Tweet about the event and speakers using LatCraft Twitter account and cards generated above. Pin the tweet about event. Use `normal_event_card_v3`, `workshop_event_card_v1` or `workshop_event_card_v2` card for event and `speaker_card_v2` for speakers.
 
 7. **Manual:** Create Lanyrd event.
 
-8. **Manual:** Create Facebook event.
+8. **Manual:** Create Facebook event. Use `normal_event_facebook_background_v2` or `workshop_facebook_background_v1` card for event background. Use `normal_event_card_v3`, `workshop_event_card_v1` or `workshop_event_card_v2` card for Facebook posts. Use `speaker_card_v2` for Facebook posts about speakers.  
 
-9. **Manual:** Create LinkedIn post.
+9. **Manual:** Create LinkedIn post. Use `normal_event_card_v3`, `workshop_event_card_v1` or `workshop_event_card_v2` card for event announcement post.
 
 ## Event cards
 
@@ -101,8 +101,7 @@ Event publishing process consists of the following steps:
 
    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-speaker_card_v1-20170307-antons_mislevics.png" width="200">
 
-- `speaker_card_v1`: use for Twitter, LinkedIn, Facebook; features: **Facebook Video** 
+- `speaker_card_v2`: use for Twitter, LinkedIn, Facebook; features: **Facebook Video** 
    
    <img src="https://github.com/latcraft/automation/raw/master/event-manager/src/main/docs/images/cards/event-speaker_card_v2-20170307-antons_mislevics.png" width="200">
-
 
