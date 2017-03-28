@@ -29,7 +29,7 @@ Event publishing process consists of the following steps:
     
     It is safe to run this task several times if there are any updates to the event data.     
         
-3. **Automated:** Copy all contacts from EventBrite to SendGrid using the following task.
+3. **Automated:** Copy all contacts from EventBrite to SendGrid using the following task:
 
         gradlew copyContactsFromEventBriteToSendGrid
 
