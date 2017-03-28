@@ -23,7 +23,7 @@ Event publishing process consists of the following steps:
         
     Cards will be generated on AWS S3 share. Links to the cards will be published inside `#craftbot` channel in Slack.    
     
-    > **WARNING:** It is responsibility of the event lead to share cards at given times on social networks. 
+    > **WARNING:** It is a responsibility of the event lead to share cards at convenient times on social networks. 
     
     Different cards have different purposes (check the *Event cards* section below). 
     
