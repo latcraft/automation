@@ -37,6 +37,10 @@ class PublishCampaignOnSendGrid extends BaseTask {
 
         slack.send("Master, you are great! SendGrid campaign has been published (or updated) for \"${invitationCampaignTitle}\"!")
 
+        if (!validateRequiredFields(event)) {
+          slack.send("WARNING: Master, some of the required fields are missing in the event data. You RISK sending an invalid e-mail!")
+        }
+
         // Save invitation campaign HTML on S3.
         File localFile = temporaryFile("invitation_${eventId}", ".html")
         localFile.text = invitationCampaignContent
@@ -61,7 +65,7 @@ class PublishCampaignOnSendGrid extends BaseTask {
     template.make([event: event]).toString()
   }
 
-  public static void main(String[] args) {
+  static void main(String[] args) {
     new PublishCampaignOnSendGrid().execute([:], new InternalContext())
   }
 

@@ -22,11 +22,15 @@ class SendCampaignOnSendGrid extends BaseTask {
 
       if (campaign.id) {
         if (campaign.status == 'Draft') {
-          logger.info "Starting campaign with ID: ${campaign.id}"
-          sendGrid.post("/v3/campaigns/${campaign.id}/schedules/now".toString(), [:]) { data ->
-            logger.info "Scheduling result: ${data.status}"
+          if (validateRequiredFields(event)) {
+            logger.info "Starting campaign with ID: ${campaign.id}"
+            sendGrid.post("/v3/campaigns/${campaign.id}/schedules/now".toString(), [:]) { data ->
+              logger.info "Scheduling result: ${data.status}"
+            }
+            slack.send("Master, as always you did a great job! Campaign \"${invitationCampaignTitle}\" has been scheduled to start NOW! ")
+          } else {
+            slack.send("WARNING: Master, I can't publish the campaign. Some of the required fields are missing in the event data. You risk sending an invalid e-mail! Campaign \"${invitationCampaignTitle}\" has NOT been scheduled to start! ")
           }
-          slack.send("Master, as always you did a great job! Campaign \"${invitationCampaignTitle}\" has been scheduled to start NOW! ")
         } else {
           logger.info "Campaign \"${invitationCampaignTitle}\" has already been sent."
           slack.send("Master, it is good that you've checked, but campaign \"${invitationCampaignTitle}\" has already been started! ")
@@ -39,7 +43,7 @@ class SendCampaignOnSendGrid extends BaseTask {
     response
   }
 
-  public static void main(String[] args) {
+  static void main(String[] args) {
     new SendCampaignOnSendGrid().execute([:], new InternalContext())
   }
 

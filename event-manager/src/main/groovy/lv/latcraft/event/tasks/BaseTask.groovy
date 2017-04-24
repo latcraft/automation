@@ -11,6 +11,7 @@ import lv.latcraft.event.integrations.Slack
 import static lv.latcraft.event.utils.Utils.dumpJson
 import static lv.latcraft.event.utils.Constants.dateFormat
 import static lv.latcraft.event.integrations.Configuration.eventDataFile
+import static org.apache.commons.lang.StringUtils.isNotBlank
 
 @Log4j("baseLogger")
 abstract class BaseTask {
@@ -87,6 +88,11 @@ abstract class BaseTask {
 
   static boolean isFutureEvent(Map<String, ?> event) {
     dateFormat.parse(event['date'].toString()) > new Date()
+  }
+
+  static boolean validateRequiredFields(Map<String, ?> event) {
+    String[] requireFields = ['theme', 'desc', 'time', 'date', 'tickets']
+    requireFields.every { isNotBlank(event.get(it) as String) }
   }
 
 }
