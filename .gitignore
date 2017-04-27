@@ -21,6 +21,7 @@ local.properties
 *.backup
 *.tfstate
 vars.tf
+00_vars.tf
 *.json
 attendees_a_j.csv
 attendees_k_p.csv
