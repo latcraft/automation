@@ -105,7 +105,7 @@ def modifySVG(String svgText, address) {
   replaceValue(svg, 'company', "${address[0]}")
   replaceValue(svg, 'line1', "${address[1]}, ${address[2]}")
   replaceValue(svg, 'line2', "${address[3]}, ${address[4]}")
-  replaceValue(svg, 'person', address[5])
+  replaceValue(svg, 'person', address.size() > 5 ? address[5] : '')
   XmlUtil.serialize(svg)
 }
 

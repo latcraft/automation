@@ -1,13 +1,11 @@
-Company;Address;City;Country;Zip;Person
-LikeIT;Krisjana Barona iela 32;Riga;Latvia;LV-1011;Irina Tocko
-Squalio;Elizabetes iela 7;Riga;Latvia;LV-1010;Baiba Gibnere
-Tele2;Mukusalas iela 41;Riga;Latvia;LV-1004;Daina Gailiusaite
-TestDevLab;Krisjana Valdemara iela 8 - 9;Riga;Latvia;LV-1010;Kristaps Skutelis
-Twino;Mukusalas iela 41;Riga;Latvia;LV-1004;Eduards Bezprozvanovs
-Visma Enterprise;Kronvalda blvd 3/5;Riga;Latvia;LV-1010;Iveta Bukane
-Zabbix;Dzelzavas iela 117;Riga;Latvia;LV-1021;Sergejs Sorokins
-JetBrains;Elsenheimerstrasse 47;Munchen;Deutschland;80687;Eugenia Dubova
-4finance;Lielirbes iela 17a-8;Riga;Latvia;LV-1046;Aleksejs Jurcenko
-Accenture;Brivibas gatve 214;Riga;Latvia;LV-1039;Karina Innus
-C.T.Co;Meistaru 33;Valdlauci, Kekavas p.;Latvia;LV-1076;Evgenijs Furs
-Intrum Justitia;Brivibas gatve 214m-2;Riga;Latvia;LV-1039;Olga Balunova
+Company;Address;City;Country;Zip
+LikeIT;Krisjana Barona iela 32;Riga;Latvia;LV-1011
+Visma Enterprise;Kronvalda blvd 3/5;Riga;Latvia;LV-1010
+4finance;Lielirbes iela 17a-8;Riga;Latvia;LV-1046
+Intrum Justitia;Brivibas gatve 214m-2;Riga;Latvia;LV-1039
+Ubiquiti Networks;Balasta dambis 15;Riga;Latvia;LV-1048
+ALSO CLOUD;Merkela iela 21;Riga;Latvia;LV-1050
+Intechsystems;Vienibas gatve 109;Riga;Latvia;LV-1058
+Neotech Developemnt;Ziedleju iela 2;Marupe;Latvia;LV-2167
+Taxify;Vana-Louna tn 39/1;Tallinn;Estonia;10134
+Pipedrive OU;Paldiski mnt 80, 7th floor;Tallinn;Estonia;10617
